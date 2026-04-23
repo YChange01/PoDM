@@ -5,17 +5,18 @@
 
 识别规则：
 - 找到表头（第一行非空）
-- 在表头里找标题含 "类型" 的那一列（如 "类型"/"参数类型"/"类 型" 等），其在表里的列序就是"类型列"
-- 此后每一行把对应列的值加入计数
-- 空行和列数少于类型列索引的行跳过（通常是续行）
-- 同时把"参数说明/Description"等**像长中文句子的列**认作描述，不计入
+- 在表头里找标题含 "类型"/"参数类型" 的那一列，其在表里的列序就是"类型列"
+- 此后每一行把对应列的值加入计数；空行和列数少于类型列索引的行跳过
 
-输出按出现次数从多到少排列。短高频 → 真正的类型词；长低频 → 多为续行噪声。
+输出按频次降序。短高频 → 真类型词；长低频 → 多为续行噪声。
 
 用法:
-    python3 scripts/type_enum.py                   # 默认输入
+    python3 scripts/type_enum.py                   # 默认输入，结果写到 output/types.txt
     python3 scripts/type_enum.py <path.docx>
-    python3 scripts/type_enum.py <path.docx> 10    # 只看 count >= 10 的
+    python3 scripts/type_enum.py <path.docx> 10    # 只保留 count >= 10 的
+
+结果直接写到 <仓库根>/output/types.txt（UTF-8），避免 Windows GBK 终端
+无法编码 Word 私用区字符导致崩溃。终端只打摘要。
 """
 from __future__ import annotations
 
@@ -34,6 +35,7 @@ from extract_interfaces import (  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_INPUT = REPO_ROOT / "data" / "Atlas PoDManager 1.0.0 Redfish 接口参考_最新.docx"
+DEFAULT_OUTPUT = REPO_ROOT / "output" / "types.txt"
 
 _TYPE_HEADER_KEYS = ("类型", "参数类型", "类 型")  # 可能的表头关键字
 
@@ -70,10 +72,28 @@ def _process_table(title: str, body: list[str], counts: Counter,
             samples[val].append(sample)
 
 
+def _render(counts: Counter[str], samples: dict[str, list[str]],
+            sections_cnt: int, table_cnt: int, min_count: int) -> str:
+    lines: list[str] = []
+    lines.append(
+        f"扫描 {sections_cnt} 个 section, {table_cnt} 张表, "
+        f"类型列共 {counts.total()} 次取值, 去重 {len(counts)} 种"
+    )
+    lines.append("")
+    lines.append(f"{'count':>6}  {'type value':<25}  sample (title | col[0])")
+    lines.append("-" * 100)
+    for val, cnt in counts.most_common():
+        if cnt < min_count:
+            break
+        sample = samples.get(val, [""])[0]
+        display_val = val if len(val) <= 25 else val[:22] + "..."
+        lines.append(f"{cnt:>6}  {display_val:<25}  {sample}")
+    return "\n".join(lines) + "\n"
+
+
 def main() -> None:
     args = sys.argv[1:]
     path = Path(args[0]) if args and not args[0].isdigit() else DEFAULT_INPUT
-    # 可选的最小 count
     min_count = 1
     for a in args:
         if a.isdigit():
@@ -95,16 +115,19 @@ def main() -> None:
                 _process_table(title, body, counts, samples)
                 table_count += 1
 
-    print(f"扫描 {len(sections)} 个 section, {table_count} 张表, "
-          f"类型列共 {counts.total()} 次取值, 去重 {len(counts)} 种\n")
-    print(f"{'count':>6}  {'type value':<25}  sample (title | col[0])")
-    print("-" * 100)
-    for val, cnt in counts.most_common():
-        if cnt < min_count:
-            break
-        sample = samples.get(val, [""])[0]
-        display_val = val if len(val) <= 25 else val[:22] + "..."
-        print(f"{cnt:>6}  {display_val:<25}  {sample}")
+    content = _render(counts, samples, len(sections), table_count, min_count)
+
+    DEFAULT_OUTPUT.parent.mkdir(parents=True, exist_ok=True)
+    DEFAULT_OUTPUT.write_text(content, encoding="utf-8")
+
+    # 终端只打摘要（避免 Windows GBK 终端遇到 PUA 字符崩溃）
+    total_rows = counts.total()
+    distinct = len(counts)
+    print(
+        f"扫描 {len(sections)} section / {table_count} 表 / {total_rows} 行类型 / "
+        f"去重 {distinct} 种 -> {DEFAULT_OUTPUT}"
+    )
+    print(f"提示：在 Windows 上直接打开该文件（UTF-8 编码）查看完整清单。")
 
 
 if __name__ == "__main__":
