@@ -16,7 +16,11 @@
           response: ["@odata.context", "@odata.type", ...]
 
 用法：
+    python3 extract_interfaces.py                             # 使用默认输入
     python3 extract_interfaces.py <输入文件> [输出文件]
+
+    默认输入：<仓库根>/data/Atlas PoDManager 1.0.0 Redfish 接口参考_最新.docx
+    默认输出：<仓库根>/output/<输入文件名>.interfaces.yaml
 
 依赖：仅 Python 3 标准库；若安装了 PyYAML 则用 YAML 输出，否则自动回退 JSON。
 """
@@ -280,14 +284,30 @@ def dump_yaml(data: dict, out: Path) -> Path:
 
 # =================== 入口 ===================
 
+REPO_ROOT = Path(__file__).resolve().parent.parent
+DEFAULT_INPUT = REPO_ROOT / "data" / "Atlas PoDManager 1.0.0 Redfish 接口参考_最新.docx"
+DEFAULT_OUTPUT_DIR = REPO_ROOT / "output"
+
+
+def _resolve_io(argv: list[str]) -> tuple[Path, Path]:
+    if len(argv) >= 2:
+        inp = Path(argv[1])
+        out = (
+            Path(argv[2])
+            if len(argv) > 2
+            else inp.with_suffix(".interfaces.yaml")
+        )
+    else:
+        inp = DEFAULT_INPUT
+        DEFAULT_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+        out = DEFAULT_OUTPUT_DIR / f"{inp.stem}.interfaces.yaml"
+    return inp, out
+
+
 def main() -> None:
-    if len(sys.argv) < 2:
-        print(__doc__.strip())
-        sys.exit(1)
-    inp = Path(sys.argv[1])
+    inp, out = _resolve_io(sys.argv)
     if not inp.exists():
         sys.exit(f"输入文件不存在: {inp}")
-    out = Path(sys.argv[2]) if len(sys.argv) > 2 else inp.with_suffix(".interfaces.yaml")
 
     text = read_source(inp)
     interfaces: list[Interface] = []

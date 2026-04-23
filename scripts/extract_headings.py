@@ -4,14 +4,12 @@
 并在每个接口小节下方附带 URI（若有），存成缩进式 txt。
 
 用法：
+    python3 extract_headings.py                      # 使用默认输入
     python3 extract_headings.py <输入文件> [输出文件]
 
-    输入：.docx 或 .txt
-    输出：默认 <输入>.headings.txt
-
-示例：
-    python3 extract_headings.py PoDM_API.docx
-    python3 extract_headings.py PoDM_API.txt  headings.txt
+    默认输入：<仓库根>/data/Atlas PoDManager 1.0.0 Redfish 接口参考_最新.docx
+    默认输出：<仓库根>/output/<输入文件名>.headings.txt
+              （当显式传入输入但未传输出时）输出写到与输入同名的 .headings.txt
 
 依赖：仅 Python 3 标准库。
 """
@@ -151,14 +149,30 @@ def format_tree(headings: list[Heading]) -> str:
 
 # ---------- 入口 ----------
 
+REPO_ROOT = Path(__file__).resolve().parent.parent
+DEFAULT_INPUT = REPO_ROOT / "data" / "Atlas PoDManager 1.0.0 Redfish 接口参考_最新.docx"
+DEFAULT_OUTPUT_DIR = REPO_ROOT / "output"
+
+
+def _resolve_io(argv: list[str]) -> tuple[Path, Path]:
+    if len(argv) >= 2:
+        inp = Path(argv[1])
+        out = (
+            Path(argv[2])
+            if len(argv) > 2
+            else inp.with_suffix(".headings.txt")
+        )
+    else:
+        inp = DEFAULT_INPUT
+        DEFAULT_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+        out = DEFAULT_OUTPUT_DIR / f"{inp.stem}.headings.txt"
+    return inp, out
+
+
 def main() -> None:
-    if len(sys.argv) < 2:
-        print(__doc__.strip())
-        sys.exit(1)
-    inp = Path(sys.argv[1])
+    inp, out = _resolve_io(sys.argv)
     if not inp.exists():
         sys.exit(f"输入文件不存在: {inp}")
-    out = Path(sys.argv[2]) if len(sys.argv) > 2 else inp.with_suffix(".headings.txt")
 
     text = read_source(inp)
     headings = extract(text)

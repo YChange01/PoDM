@@ -31,20 +31,27 @@ PoDM/
 
 ## 用法
 
-把原始文档放到 `data/`，输出落在 `output/`：
+把原始文档放到 `data/`，输出落在 `output/`。
+
+**不带参数**会直接跑仓库默认的输入文件（写死在脚本里），输出到 `output/` 下：
 
 ```bash
-# 标题树
-python3 scripts/extract_headings.py   data/PoDM_API.docx   output/PoDM_API.headings.txt
-
-# 接口参数
-python3 scripts/extract_interfaces.py data/PoDM_API.docx   output/PoDM_API.yaml
-
-# 也可指定 JSON 输出
-python3 scripts/extract_interfaces.py data/PoDM_API.docx   output/PoDM_API.json --format json
+# 默认输入：data/Atlas PoDManager 1.0.0 Redfish 接口参考_最新.docx
+# 默认输出：output/<输入文件名>.headings.txt   /   .interfaces.yaml
+python3 scripts/extract_headings.py
+python3 scripts/extract_interfaces.py
 ```
 
-不带第二个参数时，输出会写到与输入同名的 `.headings.txt` / `.interfaces.yaml`。
+**传参数**可处理任何文件：
+
+```bash
+python3 scripts/extract_headings.py   data/你的文件.docx   output/你的文件.headings.txt
+python3 scripts/extract_interfaces.py data/你的文件.docx   output/你的文件.interfaces.yaml
+```
+
+只传输入、不传输出时，结果写到与输入同名的 `.headings.txt` / `.interfaces.yaml`。
+
+如果要换默认输入，改 `scripts/extract_*.py` 里的 `DEFAULT_INPUT` 常量即可。
 
 ## 输出示例
 
