@@ -12,8 +12,9 @@
 - params.path       : URI 里的 {xxx} 占位符（顺序保留）
 - params.query      : URI 里 ?a=x&b=y 的键名
 - params.header     : 首行后、body 之前所有 "Name: value" 里的 Name
-- params.body       : 请求 body JSON 的顶层键（json.loads 失败时回退正则）
-- params.response   : 响应示例 JSON 的顶层键
+- params.body       : 请求 body JSON 中**所有深度**的 key（保序去重）
+- params.response   : 响应示例 JSON 中**所有深度**的 key（保序去重）
+  json.loads 失败（文档常见漏逗号等）时回退到 "key": 正则，结果等价。
 
 两份输出都写到 output/：
   output/<stem>.example.uris.txt          每行 "[METHOD] URI"
@@ -95,71 +96,37 @@ def _find_body(text: str) -> str | None:
     return candidates[0][1]
 
 
-def _scan_top_keys(body_raw: str) -> list[str]:
-    """手扫 {...} 体，只收 depth=1 的 "key":…… 的 key。
+_JSON_KEY_RE = re.compile(r'"([@A-Za-z_][\w@.\-]*)"\s*:')
 
-    用来兜底 json.loads 失败（文档里常见漏逗号之类写法问题）。扫描时：
-    - 跟踪大括号/方括号深度；遇到 "…" 进入字符串态，忽略其中的 {}[]
-    - 字符串结束后如果紧跟 :（允许中间空白）且当时 depth==1，就作为 key 收下
+
+def _walk_keys(obj) -> list[str]:
+    """递归收集 dict 里所有 key（含嵌套 list/dict），保留首次出现顺序。"""
+    out: list[str] = []
+
+    def walk(node) -> None:
+        if isinstance(node, dict):
+            for k, v in node.items():
+                out.append(k)
+                walk(v)
+        elif isinstance(node, list):
+            for item in node:
+                walk(item)
+
+    walk(obj)
+    return out
+
+
+def _json_all_keys(body_raw: str) -> list[str]:
+    """抓 body 里所有 "key": 的 key（任意深度），保序去重。
+
+    先尝试 json.loads + 递归 walk；失败（文档里常见漏逗号之类小毛病）
+    退化到正则，把所有 "…": 形式的 key 抓下来。
     """
-    n = len(body_raw)
-    i = 0
-    while i < n and body_raw[i] in " \t\n\r":
-        i += 1
-    if i >= n or body_raw[i] != "{":
-        return []
-    depth = 1
-    i += 1
-    in_string = False
-    escape = False
-    key_start = -1
-    keys: list[str] = []
-    seen: set[str] = set()
-
-    while i < n:
-        ch = body_raw[i]
-        if in_string:
-            if escape:
-                escape = False
-            elif ch == "\\":
-                escape = True
-            elif ch == '"':
-                in_string = False
-                if key_start >= 0 and depth == 1:
-                    j = i + 1
-                    while j < n and body_raw[j] in " \t\n\r":
-                        j += 1
-                    if j < n and body_raw[j] == ":":
-                        key = body_raw[key_start + 1 : i]
-                        if key not in seen:
-                            seen.add(key)
-                            keys.append(key)
-                key_start = -1
-        else:
-            if ch == '"':
-                in_string = True
-                key_start = i
-            elif ch in "{[":
-                depth += 1
-            elif ch == "}":
-                depth -= 1
-                if depth == 0:
-                    break
-            elif ch == "]":
-                depth -= 1
-        i += 1
-    return keys
-
-
-def _json_top_keys(body_raw: str) -> list[str]:
-    """优先 json.loads；失败退化到深度扫描（只收 depth=1 的 key，不误吞嵌套字段）。"""
     try:
-        obj = json.loads(body_raw)
-        if isinstance(obj, dict):
-            return list(obj.keys())
+        raw = _walk_keys(json.loads(body_raw))
     except Exception:
-        pass
-    return _scan_top_keys(body_raw)
+        raw = [m.group(1) for m in _JSON_KEY_RE.finditer(body_raw)]
+    return _dedup_keep_order(raw)
 
 
 def parse_request_example(lines: list[str]) -> dict | None:
@@ -176,7 +143,7 @@ def parse_request_example(lines: list[str]) -> dict | None:
     headers_section = after if body_raw is None else after.split(body_raw, 1)[0]
 
     headers = _dedup_keep_order(hm.group(1) for hm in _HEADER_RE.finditer(headers_section))
-    body_keys = _json_top_keys(body_raw) if body_raw else []
+    body_keys = _json_all_keys(body_raw) if body_raw else []
 
     path_keys = _PLACEHOLDER_RE.findall(uri)
     query_keys: list[str] = []
@@ -199,7 +166,7 @@ def parse_request_example(lines: list[str]) -> dict | None:
 def parse_response_example(lines: list[str]) -> list[str]:
     raw = "\n".join(lines).strip()
     body = _find_body(raw)
-    return _json_top_keys(body) if body else []
+    return _json_all_keys(body) if body else []
 
 
 def build_interface(section: dict) -> Interface | None:
