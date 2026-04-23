@@ -37,13 +37,37 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _docx_utils import read_source  # noqa: E402
 from extract_interfaces import (  # noqa: E402
+    SECTION_MARKERS,
     Interface,
     Params,
     _section_has_uri,
     dedup_sections,
     split_sections,
-    split_subsections,
 )
+
+
+# ---- 本脚本私有的 split_subsections ------------------------------------
+# 与 extract_interfaces.py 的版本的唯一区别：marker 与尾部数字之间允许空格。
+# 示例里的 "请求示例 1" / "响应示例 2" 带空格是常见写法，但表格版不需要
+# 这种兼容（原写死 "响应参数1"/"响应参数2" 居多），所以两边各自维护一份，
+# 互不影响。
+_EX_MARKER_RE = re.compile(
+    r"^(" + "|".join(re.escape(m) for m in SECTION_MARKERS) + r")\s*\d*$"
+)
+
+
+def _split_subsections(lines: list[str]) -> dict[str, list[str]]:
+    subs: dict[str, list[str]] = {m: [] for m in SECTION_MARKERS}
+    current: str | None = None
+    for line in lines:
+        stripped = line.strip()
+        m = _EX_MARKER_RE.match(stripped)
+        if m:
+            current = m.group(1)  # 归到基础 marker (去掉数字后缀)
+            continue
+        if current is not None:
+            subs[current].append(line)
+    return subs
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_INPUT = REPO_ROOT / "data" / "Atlas PoDManager 1.0.0 Redfish 接口参考_最新.docx"
@@ -220,7 +244,7 @@ def parse_response_example(lines: list[str]) -> list[str]:
 
 
 def build_interface(section: dict) -> Interface | None:
-    subs = split_subsections(section["lines"])
+    subs = _split_subsections(section["lines"])
     req = parse_request_example(subs.get("请求示例", []))
     if req is None:
         return None
