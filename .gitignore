@@ -1,0 +1,25 @@
+# ---- Internal / vendor-specific data (do NOT commit) ----
+BMC.txt
+PoDM.txt
+compare_report.txt
+BMC_vs_PoDM_分析.txt
+sample.*.txt
+sample.*.yaml
+*.docx
+*.doc
+
+# ---- Local scripts kept out of the public tool ----
+compare.py
+make_test_docx.py
+
+# ---- Editor / IDE ----
+.vscode/
+.idea/
+
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+.venv/
+venv/

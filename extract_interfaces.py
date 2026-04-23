@@ -1,0 +1,312 @@
+#!/usr/bin/env python3
+"""
+从 PoDManager 接口文档 (.docx 或 .txt) 中逐个接口提取 URI 与参数名。
+
+每个接口只抽取"表格第一列"的参数名（即参数名称），按 path/header/body/query/response 分类：
+
+    interfaces:
+      - section: "4.2.25"
+        title:   "导出日志信息"
+        uri:     /redfish/v1/Managers/{manager_id}/...
+        params:
+          path:     [manager_id, logservices_id]
+          header:   [X-Auth-Token, Content-Type]
+          body:     [Type, Content]
+          query:    []
+          response: ["@odata.context", "@odata.type", ...]
+
+用法：
+    python3 extract_interfaces.py <输入文件> [输出文件]
+
+依赖：仅 Python 3 标准库；若安装了 PyYAML 则用 YAML 输出，否则自动回退 JSON。
+"""
+from __future__ import annotations
+
+import json
+import re
+import sys
+import xml.etree.ElementTree as ET
+import zipfile
+from dataclasses import asdict, dataclass, field
+from pathlib import Path
+
+
+W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
+
+
+# =================== 数据结构 ===================
+
+@dataclass
+class Params:
+    path: list[str] = field(default_factory=list)
+    header: list[str] = field(default_factory=list)
+    body: list[str] = field(default_factory=list)
+    query: list[str] = field(default_factory=list)
+    response: list[str] = field(default_factory=list)
+
+
+@dataclass
+class Interface:
+    section: str
+    title: str
+    uri: str
+    params: Params
+
+
+# =================== 输入读取 ===================
+
+def read_docx(path: Path) -> str:
+    with zipfile.ZipFile(path) as z:
+        with z.open("word/document.xml") as f:
+            tree = ET.parse(f)
+    body = tree.getroot().find(f"{W}body")
+    out: list[str] = []
+    for child in body:
+        if child.tag == f"{W}p":
+            texts = [t.text for t in child.iter(f"{W}t") if t.text]
+            out.append("".join(texts))
+        elif child.tag == f"{W}tbl":
+            for row in child.iter(f"{W}tr"):
+                cells: list[str] = []
+                for cell in row.iter(f"{W}tc"):
+                    ctext = "".join(t.text for t in cell.iter(f"{W}t") if t.text)
+                    cells.append(ctext)
+                out.append("\t".join(cells))
+    return "\n".join(out)
+
+
+def read_source(path: Path) -> str:
+    if path.suffix.lower() == ".docx":
+        text = read_docx(path)
+    else:
+        text = path.read_text(encoding="utf-8-sig")
+    return text.replace("　", " ").replace("\xa0", " ")
+
+
+# =================== 章节与小节切分 ===================
+
+HEADING_RE = re.compile(r"^(\d+(?:\.\d+)+)[\s\t]+([^\s/{][^/{}]{0,80})$")
+
+SECTION_MARKERS = (
+    "接口功能", "接口约束", "调用方法", "URI",
+    "请求参数", "请求示例", "响应参数", "响应示例",
+    "返回值", "样例",
+)
+
+
+def split_sections(text: str) -> list[dict]:
+    sections: list[dict] = []
+    current: dict | None = None
+    for line in text.splitlines():
+        stripped = line.strip()
+        match = HEADING_RE.match(stripped)
+        if match:
+            if current is not None:
+                sections.append(current)
+            current = {"number": match.group(1), "title": match.group(2).strip(), "lines": []}
+            continue
+        if current is not None:
+            current["lines"].append(line)
+    if current is not None:
+        sections.append(current)
+    return sections
+
+
+def split_subsections(lines: list[str]) -> dict[str, list[str]]:
+    subs: dict[str, list[str]] = {m: [] for m in SECTION_MARKERS}
+    current: str | None = None
+    for line in lines:
+        stripped = line.strip()
+        if stripped in SECTION_MARKERS:
+            current = stripped
+            continue
+        if current is not None:
+            subs[current].append(line)
+    return subs
+
+
+# =================== 表格解析（仅为了取"参数名称"首列） ===================
+
+REQUIRED_VALUES = {"是", "否", "必选", "可选"}
+TYPE_VALUES = {
+    "string", "int", "integer", "bool", "boolean", "array", "object", "float",
+    "number", "null", "list", "dict", "enum",
+    "字符串", "数字", "整数", "布尔", "布尔值", "数组", "对象", "自定义属性",
+    "浮点", "浮点数", "枚举", "日期", "时间", "字节", "字符",
+}
+TYPE_SUFFIX_RE = re.compile(r"^.{0,10}(列表|数组|对象|集合|属性|字典)$")
+STATUS_CODE_PROSE_RE = re.compile(r"^返回状态码为\d+")
+
+
+def split_columns(line: str) -> list[str]:
+    return [c for c in re.split(r"\t+|  +", line.strip()) if c != ""]
+
+
+def looks_like_type(s: str) -> bool:
+    if not s:
+        return False
+    if s in REQUIRED_VALUES or s in TYPE_VALUES:
+        return True
+    return bool(TYPE_SUFFIX_RE.match(s))
+
+
+def is_new_row(cols: list[str]) -> bool:
+    """新行的第 2~3 列应当是"是/否"或类型词。"""
+    if len(cols) < 2:
+        return False
+    for i in range(1, min(4, len(cols))):
+        if looks_like_type(cols[i]):
+            return True
+    return False
+
+
+def extract_param_names(body_lines: list[str]) -> list[str]:
+    """从一个表的正文里抽取"参数名称"（每个新行的第一列）。
+
+    不做去重：同名重复通常代表嵌套字段（如 Members 下的 @odata.id），丢弃会丢信息。
+    """
+    names: list[str] = []
+    # 跳过表头（第一个非空行）
+    iter_lines = iter(body_lines)
+    for line in iter_lines:
+        if line.strip():
+            break
+    for line in iter_lines:
+        if not line.strip():
+            continue
+        cols = split_columns(line)
+        if is_new_row(cols) and cols[0]:
+            names.append(cols[0])
+    return names
+
+
+def classify_table(title: str) -> str:
+    lower = title.lower()
+    if "path" in lower:
+        return "path"
+    if "header" in lower:
+        return "header"
+    if "body" in lower:
+        return "body"
+    if "query" in lower:
+        return "query"
+    if "response" in lower or "响应" in title or "返回" in title:
+        return "response"
+    return "other"
+
+
+def iter_tables(lines: list[str]):
+    """按 '表X-XXX ...' 切出若干表，yield (title, body_lines)。"""
+    i, n = 0, len(lines)
+    while i < n:
+        s = lines[i].strip()
+        is_table_title = s.startswith("表") and ("参数" in s or "Response" in s or "列表" in s)
+        if not is_table_title:
+            i += 1
+            continue
+        title = s
+        j = i + 1
+        body: list[str] = []
+        while j < n:
+            tt = lines[j].strip()
+            if tt.startswith("表") and ("参数" in tt or "Response" in tt or "列表" in tt):
+                break
+            if tt in SECTION_MARKERS:
+                break
+            if HEADING_RE.match(tt):
+                break
+            if STATUS_CODE_PROSE_RE.match(tt):
+                break
+            body.append(lines[j])
+            j += 1
+        yield title, body
+        i = j
+
+
+# =================== 组装接口 ===================
+
+def first_non_empty(lines: list[str]) -> str:
+    for line in lines:
+        if line.strip():
+            return line.strip()
+    return ""
+
+
+def build_interface(section: dict) -> Interface:
+    subs = split_subsections(section["lines"])
+    params = Params()
+
+    for title, body_lines in iter_tables(subs["请求参数"]):
+        names = extract_param_names(body_lines)
+        category = classify_table(title)
+        if category in ("path", "header", "body", "query"):
+            getattr(params, category).extend(names)
+
+    for _, body_lines in iter_tables(subs["响应参数"]):
+        params.response.extend(extract_param_names(body_lines))
+
+    return Interface(
+        section=section["number"],
+        title=section["title"],
+        uri=first_non_empty(subs["URI"]),
+        params=params,
+    )
+
+
+# =================== 输出 ===================
+
+def dump_yaml(data: dict, out: Path) -> Path:
+    try:
+        import yaml
+    except ImportError:
+        print("提示：未安装 PyYAML，自动改输出 JSON。`pip install pyyaml` 可切回 YAML。",
+              file=sys.stderr)
+        out = out.with_suffix(".json")
+        out.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+        return out
+
+    def str_representer(dumper, value):
+        if "\n" in value:
+            return dumper.represent_scalar("tag:yaml.org,2002:str", value, style="|")
+        return dumper.represent_scalar("tag:yaml.org,2002:str", value)
+
+    yaml.add_representer(str, str_representer, Dumper=yaml.SafeDumper)
+    out.write_text(
+        yaml.safe_dump(data, allow_unicode=True, sort_keys=False, width=1000),
+        encoding="utf-8",
+    )
+    return out
+
+
+# =================== 入口 ===================
+
+def main() -> None:
+    if len(sys.argv) < 2:
+        print(__doc__.strip())
+        sys.exit(1)
+    inp = Path(sys.argv[1])
+    if not inp.exists():
+        sys.exit(f"输入文件不存在: {inp}")
+    out = Path(sys.argv[2]) if len(sys.argv) > 2 else inp.with_suffix(".interfaces.yaml")
+
+    text = read_source(inp)
+    interfaces: list[Interface] = []
+    for section in split_sections(text):
+        if "URI" not in "\n".join(section["lines"]):
+            continue
+        try:
+            iface = build_interface(section)
+        except Exception as exc:  # pragma: no cover
+            print(f"WARN: 解析 {section['number']} {section['title']} 失败: {exc}",
+                  file=sys.stderr)
+            continue
+        if iface.uri:
+            interfaces.append(iface)
+
+    data = {"interfaces": [asdict(i) for i in interfaces]}
+    final_path = dump_yaml(data, out)
+    print(f"已提取 {len(interfaces)} 个接口 -> {final_path}")
+
+
+if __name__ == "__main__":
+    main()
