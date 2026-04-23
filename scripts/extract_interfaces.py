@@ -203,13 +203,24 @@ def classify_table(title: str) -> str:
     return "other"
 
 
+# 表格标题：可选 "表X-XXX " 前缀 + 可选 Path/Header/Body/Query/Response + "参数列表"
+# 覆盖实际见到的三种写法：
+#   "表4-114 Path参数列表" / "表4-117 Response参数列表" / "Response参数列表"
+_TABLE_TITLE_RE = re.compile(
+    r"^(?:表\s*[\d\-.]+\s+)?(?:Path|Header|Body|Query|Response)?参数列表\s*$"
+)
+
+
+def _is_table_title(s: str) -> bool:
+    return bool(_TABLE_TITLE_RE.match(s))
+
+
 def iter_tables(lines: list[str]):
-    """按 '表X-XXX ...' 切出若干表，yield (title, body_lines)。"""
+    """拆表。标题支持 "表X-XXX …参数列表" 与纯 "…参数列表" 两种写法。"""
     i, n = 0, len(lines)
     while i < n:
         s = lines[i].strip()
-        is_table_title = s.startswith("表") and ("参数" in s or "Response" in s or "列表" in s)
-        if not is_table_title:
+        if not _is_table_title(s):
             i += 1
             continue
         title = s
@@ -217,7 +228,7 @@ def iter_tables(lines: list[str]):
         body: list[str] = []
         while j < n:
             tt = lines[j].strip()
-            if tt.startswith("表") and ("参数" in tt or "Response" in tt or "列表" in tt):
+            if _is_table_title(tt):
                 break
             if tt in SECTION_MARKERS:
                 break
