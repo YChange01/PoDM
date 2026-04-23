@@ -137,12 +137,24 @@ def split_subsections(lines: list[str]) -> dict[str, list[str]]:
 
 REQUIRED_VALUES = {"是", "否", "必选", "可选"}
 TYPE_VALUES = {
+    # 英文
     "string", "int", "integer", "bool", "boolean", "array", "object", "float",
-    "number", "null", "list", "dict", "enum",
-    "字符串", "数字", "整数", "布尔", "布尔值", "数组", "对象", "自定义属性",
-    "浮点", "浮点数", "枚举", "日期", "时间", "字节", "字符",
+    "number", "null", "list", "dict", "enum", "long", "short", "double", "map",
+    "byte", "timestamp",
+    # 中文基础类型
+    "字符串", "字符", "字符型",
+    "数字", "整数", "整型", "长整型", "短整型",
+    "布尔", "布尔值", "布尔型",
+    "浮点", "浮点数", "浮点型", "小数",
+    "枚举", "枚举型",
+    "数组", "列表", "对象", "字典", "集合", "映射",
+    "自定义属性", "属性",
+    "日期", "时间", "时间戳", "字节",
+    # 文档里把类名当类型用的情况
+    "用户", "角色", "权限", "权限集合",
 }
-TYPE_SUFFIX_RE = re.compile(r"^.{0,10}(列表|数组|对象|集合|属性|字典)$")
+# "整型/字符型/浮点型" 等以 型 结尾的变体统一兜底；列表/数组/对象/集合/属性/字典/映射 原有
+TYPE_SUFFIX_RE = re.compile(r"^.{0,10}(列表|数组|对象|集合|属性|字典|映射|型)$")
 STATUS_CODE_PROSE_RE = re.compile(r"^返回状态码为\d+")
 
 
