@@ -24,7 +24,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _docx_utils import read_source  # noqa: E402
-from extract_interfaces import (  # noqa: E402
+from extract_from_tables import (  # noqa: E402
     iter_tables,
     split_columns,
     split_sections,

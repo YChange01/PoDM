@@ -17,8 +17,8 @@
           response: ["@odata.context", "@odata.type", ...]
 
 用法：
-    python3 extract_interfaces.py                             # 使用默认输入
-    python3 extract_interfaces.py <输入文件> [输出文件]
+    python3 extract_from_tables.py                             # 使用默认输入
+    python3 extract_from_tables.py <输入文件> [输出文件]
 
     默认输入：<仓库根>/data/Atlas PoDManager 1.0.0 Redfish 接口参考_最新.docx
     默认输出：<仓库根>/output/<输入文件名>.interfaces.yaml

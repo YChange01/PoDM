@@ -1,6 +1,6 @@
 """扫描 .docx 里所有参数表的"类型"列取值，输出去重+计数的清单。
 
-用途：用这份清单来决定 extract_interfaces.py 里 TYPE_VALUES 白名单该放什么。
+用途：用这份清单来决定 extract_from_tables.py 里 TYPE_VALUES 白名单该放什么。
 不再靠猜或一条条补，数据说话。
 
 识别规则：
@@ -26,7 +26,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _docx_utils import read_source  # noqa: E402
-from extract_interfaces import (  # noqa: E402
+from extract_from_tables import (  # noqa: E402
     iter_tables,
     split_columns,
     split_sections,

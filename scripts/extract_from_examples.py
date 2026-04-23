@@ -1,8 +1,8 @@
 """基于"请求示例 / 响应示例"的 HTTP 代码块提取 URI 与参数。
 
-与基于参数表的 extract_interfaces.py **平行**，区别只在数据源：
-- extract_interfaces.py 读"请求参数/响应参数"里的表格
-- extract_example.py   读"请求示例/响应示例"里的 HTTP 报文和 JSON
+与基于参数表的 extract_from_tables.py **平行**，区别只在数据源：
+- extract_from_tables.py 读"请求参数/响应参数"里的表格
+- extract_from_examples.py   读"请求示例/响应示例"里的 HTTP 报文和 JSON
 
 对同一份 docx 分别跑两个脚本，再 diff 两份 yaml，就能发现
 "表格写了但示例没发" / "示例发了但表格没列" 的文档不自洽。
@@ -21,8 +21,8 @@
   output/<stem>.example.interfaces.yaml   字段同 interfaces.yaml
 
 用法:
-    python3 scripts/extract_example.py                       # 默认输入
-    python3 scripts/extract_example.py <path.docx>
+    python3 scripts/extract_from_examples.py                       # 默认输入
+    python3 scripts/extract_from_examples.py <path.docx>
 
 依赖：仅 Python 3 标准库；装了 PyYAML 走 yaml，否则自动回退 JSON。
 """
@@ -36,7 +36,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _docx_utils import read_source  # noqa: E402
-from extract_interfaces import (  # noqa: E402
+from extract_from_tables import (  # noqa: E402
     SECTION_MARKERS,
     Interface,
     Params,
@@ -47,7 +47,7 @@ from extract_interfaces import (  # noqa: E402
 
 
 # ---- 本脚本私有的 split_subsections ------------------------------------
-# 与 extract_interfaces.py 的版本的唯一区别：marker 与尾部数字之间允许空格。
+# 与 extract_from_tables.py 的版本的唯一区别：marker 与尾部数字之间允许空格。
 # 示例里的 "请求示例 1" / "响应示例 2" 带空格是常见写法，但表格版不需要
 # 这种兼容（原写死 "响应参数1"/"响应参数2" 居多），所以两边各自维护一份，
 # 互不影响。

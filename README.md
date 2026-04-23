@@ -5,7 +5,21 @@
 
 > 零第三方依赖：仅用 Python 3 标准库（`zipfile` + `xml.etree`）直读 `.docx`，
 > 不需要 `pandoc` / `python-docx` / `pip` 安装。
-> 若安装了 `PyYAML`，`extract_interfaces.py` 会用 YAML 输出，否则自动回退 JSON。
+> 若安装了 `PyYAML`，两份 interfaces.yaml 会用 YAML 输出，否则自动回退 JSON。
+
+## 两条独立的参数提取路径
+
+同一份 docx 里，参数在两个地方各出现一次：**参数表** 和 **请求/响应示例代码**。
+两个地方**互为校验**——理想情况下应一致，不一致就是文档 bug。所以仓库里有
+**两个独立的提取脚本**，字段和输出结构完全对称，便于 diff：
+
+| 路径 | 数据源 | 脚本 |
+|---|---|---|
+| 表格路径 | "请求参数 / 响应参数" 小节里的参数表 | `scripts/extract_from_tables.py` |
+| 示例路径 | "请求示例 / 响应示例" 小节里的 HTTP 报文和 JSON | `scripts/extract_from_examples.py` |
+
+两条路径的实现彼此独立（比如 marker 识别规则不同——示例里有 "请求示例 1 / 响应示例 2"
+这种带空格数字后缀的写法；表格没有）。互不共享状态，一边优化不会影响另一边。
 
 ## 目录结构
 
@@ -13,32 +27,36 @@
 PoDM/
 ├── README.md
 ├── .gitignore
-├── scripts/          # 公共提取工具
-│   ├── _docx_utils.py
-│   ├── docx_diag.py
-│   ├── extract_headings.py
-│   ├── extract_interfaces.py
-│   └── extract_uris.py
-├── analysis/         # 一次性对比分析（BMC vs PoDM 的 Redfish 接口清单）
-│   ├── compare.py              # 规范化 URI 后做集合差/分类汇总
-│   ├── compare_report.txt      # 脚本输出：按分类列出共同/独有接口
-│   └── BMC_vs_PoDM_分析.txt    # 基于 compare 结果的人肉分析
-├── data/             # 放原始文档（.docx / .txt），本地使用，不入库
-└── output/           # 脚本生成的结果（headings.txt / interfaces.yaml），不入库
+├── scripts/
+│   ├── _docx_utils.py                # 共享 .docx 读取 (跳 ToC + 合成 X.Y.Z 编号)
+│   ├── extract_headings.py           # 提取章节标题 + [METHOD] URI
+│   ├── extract_uris.py               # 从 headings.txt 抽纯 URI 列表
+│   ├── extract_from_tables.py        # 路径①：从表格提取 URI + 参数
+│   ├── extract_from_examples.py      # 路径②：从示例代码提取 URI + 参数
+│   ├── col_enum.py                   # 诊断：按列索引枚举表格某列取值
+│   ├── type_enum.py                  # 诊断：枚举参数表"类型"列的取值
+│   ├── docx_diag.py                  # 诊断：打印段落样式分布
+│   └── section_dump.py               # 诊断：导出指定章节的原文
+├── analysis/                         # 一次性对比分析 (BMC vs PoDM)
+│   ├── compare.py
+│   ├── compare_report.txt
+│   └── BMC_vs_PoDM_分析.txt
+├── data/                             # 原始文档（.docx / .txt），不入库
+└── output/                           # 脚本生成的结果，不入库
 ```
 
 `data/` 与 `output/` 目录只保留空壳（`.gitkeep`），内部文件默认被 `.gitignore` 屏蔽。
 `analysis/compare.py` 依赖 `data/BMC.txt` 和 `data/PoDM.txt` 运行，公开仓库里跑
 不起来是预期的——报告本身可读即可。
 
-## 工具
+## 主工作流
 
 | 脚本 | 作用 | 默认输出 |
 |---|---|---|
 | `scripts/extract_headings.py` | 提取 `X.Y.Z` 级章节标题，每个接口小节附带 `[METHOD] URI` | `<input>.headings.txt` |
-| `scripts/extract_interfaces.py` | 按接口小节提取 URI + 各表第一列（参数名称），分 path/header/body/query/response | `<input>.interfaces.yaml` |
-| `scripts/extract_uris.py` | 从已生成的 `headings.txt` 里只抽出 URI，每行一个（顺序保留，不去重） | `<input>.uris.txt` |
-| `scripts/docx_diag.py` | 打印 `.docx` 里段落样式分布 + 首次文本样本，排查非标准样式用 | stdout |
+| `scripts/extract_from_tables.py` | **表格路径**：从参数表抽 URI + path/header/body/query/response | `<input>.interfaces.yaml` |
+| `scripts/extract_from_examples.py` | **示例路径**：从请求/响应示例代码抽相同字段结构 | `<input>.example.interfaces.yaml` 和 `<input>.example.uris.txt` |
+| `scripts/extract_uris.py` | 从已生成的 `headings.txt` 里只抽出 URI，每行一个 | `<input>.uris.txt` |
 
 ## 用法
 
@@ -48,16 +66,17 @@ PoDM/
 
 ```bash
 # 默认输入：data/Atlas PoDManager 1.0.0 Redfish 接口参考_最新.docx
-# 默认输出：output/<输入文件名>.headings.txt   /   .interfaces.yaml
 python3 scripts/extract_headings.py
-python3 scripts/extract_interfaces.py
+python3 scripts/extract_from_tables.py
+python3 scripts/extract_from_examples.py
 ```
 
 **传参数**可处理任何文件：
 
 ```bash
-python3 scripts/extract_headings.py   data/你的文件.docx   output/你的文件.headings.txt
-python3 scripts/extract_interfaces.py data/你的文件.docx   output/你的文件.interfaces.yaml
+python3 scripts/extract_headings.py       data/你的文件.docx   output/你的文件.headings.txt
+python3 scripts/extract_from_tables.py    data/你的文件.docx   output/你的文件.interfaces.yaml
+python3 scripts/extract_from_examples.py  data/你的文件.docx
 ```
 
 只传输入、不传输出时，结果写到与输入同名的 `.headings.txt` / `.interfaces.yaml`。
@@ -97,6 +116,17 @@ interfaces:
       query:    []
       response: ["@odata.context", "@odata.type", "@odata.id", Id, Name, TaskState, StartTime, Messages, Oem/Huawei, TaskPercentage]
 ```
+
+## 诊断工具
+
+跑完主工作流如果发现某节漏字段 / 多字段 / 解析错乱，按症状对号：
+
+| 症状 | 用哪个 |
+|---|---|
+| 某节解析不完整，想看原文长啥样 | `scripts/section_dump.py X.Y.Z` 导出该节扁平化后的原文 |
+| 类型词白名单要扩哪些 | `scripts/type_enum.py` 列出"类型"列所有真实取值 + 频次 |
+| 怀疑表格某列写法不一致 | `scripts/col_enum.py 1` 列出第 2 列所有取值 |
+| 标题识别不全 | `scripts/docx_diag.py` 看段落样式分布 |
 
 ## 文档格式假设
 
