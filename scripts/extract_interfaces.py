@@ -198,23 +198,57 @@ def is_new_row(cols: list[str]) -> bool:
     return False
 
 
+# 参数名长相：ASCII 字母/@/_ 开头，只含 ASCII 字母数字和 _ @ . - /
+# 用于两个地方：①过滤非标识符首列（避免"文件传输协议包括：sftp"被 "-" 触发成新行）
+#              ②结构补救：上一行刚结束、首列像参数名、整行 ≥2 列 时也视为新行
+_NAME_LIKE_RE = re.compile(r"^[@A-Za-z_][A-Za-z0-9_@./\-]*$")
+
+
 def extract_param_names(body_lines: list[str]) -> list[str]:
     """从一个表的正文里抽取"参数名称"（每个新行的第一列）。
 
     不做去重：同名重复通常代表嵌套字段（如 Members 下的 @odata.id），丢弃会丢信息。
+
+    两条新行判定规则：
+      ① 类型命中（白名单/后缀）——is_new_row
+      ② 结构补救——上一行没有续行过 & 首列是标识符 & ≥2 列
+         覆盖类型列漏填的行，如 "NameServers  指定网口地址为动态模式时，所需的DNS服务器信息。"
     """
     names: list[str] = []
-    # 跳过表头（第一个非空行）
     iter_lines = iter(body_lines)
+    # 跳过表头（第一个非空行）
     for line in iter_lines:
         if line.strip():
             break
+
+    in_row = False          # 是否有"当前行"
+    cont_count = 0          # 当前行已吃到的续行数量
     for line in iter_lines:
         if not line.strip():
             continue
         cols = split_columns(line)
-        if is_new_row(cols) and cols[0]:
-            names.append(cols[0])
+        if not cols:
+            continue
+
+        type_hit = is_new_row(cols)
+        struct_hit = (
+            not type_hit
+            and in_row
+            and cont_count == 0
+            and len(cols) >= 2
+            and bool(_NAME_LIKE_RE.match(cols[0]))
+        )
+
+        if type_hit or struct_hit:
+            # 过滤首列不是参数名长相的行——如 "文件传输协议包括：sftp" 这种中文描述
+            # 被 col[1]='-' 触发 type_hit=True，但首列不像参数名，忽略它
+            if _NAME_LIKE_RE.match(cols[0]):
+                names.append(cols[0])
+            in_row = True
+            cont_count = 0
+        else:
+            if in_row:
+                cont_count += 1
     return names
 
 
