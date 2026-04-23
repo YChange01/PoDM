@@ -1,0 +1,69 @@
+interfaces:
+- section: 4.2.25
+  title: 导出日志信息
+  uri: /redfish/v1/Managers/{manager_id}/LogServices/{logservices_id}/Actions/Oem/Huawei/LogService.ExportLog
+  params:
+    path:
+    - manager_id
+    - logservices_id
+    header:
+    - X-Auth-Token
+    - Content-Type
+    body:
+    - Type
+    - Content
+    query: []
+    response:
+    - '@odata.context'
+    - '@odata.type'
+    - '@odata.id'
+    - Id
+    - Name
+    - TaskState
+    - StartTime
+    - Messages
+    - Oem/Huawei
+    - TaskPercentage
+- section: 4.2.26
+  title: 查询日志集合资源信息
+  uri: /redfish/v1/Managers/{manager_id}/LogServices/{logservices_id}/Entries
+  params:
+    path:
+    - manager_id
+    - logservices_id
+    header:
+    - X-Auth-Token
+    body: []
+    query: []
+    response:
+    - '@odata.context'
+    - '@odata.id'
+    - '@odata.type'
+    - Name
+    - Members@odata.count
+    - Members
+    - '@odata.id'
+    - Members@odata.nextLin
+- section: 4.2.27
+  title: 查询日志资源信息
+  uri: /redfish/v1/Managers/{manager_id}/LogServices/{logservices_id}/Entries/{Entries_id}
+  params:
+    path:
+    - manager_id
+    - logservices_id
+    - entries_id
+    header: []
+    body: []
+    query: []
+    response:
+    - '@odata.context'
+    - '@odata.id'
+    - '@odata.type'
+    - Name
+    - Created
+    - EntryType
+    - Message
+    - Oem/Huawei
+    - Interface
+    - User
+    - Address
