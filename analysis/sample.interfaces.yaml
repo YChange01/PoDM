@@ -1,6 +1,7 @@
 interfaces:
 - section: 4.2.25
   title: 导出日志信息
+  method: POST
   uri: /redfish/v1/Managers/{manager_id}/LogServices/{logservices_id}/Actions/Oem/Huawei/LogService.ExportLog
   params:
     path:
@@ -26,6 +27,7 @@ interfaces:
     - TaskPercentage
 - section: 4.2.26
   title: 查询日志集合资源信息
+  method: GET
   uri: /redfish/v1/Managers/{manager_id}/LogServices/{logservices_id}/Entries
   params:
     path:
@@ -46,6 +48,7 @@ interfaces:
     - Members@odata.nextLin
 - section: 4.2.27
   title: 查询日志资源信息
+  method: GET
   uri: /redfish/v1/Managers/{manager_id}/LogServices/{logservices_id}/Entries/{Entries_id}
   params:
     path:

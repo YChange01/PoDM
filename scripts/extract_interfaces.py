@@ -7,6 +7,7 @@
     interfaces:
       - section: "4.2.25"
         title:   "导出日志信息"
+        method:  POST
         uri:     /redfish/v1/Managers/{manager_id}/...
         params:
           path:     [manager_id, logservices_id]
@@ -51,6 +52,7 @@ class Params:
 class Interface:
     section: str
     title: str
+    method: str
     uri: str
     params: Params
 
@@ -289,6 +291,7 @@ def build_interface(section: dict) -> Interface:
     return Interface(
         section=section["number"],
         title=section["title"],
+        method=first_non_empty(subs["调用方法"]),
         uri=first_non_empty(subs["URI"]),
         params=params,
     )

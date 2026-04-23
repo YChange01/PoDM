@@ -88,6 +88,7 @@ python3 scripts/extract_uris.py output/你的文件.headings.txt        # 指定
 interfaces:
   - section: 4.2.25
     title: 导出日志信息
+    method: POST
     uri: /redfish/v1/Managers/{manager_id}/LogServices/{logservices_id}/Actions/Oem/Huawei/LogService.ExportLog
     params:
       path:     [manager_id, logservices_id]
