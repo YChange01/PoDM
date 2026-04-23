@@ -4,16 +4,9 @@ data/*
 output/*
 !output/.gitkeep
 
-# ---- Private analysis scripts and reports ----
-analysis/
-
-# ---- Belt-and-suspenders guard for raw data at any path ----
+# ---- Raw data must stay local (analysis/ tracked, but not raw dumps) ----
 BMC.txt
 PoDM.txt
-compare_report.txt
-BMC_vs_PoDM_分析.txt
-sample.*.txt
-sample.*.yaml
 *.docx
 *.doc
 

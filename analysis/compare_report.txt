@@ -1,0 +1,313 @@
+BMC  总行数: 442  去重规范化后: 357
+PoDM 总行数: 374  去重规范化后: 304
+
+共同接口  : 220
+仅 BMC 有 : 137
+仅 PoDM 有: 84
+
+============================================================================================
+分类                           共同     仅BMC    仅PoDM
+--------------------------------------------------------------------------------------------
+$metadata                     0        0        1
+(root)                        1        0        1
+accountservice                9       14        1
+certificateservice            4        3        2
+chassis                      41       12        9
+chassis?$expand=.($levels=levels_num)      0        1        0
+chassisoverview               0        0        1
+dataacquisitionservice        2        0        1
+eventservice                  8        0        0
+jobservice                    0        3        0
+jsonschemas                   0        4        2
+managers                     70       69       47
+managers或任意资源url              0        1        0
+oem                           5       18        7
+performancecollection         1        0        0
+registries                    0        0        2
+schemastore                   0        0        1
+sessionservice                3        0        1
+systems                      55       10        5
+taskservice                   3        1        3
+telemetryservice             13        0        0
+updateservice                 5        1        0
+============================================================================================
+
+## 仅 BMC 有的接口（按分类）
+
+### [accountservice]  (14)
+  - /redfish/v1/accountservice/accounts/account_id/oem/huawei/actions/account.deletemutualauthclientcert
+  - /redfish/v1/accountservice/accounts/account_id/oem/huawei/actions/account.deletesshpublickey
+  - /redfish/v1/accountservice/accounts/account_id/oem/huawei/actions/account.importmutualauthclientcert
+  - /redfish/v1/accountservice/accounts/account_id/oem/huawei/actions/account.importsshpublickey
+  - /redfish/v1/accountservice/kerberosservice
+  - /redfish/v1/accountservice/kerberosservice/kerberoscontrollers
+  - /redfish/v1/accountservice/kerberosservice/kerberoscontrollers/member_id
+  - /redfish/v1/accountservice/ldapservice/ldapcontrollers/member_id/actions/hwldapcontroller.importcert
+  - /redfish/v1/accountservice/ldapservice/ldapcontrollers/member_id/actions/ldapcontroller.importcrl
+  - /redfish/v1/accountservice/oem/huawei/actions/accountservice.deletecrl
+  - /redfish/v1/accountservice/oem/huawei/actions/accountservice.deleterootcertificate
+  - /redfish/v1/accountservice/oem/huawei/actions/accountservice.importcrl
+  - /redfish/v1/accountservice/oem/huawei/actions/accountservice.importrootcertificate
+  - /redfish/v1/accountservice/privilegemap
+
+### [certificateservice]  (3)
+  - /redfish/v1/certificateservice/actions/certificateservice.generatecsr
+  - /redfish/v1/certificateservice/actions/certificateservice.replacecertificate
+  - /redfish/v1/certificateservice/certificatelocations
+
+### [chassis]  (12)
+  - /redfish/v1/chassis/?$top=top_num&$skip=skip_num&$expand=.($levels=levels_num)
+  - /redfish/v1/chassis/chassis_id/backupbatteryunits
+  - /redfish/v1/chassis/chassis_id/backupbatteryunits/backupbattery_id
+  - /redfish/v1/chassis/chassis_id/boards/board_id/actions/npuboard.npuboardreset
+  - /redfish/v1/chassis/chassis_id/drives/drives_id
+  - /redfish/v1/chassis/chassis_id/drives/drives_id/actions/oem/huawei/drive.cryptoerase
+  - /redfish/v1/chassis/chassis_id/networkadapters/networkadapters_id/actions/networkadapter.reset
+  - /redfish/v1/chassis/chassis_id/pciedevices/pciedevices_id/actions/oem/huawei/pciedevices.rest
+  - /redfish/v1/chassis/chassis_id/pcieslots
+  - /redfish/v1/chassis/chassisid/powersubsystem/powersupplies
+  - /redfish/v1/chassis/chassisid/powersubsystem/powersupplies/powersupplyid
+  - /redfish/v1/chassis/chassisid/powersubsystem/powersupplies/powersupplyid/metrics
+
+### [chassis?$expand=.($levels=levels_num)]  (1)
+  - /redfish/v1/chassis?$expand=.($levels=levels_num)
+
+### [jobservice]  (3)
+  - /redfish/v1/jobservice
+  - /redfish/v1/jobservice/jobs
+  - /redfish/v1/jobservice/jobs/job_id
+
+### [jsonschemas]  (4)
+  - /redfish/v1/jsonschemas/?$skip=skip_num
+  - /redfish/v1/jsonschemas/?$skip=skip_num&$top=top_num
+  - /redfish/v1/jsonschemas/?$top=top_num
+  - /redfish/v1/jsonschemas/?$top=top_num&$skip=skip_num
+
+### [managers]  (69)
+  - /redfish/v1/managers/manager_id/actions/manager.resettodefaults
+  - /redfish/v1/managers/manager_id/actions/oem/huawei/manager.deletelanguage
+  - /redfish/v1/managers/manager_id/actions/oem/huawei/manager.dump
+  - /redfish/v1/managers/manager_id/actions/oem/huawei/manager.quickdump
+  - /redfish/v1/managers/manager_id/actions/oem/huawei/manager.testconnection
+  - /redfish/v1/managers/manager_id/certificates
+  - /redfish/v1/managers/manager_id/certificates/certificate_id
+  - /redfish/v1/managers/manager_id/certificates/certificate_id/actions/certificate.deletecacertificatecrl
+  - /redfish/v1/managers/manager_id/diagnosticservice/actions/diagnosticservice.exportdiagnosticmetrics
+  - /redfish/v1/managers/manager_id/diagnosticservice/actions/diagnosticservice.exportnpudevicelog
+  - /redfish/v1/managers/manager_id/diagnosticservice/actions/diagnosticservice.exportnpulog
+  - /redfish/v1/managers/manager_id/diagnosticservice/prbstest
+  - /redfish/v1/managers/manager_id/diagnosticservice/workrecord
+  - /redfish/v1/managers/manager_id/kvmservice
+  - /redfish/v1/managers/manager_id/kvmservice/actions/kvmservice.setkvmkey
+  - /redfish/v1/managers/manager_id/licenseservice
+  - /redfish/v1/managers/manager_id/licenseservice/actions/licenseservice.deletelicense
+  - /redfish/v1/managers/manager_id/licenseservice/actions/licenseservice.exportlicense
+  - /redfish/v1/managers/manager_id/licenseservice/actions/licenseservice.installlicense
+  - /redfish/v1/managers/manager_id/licenseservice/actions/licenseservice.revokelicense
+  - /redfish/v1/managers/manager_id/logservices/eventlog/actions/logservice.clearlog
+  - /redfish/v1/managers/manager_id/logservices/logservice_id/actions/oem/huawei/logservice.exportlog
+  - /redfish/v1/managers/manager_id/logservices/logservice_id/entries
+  - /redfish/v1/managers/manager_id/logservices/logservice_id/entries/entries_id
+  - /redfish/v1/managers/manager_id/networkprotocol/https/certificates
+  - /redfish/v1/managers/manager_id/networkprotocol/https/certificates/certificate_id
+  - /redfish/v1/managers/manager_id/nics
+  - /redfish/v1/managers/manager_id/nics/nicid
+  - /redfish/v1/managers/manager_id/securitypolicy
+  - /redfish/v1/managers/manager_id/securityservice/actions/securityservice.deleteremotehttpsserverrootca
+  - /redfish/v1/managers/manager_id/securityservice/actions/securityservice.importremotehttpsservercrl
+  - /redfish/v1/managers/manager_id/securityservice/actions/securityservice.importremotehttpsserverrootca
+  - /redfish/v1/managers/manager_id/securityservice/actions/securityservice.updatemasterkey
+  - /redfish/v1/managers/manager_id/securityservice/certupdateservice
+  - /redfish/v1/managers/manager_id/securityservice/certupdateservice/actions/certupdateservice.deletecrl
+  - /redfish/v1/managers/manager_id/securityservice/certupdateservice/actions/certupdateservice.importca
+  - /redfish/v1/managers/manager_id/securityservice/certupdateservice/actions/certupdateservice.importclientcert
+  - /redfish/v1/managers/manager_id/securityservice/certupdateservice/actions/certupdateservice.importcrl
+  - /redfish/v1/managers/manager_id/securityservice/certupdateservice/actions/certupdateservice.updatecertfromca
+  - /redfish/v1/managers/manager_id/securityservice/dicecert
+  - /redfish/v1/managers/manager_id/securityservice/dicecert/actions/dicecert.exportdicecertficatechain
+  - /redfish/v1/managers/manager_id/securityservice/dicecert/actions/dicecert.exportdicecsr
+  - /redfish/v1/managers/manager_id/securityservice/dicecert/actions/dicecert.exporthardwarecomponentscertficatechain
+  - /redfish/v1/managers/manager_id/securityservice/dicecert/actions/dicecert.importdicecertificate
+  - /redfish/v1/managers/manager_id/securityservice/httpscert
+  - /redfish/v1/managers/manager_id/securityservice/httpscert/actions/httpscert.exportcsr
+  - /redfish/v1/managers/manager_id/securityservice/httpscert/actions/httpscert.generatecsr
+  - /redfish/v1/managers/manager_id/securityservice/httpscert/actions/httpscert.importcustomcertificate
+  - /redfish/v1/managers/manager_id/securityservice/httpscert/actions/httpscert.importservercertificate
+  - /redfish/v1/managers/manager_id/smsservice
+  - /redfish/v1/managers/manager_id/smsservice/actions/smsservice.refreshinstallablebma
+  - /redfish/v1/managers/manager_id/smtpservice
+  - /redfish/v1/managers/manager_id/smtpservice/actions/smtpservice.importrootcertificate
+  - /redfish/v1/managers/manager_id/smtpservice/actions/smtpservice.submittestevent
+  - /redfish/v1/managers/manager_id/spservice/spfwupdate/update_id/actions/spfwupdate.simpleupdate
+  - /redfish/v1/managers/manager_id/syslogservice/actions/syslogservice.deletecrl
+  - /redfish/v1/managers/manager_id/syslogservice/actions/syslogservice.importclientcertificate
+  - /redfish/v1/managers/manager_id/syslogservice/actions/syslogservice.importcrl
+  - /redfish/v1/managers/manager_id/syslogservice/actions/syslogservice.importrootcertificate
+  - /redfish/v1/managers/manager_id/syslogservice/actions/syslogservice.submittestevent
+  - /redfish/v1/managers/manager_id/virtualmedia
+  - /redfish/v1/managers/manager_id/virtualmedia/cd
+  - /redfish/v1/managers/manager_id/virtualmedia/cd/actions/virtualmedia.ejectmedia
+  - /redfish/v1/managers/manager_id/virtualmedia/cd/actions/virtualmedia.insertmedia
+  - /redfish/v1/managers/manager_id/virtualmedia/cd/oem/huawei/actions/virtualmedia.vmmcontrol
+  - /redfish/v1/managers/manager_id/virtualmedia/ibmausbstick
+  - /redfish/v1/managers/manager_id/virtualmedia/ibmausbstick/oem/huawei/actions/virtualmedia.usbstickcontrol
+  - /redfish/v1/managers/manager_id/virtualmedia/usbstick
+  - /redfish/v1/managers/manager_id/vncservice
+
+### [managers或任意资源url]  (1)
+  - /redfish/v1/managers或任意资源url
+
+### [oem]  (18)
+  - /redfish/v1/oem/huawei/lcnservice
+  - /redfish/v1/oem/huawei/lcnservice/lcndevices
+  - /redfish/v1/oem/huawei/lcnservice/lcndevices/device_id
+  - /redfish/v1/oem/huawei/lcnservice/lcndevices/device_id/accounts
+  - /redfish/v1/oem/huawei/lcnservice/lcndevices/device_id/accounts/actions/lcn.changepassword
+  - /redfish/v1/oem/huawei/lcnservice/lcndevices/device_id/accounts/actions/lcn.createaccount
+  - /redfish/v1/oem/huawei/lcnservice/lcndevices/device_id/accounts/actions/lcn.deleteaccount
+  - /redfish/v1/oem/huawei/lcnservice/lcndevices/device_id/actions/lcn.exportlog
+  - /redfish/v1/oem/huawei/lcnservice/lcndevices/device_id/actions/lcn.setinnernetwork
+  - /redfish/v1/oem/huawei/lcnservice/lcndevices/device_id/actions/lcn.setnetworkinterface
+  - /redfish/v1/oem/huawei/lcnservice/lcndevices/device_id/actions/lcndevice.reset
+  - /redfish/v1/oem/huawei/lcnservice/lcndevices/device_id/actions/lcndevice.resettodefaults
+  - /redfish/v1/oem/huawei/lcnservice/lcndevices/device_id/subcards
+  - /redfish/v1/oem/huawei/lcnservice/lcndevices/device_id/subcards/card_id
+  - /redfish/v1/oem/huawei/lcnservice/lcndevices/device_id/updateservice
+  - /redfish/v1/oem/huawei/lcnservice/lcndevices/device_id/updateservice/actions/updateservice.simpleupdate
+  - /redfish/v1/oem/huawei/observabilityservice
+  - /redfish/v1/oem/huawei/observabilityservice/actions/observabilityservice.submittesttelemetrydata
+
+### [systems]  (10)
+  - /redfish/v1/systems/system_id/digitalwarranty
+  - /redfish/v1/systems/system_id/logservices
+  - /redfish/v1/systems/system_id/logservices/log_id/entries
+  - /redfish/v1/systems/system_id/logservices/logservice_id
+  - /redfish/v1/systems/system_id/logservices/logservice_id/actions/logservice.clearlog
+  - /redfish/v1/systems/system_id/logservices/logservice_id/actions/oem/huawei/logservice.querysellogentries
+  - /redfish/v1/systems/system_id/logservices/logservice_id/entries/entries_id
+  - /redfish/v1/systems/system_id/logservices/logservices_id
+  - /redfish/v1/systems/system_id/resetactioninfo或任意actioninfo资源url
+  - /redfish/v1/systems/systems_id/logservices/logservice_id/actions/oem/huawei/logservice.collectsel
+
+### [taskservice]  (1)
+  - /redfish/v1/taskservice/tasks/task_id/monitor
+
+### [updateservice]  (1)
+  - /redfish/v1/updateservice/actions/updateservice.simpleupdate
+
+
+## 仅 PoDM 有的接口（按分类）
+
+### [$metadata]  (1)
+  - /redfish/v1/$metadata
+
+### [(root)]  (1)
+  - /redfish
+
+### [accountservice]  (1)
+  - /redfish/v1/accountservice/check
+
+### [certificateservice]  (2)
+  - /redfish/v1/certificateservice/actions/certificateservice.deletecacertificatecr
+  - /redfish/v1/certificateservice/actions/certificateservice.importsouthcacertificate
+
+### [chassis]  (9)
+  - /redfish/v1/chassis/chassis_id/boards/acuboard/actions/npuboard.npuboardreset
+  - /redfish/v1/chassis/chassis_id/digitalwarranty
+  - /redfish/v1/chassis/chassis_id/drives/drive_id/actions/oem/huawei/drive.cryptoerase
+  - /redfish/v1/chassis/chassis_id/pciedevices/pciedevices_id/actions/oem/huawei/pciedevices.reset
+  - /redfish/v1/chassis/chassis_id/powersubsystem/powersupplies/powersupply_id
+  - /redfish/v1/chassis/chassis_id/powersubsystem/powersupplies/powersupply_id/metrics
+  - /redfish/v1/chassis/chassis_id/sensors/sensor_id
+  - /redfish/v1/chassis/chassis_id/thermalsubsystem/actions/oem/oemidentifier/thermalcontrolunitgroup.setexpectedspeedpercent
+  - /redfish/v1/chassis/chassis_id/transceivers/transceivers_id
+
+### [chassisoverview]  (1)
+  - /redfish/v1/chassisoverview
+
+### [dataacquisitionservice]  (1)
+  - /redfish/v1/dataacquisitionservice/actions/hwdataacquisitionservice.clearhistorydata
+
+### [jsonschemas]  (2)
+  - /redfish/v1/jsonschemas
+  - /redfish/v1/jsonschemas/member_id
+
+### [managers]  (47)
+  - /redfish/v1/managers/1
+  - /redfish/v1/managers/1/certificates
+  - /redfish/v1/managers/1/certificates/certificate_id
+  - /redfish/v1/managers/1/securityservice
+  - /redfish/v1/managers/1/securityservice/actions/securityservice.showmasterkey
+  - /redfish/v1/managers/1/securityservice/actions/securityservice.updatemasterkey
+  - /redfish/v1/managers/1/securityservice/certupdateservice
+  - /redfish/v1/managers/1/securityservice/certupdateservice/actions/certupdateservice.updatecertfromca
+  - /redfish/v1/managers/1/securityservice/certupdateservice/actions/certupdateservice.updatesouthcertfromca
+  - /redfish/v1/managers/1/securityservice/httpscert
+  - /redfish/v1/managers/1/securityservice/httpscert/actions/httpscert.exportcsr
+  - /redfish/v1/managers/1/securityservice/httpscert/actions/httpscert.exportsouthcsr
+  - /redfish/v1/managers/1/securityservice/httpscert/actions/httpscert.generatecsr
+  - /redfish/v1/managers/1/securityservice/httpscert/actions/httpscert.generatesouthcsr
+  - /redfish/v1/managers/1/securityservice/httpscert/actions/httpscert.importcustomcertificate
+  - /redfish/v1/managers/1/securityservice/httpscert/actions/httpscert.importcustomsouthcertificate
+  - /redfish/v1/managers/1/securityservice/httpscert/actions/httpscert.importservercertificate
+  - /redfish/v1/managers/1/securityservice/httpscert/actions/httpscert.importserversouthcertificat
+  - /redfish/v1/managers/1/securityservice/httpssouthcert
+  - /redfish/v1/managers/1/securityservice/southcertupdateservice
+  - /redfish/v1/managers/bladen/securityservice/httpscert/actions/httpscert.importcustomcertificate
+  - /redfish/v1/managers/bladen/securityservice/httpscert/actions/httpscert.importservercertificate
+  - /redfish/v1/managers/manager_id/actions/manager.restorefactory
+  - /redfish/v1/managers/manager_id/actions/oem/huawei/manager.backupconfiguration
+  - /redfish/v1/managers/manager_id/actions/oem/huawei/manager.exportlog
+  - /redfish/v1/managers/manager_id/actions/oem/huawei/manager.podexportconfiguration
+  - /redfish/v1/managers/manager_id/actions/oem/huawei/manager.podimportconfiguration
+  - /redfish/v1/managers/manager_id/actions/oem/huawei/manager.restoreconfiguration
+  - /redfish/v1/managers/manager_id/diagnosticservice/prbstest/actions/prbstest.clearstatistics
+  - /redfish/v1/managers/manager_id/diagnosticservice/prbstest/actions/prbstest.config
+  - /redfish/v1/managers/manager_id/diagnosticservice/prbstest/actions/prbstest.queryinfo
+  - /redfish/v1/managers/manager_id/diagnosticservice/prbstest/actions/prbstest.shutdown
+  - /redfish/v1/managers/manager_id/ethernetinterfaces/oem/huawei/ethernetinterfacesmode
+  - /redfish/v1/managers/manager_id/logservices/eventlog/oem/huawei/healthevent/entries
+  - /redfish/v1/managers/manager_id/logservices/logservices_id/actions/oem/huawei/logservice.exportlog
+  - /redfish/v1/managers/manager_id/logservices/logservices_id/entries
+  - /redfish/v1/managers/manager_id/logservices/logservices_id/entries/entries_id
+  - /redfish/v1/managers/manager_id/oem/huawei/maintenancemode
+  - /redfish/v1/managers/manager_id/oem/huawei/manager.setethernetinterfacesmode
+  - /redfish/v1/managers/manager_id/oem/huawei/manager.setmaintenancemode
+  - /redfish/v1/managers/manager_id/oem/huawei/manager.setpodmaintenancemode
+  - /redfish/v1/managers/manager_id/spservice/spfwupdate/updateid/actions/spfwupdate.simpleupdate
+  - /redfish/v1/managers/manager_id/updateservice/firmwareinventory
+  - /redfish/v1/managers/smn1(smn2)/actions/oem/huawei/manager.importfile
+  - /redfish/v1/managers/smn1(smn2)/actions/oem/huawei/manager.takeover
+  - /redfish/v1/managers/smn1(smn2)/oem/huawei/manager.importswitchfile
+  - /redfish/v1/managers/smn1/oem/huawei/manager.importubmfile
+
+### [oem]  (7)
+  - /redfish/v1/oem/huawei/resourcenodes
+  - /redfish/v1/oem/huawei/ubmservice
+  - /redfish/v1/oem/huawei/ubmservice/ubmdevices
+  - /redfish/v1/oem/huawei/ubmservice/ubmdevices/device_id
+  - /redfish/v1/oem/huawei/ubmservice/ubmdevices/device_id/actions/ubm.exportlog
+  - /redfish/v1/oem/huawei/ubmservice/ubmdevices/device_id/subcards
+  - /redfish/v1/oem/huawei/ubmservice/ubmdevices/device_id/subcards/card_id
+
+### [registries]  (2)
+  - /redfish/v1/registries
+  - /redfish/v1/registries/registries_id
+
+### [schemastore]  (1)
+  - /redfish/v1/schemastore/language_id/file_id
+
+### [sessionservice]  (1)
+  - /redfish/v1/sessionservice/actions/sessionservice.checkvalid
+
+### [systems]  (5)
+  - /redfish/v1/systems/system_id/kvmservice
+  - /redfish/v1/systems/system_id/kvmservice/actions/kvmservice.setkvmkey
+  - /redfish/v1/systems/system_id/virtualmedia/cd/oem/huawei/actions/virtualmedia.vmmcontrol
+  - /redfish/v1/systems/system_id/virtualmedia/usbstick
+  - /redfish/v1/systems/system_id/vncservice
+
+### [taskservice]  (3)
+  - /redfish/v1/taskservice/tasks/taskid/monitor
+  - /redfish/v1/taskservice/tasks/taskid/subtasks
+  - /redfish/v1/taskservice/tasks/taskid/subtasks/subtaskid

@@ -14,13 +14,22 @@ PoDM/
 ├── README.md
 ├── .gitignore
 ├── scripts/          # 公共提取工具
+│   ├── _docx_utils.py
+│   ├── docx_diag.py
 │   ├── extract_headings.py
-│   └── extract_interfaces.py
+│   ├── extract_interfaces.py
+│   └── extract_uris.py
+├── analysis/         # 一次性对比分析（BMC vs PoDM 的 Redfish 接口清单）
+│   ├── compare.py              # 规范化 URI 后做集合差/分类汇总
+│   ├── compare_report.txt      # 脚本输出：按分类列出共同/独有接口
+│   └── BMC_vs_PoDM_分析.txt    # 基于 compare 结果的人肉分析
 ├── data/             # 放原始文档（.docx / .txt），本地使用，不入库
 └── output/           # 脚本生成的结果（headings.txt / interfaces.yaml），不入库
 ```
 
-`data/` 与 `output/` 目录保留空壳（`.gitkeep`），内部文件默认被 `.gitignore` 屏蔽。
+`data/` 与 `output/` 目录只保留空壳（`.gitkeep`），内部文件默认被 `.gitignore` 屏蔽。
+`analysis/compare.py` 依赖 `data/BMC.txt` 和 `data/PoDM.txt` 运行，公开仓库里跑
+不起来是预期的——报告本身可读即可。
 
 ## 工具
 
