@@ -1,0 +1,60 @@
+输入: D:\projects\PoDM\data\Atlas PoDManager 1.0.0 Redfish 接口参考_最新.docx
+表格路径覆盖 371 条 / 示例路径覆盖 359 条 / 漏抓 12 条
+
+漏抓原因分布：
+  MALFORMED_HTTP       10
+  NO_HTTP_LINE         2
+
+## MALFORMED_HTTP  (10 条)
+  4.2.64  修改诊断服务资源
+    tables: [PATCH] /redfish/v1/Managers/{manager_id}/DiagnosticService
+    | HTTP的示例
+    | PATCH/redfish/v1/Managers/{manager_id}/DiagnosticService HTTP/1.1 Host: 192.168.2.101 Content-Type: application/json If-Match: W/"3d607e36" X-Auth-Token: xxxxxxxx  {   "VideoRecordingEnabled": ...
+  4.2.70  截图
+    tables: [POST] /redfish/v1/Managers/{manager_id}/DiagnosticService/Actions/DiagnosticService.CaptureScreenShot
+    | HTTP的示例
+    | POST/redfish/v1/Managers/{manager_id}/DiagnosticService/Actions/DiagnosticService.CaptureScreenShot HTTP/1.1 Host: 192.168.2.101 Content-Type: application/json X-Auth-Token: xxxxxxxx  { }
+  4.2.71  删除截屏
+    tables: [POST] /redfish/v1/Managers/{manager_id}/DiagnosticService/Actions/DiagnosticService.DeleteScreenShot
+    | HTTP的示例
+    | POST/redfish/v1/Managers/{manager_id}/DiagnosticService/Actions/DiagnosticService.CaptureScreenShot HTTP/1.1 Host: 192.168.2.101 Content-Type: application/json X-Auth-Token: xxxxxxxx  { }
+  4.2.73  导出串口数据
+    tables: [POST] /redfish/v1/Managers/{manager_id}/DiagnosticService/Actions/DiagnosticService.ExportSerialPortData
+    | HTTP的示例
+    | POST/redfish/v1/Managers/{manager_id}/DiagnosticService/Actions/DiagnosticService.ExportSerialPortData HTTP/1.1 Host: 192.168.2.101 Content-Type: application/json X-Auth-Token: xxxxxxxx  {     ...
+  4.2.82  下载BMC文件
+    tables: [POST] /redfish/v1/Managers/{manager_id}/Actions/Oem/Huawei/Manager.GeneralDownload
+    | HTTP的示例
+    | POST/redfish/v1/Managers/{manager_id}/Actions/Oem/Huawei/Manager.GeneralDownload HTTP/1.1 Host: 192.168.2.101 Content-Type: application/json X-Auth-Token: xxxxxxxx  {     "TransferProtocol": " ...
+  4.2.83  进入最小系统
+    tables: [POST] /redfish/v1/Managers/{manager_id}/Actions/Oem/Huawei/Manager.EnterRecoveryMode
+    | HTTP的示例
+    | POST/redfish/v1/Managers/{manager_id}/Actions/Oem/Huawei/Manager.EnterRecoveryMode HTTP/1.1 Host: 192.168.2.101 Content-Type: application/json X-Auth-Token: xxxxxxxx  { }
+  4.2.84  重启iBMC
+    tables: [POST] /redfish/v1/Managers/{manager_id}/Actions/Manager.Reset
+    | HTTP的示例
+    | POST/redfish/v1/Managers/{manager_id}/Actions/Manager.Reset HTTP/1.1 Host: 192.168.2.101 Content-Type: application/json X-Auth-Token: xxxxxxxx  {   "ResetType": "ForceRestart" }
+  4.3.24  查询网络桥接资源信息
+    tables: [GET] /redfish/v1/Systems/{system_id}/NetworkBridge/{bridge _id}
+    | HTTP的示例
+    | GET /redfish/v1/Systems/{system_id}/NetworkBridge/{bridge _id} HTTP/1.1 Host: 192.168.2.101 X-Auth-Token: xxxxxxxx
+  4.3.62  导入Foreign配置
+    tables: [POST] /redfish/v1/Systems/{system_id}/Storages/{storage_id}/Actions/Oem/Huawei/Public/Storage. ImportForeignConfig
+    | HTTP的示例
+    | POST /redfish/v1/Systems/{system_id}/Storages/{storage_id}/Actions/Oem/Huawei/Public/Storage. ImportForeignConfig HTTP/1.1 Host: 192.168.2.101 Content-Type: application/json    X-Auth-Token: x ...
+  4.5.5  生效固件
+    tables: [POST] /redfish/v1/UpdateService/Actions/Oem/Huawei/UpdateService.StartActivate
+    | HTTP的示例
+    | POST /redfish/v1/UpdateService/Actions/Oem/Huawei/ UpdateService.StartActivate HTTP/1.1 Host: 192.168.2.101 Content-Type: application/json X-Auth-Token: xxxxxxxx  {   "ActivationControl": [    ...
+
+## NO_HTTP_LINE  (2 条)
+  4.2.32  导入整框配置数据
+    tables: [POST] /redfish/v1/Managers/{manager_id}/Actions/Oem/Huawei/Manager.PoDImportConfiguration
+    | HTTP的示例
+    | POST /redfish/v1/Managers/{manager_id}/Actions/Oem/Huawei/Manager.PoDImportConfigurationHTTP/1.1 Host: 192.168.2.101 Content-Type: application/json X-Auth-Token: xxxxxxxx  {     "Type":type_va ...
+  4.10.4.2  创建会话（登录）
+    tables: [POST] /redfish/v1/SessionService/Sessions
+    | Redfish会话请求头：
+    | Content-Type: application/json  Ip:192.168.2.101 Mac:mac From:Redfish x-non-renewal-session:false
+    | Web会话请求头：
+    | Content-Type: application/json  Ip:192.168.2.101 Mac:mac From:Web x-non-renewa ...

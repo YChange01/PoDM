@@ -73,7 +73,13 @@ REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_INPUT = REPO_ROOT / "data" / "Atlas PoDManager 1.0.0 Redfish 接口参考_最新.docx"
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "output"
 
-_HTTP_FIRST_RE = re.compile(r"(GET|POST|PUT|PATCH|DELETE)\s+(\S+)\s+HTTP/\S+")
+# 宽容匹配 HTTP 首行，兼容文档里常见的排版手滑：
+#   - METHOD 和 URI 之间缺空格： "POST/redfish/v1/..."           → \s* 允许 0 空格
+#   - URI 段中夹空格：           "... /Storage. ImportFC ..."   → URI 用 lazy .*?
+#   - URI 和 HTTP/x.y 粘连：      "...PoDImportConfigurationHTTP/1.1" → 后一个 \s* 也是 0 空格
+# 这样 examples 路径里能把文档作者这些小手滑抓进来，原样带 bug 输出——
+# diff_uris.py 能据此指出差异，作者按清单改 doc。
+_HTTP_FIRST_RE = re.compile(r"(GET|POST|PUT|PATCH|DELETE)\s*(\S.*?)\s*HTTP/\S+")
 # header: "Name: value"，名字允许大小写字母、数字、短横线、下划线
 _HEADER_RE = re.compile(r"([A-Za-z][\w-]*)\s*:\s*\S+")
 _PLACEHOLDER_RE = re.compile(r"\{([^{}]+)\}")
