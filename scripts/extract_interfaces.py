@@ -29,13 +29,11 @@ from __future__ import annotations
 import json
 import re
 import sys
-import xml.etree.ElementTree as ET
-import zipfile
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
-
-W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _docx_utils import read_source  # noqa: E402
 
 
 # =================== 数据结构 ===================
@@ -57,39 +55,17 @@ class Interface:
     params: Params
 
 
-# =================== 输入读取 ===================
-
-def read_docx(path: Path) -> str:
-    with zipfile.ZipFile(path) as z:
-        with z.open("word/document.xml") as f:
-            tree = ET.parse(f)
-    body = tree.getroot().find(f"{W}body")
-    out: list[str] = []
-    for child in body:
-        if child.tag == f"{W}p":
-            texts = [t.text for t in child.iter(f"{W}t") if t.text]
-            out.append("".join(texts))
-        elif child.tag == f"{W}tbl":
-            for row in child.iter(f"{W}tr"):
-                cells: list[str] = []
-                for cell in row.iter(f"{W}tc"):
-                    ctext = "".join(t.text for t in cell.iter(f"{W}t") if t.text)
-                    cells.append(ctext)
-                out.append("\t".join(cells))
-    return "\n".join(out)
-
-
-def read_source(path: Path) -> str:
-    if path.suffix.lower() == ".docx":
-        text = read_docx(path)
-    else:
-        text = path.read_text(encoding="utf-8-sig")
-    return text.replace("　", " ").replace("\xa0", " ")
-
-
 # =================== 章节与小节切分 ===================
 
 HEADING_RE = re.compile(r"^(\d+(?:\.\d+)+)[\s\t]+([^\s/{][^/{}]{0,80})$")
+_TRAILING_PAGENO = re.compile(r"(\d{1,4})$")
+
+
+def _strip_trailing_pageno(title: str) -> str:
+    m = _TRAILING_PAGENO.search(title)
+    if m and m.start() > 0 and not title[m.start() - 1].isdigit():
+        return title[: m.start()]
+    return title
 
 SECTION_MARKERS = (
     "接口功能", "接口约束", "调用方法", "URI",
@@ -107,7 +83,11 @@ def split_sections(text: str) -> list[dict]:
         if match:
             if current is not None:
                 sections.append(current)
-            current = {"number": match.group(1), "title": match.group(2).strip(), "lines": []}
+            current = {
+                "number": match.group(1),
+                "title": _strip_trailing_pageno(match.group(2).strip()),
+                "lines": [],
+            }
             continue
         if current is not None:
             current["lines"].append(line)

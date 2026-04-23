@@ -17,16 +17,16 @@ from __future__ import annotations
 
 import re
 import sys
-import zipfile
-import xml.etree.ElementTree as ET
 from dataclasses import dataclass, field
 from pathlib import Path
 
-
-W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _docx_utils import read_source  # noqa: E402
 
 # X.Y 或更深，后面紧跟一段可读标题（不以 /{ 空格 开头，且不含 / { }）
 HEADING_RE = re.compile(r"^(\d+(?:\.\d+)+)[\s\t]+([^\s/{][^/{}]{0,80})$")
+# 目录页页码防御：标题末尾跟着 1-4 位纯数字（前一个字符必须是非数字）
+_TRAILING_PAGENO = re.compile(r"(\d{1,4})$")
 
 
 @dataclass(frozen=True)
@@ -44,39 +44,15 @@ class _Section:
     lines: list[str] = field(default_factory=list)
 
 
-# ---------- 输入读取 ----------
-
-def read_docx(path: Path) -> str:
-    """解析 .docx：按文档顺序抽取段落和表格（表格以制表符分隔）。"""
-    with zipfile.ZipFile(path) as z:
-        with z.open("word/document.xml") as f:
-            tree = ET.parse(f)
-    body = tree.getroot().find(f"{W}body")
-    out: list[str] = []
-    for child in body:
-        tag = child.tag
-        if tag == f"{W}p":
-            texts = [t.text for t in child.iter(f"{W}t") if t.text]
-            out.append("".join(texts))
-        elif tag == f"{W}tbl":
-            for row in child.iter(f"{W}tr"):
-                cells: list[str] = []
-                for cell in row.iter(f"{W}tc"):
-                    ctext = "".join(t.text for t in cell.iter(f"{W}t") if t.text)
-                    cells.append(ctext)
-                out.append("\t".join(cells))
-    return "\n".join(out)
-
-
-def read_source(path: Path) -> str:
-    if path.suffix.lower() == ".docx":
-        text = read_docx(path)
-    else:
-        text = path.read_text(encoding="utf-8-sig")
-    return text.replace("　", " ").replace("\xa0", " ")
-
-
 # ---------- 标题识别 ----------
+
+def _strip_trailing_pageno(title: str) -> str:
+    """防御：若 title 末尾粘着 1-4 位页码（前一个字符非数字），剥掉。"""
+    m = _TRAILING_PAGENO.search(title)
+    if m and m.start() > 0 and not title[m.start() - 1].isdigit():
+        return title[: m.start()]
+    return title
+
 
 def _accept_title(title: str) -> bool:
     if not title:
@@ -96,7 +72,8 @@ def _split_sections(text: str) -> list[_Section]:
         stripped = line.strip()
         match = HEADING_RE.match(stripped)
         if match:
-            number, title = match.group(1), match.group(2).strip().rstrip(" 　：:")
+            number = match.group(1)
+            title = _strip_trailing_pageno(match.group(2).strip().rstrip(" 　：:"))
             if not _accept_title(title):
                 if current is not None:
                     current.lines.append(line)
