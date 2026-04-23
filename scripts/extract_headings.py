@@ -112,6 +112,29 @@ def extract(text: str) -> list[Heading]:
 
 # ---------- 输出格式 ----------
 
+def dedup_prefer_uri(headings: list[Heading]) -> list[Heading]:
+    """按 (number, title) 去重：带 URI 的优先；否则保留较后出现的一条。
+
+    较后出现的通常更靠近正文（mini-outline 在前、正文在后），保留它可以让
+    4.1、4.1.1、4.1.2… 在输出里呈现正确的阅读顺序。
+    """
+    best: dict[tuple[str, str], int] = {}
+    for i, h in enumerate(headings):
+        key = (h.number, h.title)
+        prev = best.get(key)
+        if prev is None:
+            best[key] = i
+            continue
+        prev_has_uri = bool(headings[prev].uri)
+        cur_has_uri = bool(h.uri)
+        if cur_has_uri and not prev_has_uri:
+            best[key] = i
+        elif cur_has_uri == prev_has_uri:
+            best[key] = i
+    keep = set(best.values())
+    return [h for i, h in enumerate(headings) if i in keep]
+
+
 def format_tree(headings: list[Heading]) -> str:
     lines: list[str] = []
     for h in headings:
@@ -152,10 +175,16 @@ def main() -> None:
         sys.exit(f"输入文件不存在: {inp}")
 
     text = read_source(inp)
-    headings = extract(text)
+    raw = extract(text)
+    headings = dedup_prefer_uri(raw)
     out.write_text(format_tree(headings), encoding="utf-8")
+    dropped = len(raw) - len(headings)
     with_uri = sum(1 for h in headings if h.uri)
-    print(f"已提取 {len(headings)} 个标题（其中 {with_uri} 个接口小节带 URI）-> {out}")
+    dup_note = f"，去重 {dropped} 条" if dropped else ""
+    print(
+        f"已提取 {len(headings)} 个标题"
+        f"（其中 {with_uri} 个接口小节带 URI{dup_note}）-> {out}"
+    )
 
 
 if __name__ == "__main__":

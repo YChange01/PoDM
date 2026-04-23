@@ -96,6 +96,30 @@ def split_sections(text: str) -> list[dict]:
     return sections
 
 
+def _section_has_uri(sec: dict) -> bool:
+    """判断 section 是否是接口小节——lines 里存在独立的 'URI' 行。"""
+    return any(line.strip() == "URI" for line in sec["lines"])
+
+
+def dedup_sections(sections: list[dict]) -> list[dict]:
+    """按 (number, title) 去重：带 URI 标记的优先；否则保留较后出现的一条。"""
+    best: dict[tuple[str, str], int] = {}
+    for i, sec in enumerate(sections):
+        key = (sec["number"], sec["title"])
+        prev = best.get(key)
+        if prev is None:
+            best[key] = i
+            continue
+        prev_has = _section_has_uri(sections[prev])
+        cur_has = _section_has_uri(sec)
+        if cur_has and not prev_has:
+            best[key] = i
+        elif cur_has == prev_has:
+            best[key] = i
+    keep = set(best.values())
+    return [s for i, s in enumerate(sections) if i in keep]
+
+
 def split_subsections(lines: list[str]) -> dict[str, list[str]]:
     subs: dict[str, list[str]] = {m: [] for m in SECTION_MARKERS}
     current: str | None = None
@@ -290,9 +314,13 @@ def main() -> None:
         sys.exit(f"输入文件不存在: {inp}")
 
     text = read_source(inp)
+    all_sections = split_sections(text)
+    sections = dedup_sections(all_sections)
+    dropped = len(all_sections) - len(sections)
+
     interfaces: list[Interface] = []
-    for section in split_sections(text):
-        if "URI" not in "\n".join(section["lines"]):
+    for section in sections:
+        if not _section_has_uri(section):
             continue
         try:
             iface = build_interface(section)
@@ -305,7 +333,8 @@ def main() -> None:
 
     data = {"interfaces": [asdict(i) for i in interfaces]}
     final_path = dump_yaml(data, out)
-    print(f"已提取 {len(interfaces)} 个接口 -> {final_path}")
+    dup_note = f"，去重 {dropped} 条章节" if dropped else ""
+    print(f"已提取 {len(interfaces)} 个接口{dup_note} -> {final_path}")
 
 
 if __name__ == "__main__":
