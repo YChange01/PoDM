@@ -74,6 +74,11 @@ SECTION_MARKERS = (
     "请求参数", "请求示例", "响应参数", "响应示例",
     "返回值", "样例",
 )
+# 兼容带数字后缀的 marker，如 "响应示例1"/"响应示例2"/"请求示例1"。
+# 命中时把内容归到不带数字的基础 marker。
+_MARKER_WITH_SUFFIX_RE = re.compile(
+    r"^(" + "|".join(re.escape(m) for m in SECTION_MARKERS) + r")\d*$"
+)
 
 
 def split_sections(text: str) -> list[dict]:
@@ -127,8 +132,9 @@ def split_subsections(lines: list[str]) -> dict[str, list[str]]:
     current: str | None = None
     for line in lines:
         stripped = line.strip()
-        if stripped in SECTION_MARKERS:
-            current = stripped
+        m = _MARKER_WITH_SUFFIX_RE.match(stripped)
+        if m:
+            current = m.group(1)  # 去掉尾部数字后缀，归到基础 marker
             continue
         if current is not None:
             subs[current].append(line)
