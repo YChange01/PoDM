@@ -1,10 +1,12 @@
 """
 从 extract_headings.py 生成的 headings.txt 里抽取接口 URI，
-输出一份纯 URI 列表（每行一个），文档顺序保留，不去重。
+输出一份带 [METHOD] 前缀的 URI 列表（每行一个），文档顺序保留，不去重。
 
 headings.txt 里形如：
         [POST] /redfish/v1/Managers/{manager_id}/LogServices/.../LogService.ExportLog
-的行会被识别为接口 URI 行。
+的行会被识别为接口 URI 行。输出直接保留 [METHOD] 前缀与原始 URI。
+
+兼容文档拼写瑕疵：URI 缺前导 '/' 的情况（如 "redfish/v1/..."）也会被抓到。
 
 用法：
     python3 extract_uris.py                                    # 使用默认输入
@@ -27,8 +29,9 @@ DEFAULT_INPUT = (
 )
 DEFAULT_OUTPUT_DIR = REPO_ROOT / "output"
 
-# 缩进 + 可选的 [METHOD] + 以 / 开头的 URI（从 / 取到行尾，兼容带空格/查询串的 URI）
-_URI_LINE = re.compile(r"^\s+(?:\[([A-Z]+)\]\s+)?(/.+)$")
+# 缩进 + 整段保留（可选的 [METHOD] + 以 / 或 redfish 开头的 URI）。
+# 用 (?:/|redfish) 兼容缺前导 / 的文档瑕疵。
+_URI_LINE = re.compile(r"^\s+((?:\[[A-Z]+\]\s+)?(?:/|redfish)\S.*)$")
 
 
 def extract_uris(text: str) -> list[str]:
@@ -36,7 +39,7 @@ def extract_uris(text: str) -> list[str]:
     for line in text.splitlines():
         m = _URI_LINE.match(line)
         if m:
-            uris.append(m.group(2).rstrip())
+            uris.append(m.group(1).rstrip())
     return uris
 
 
