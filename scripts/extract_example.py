@@ -96,6 +96,39 @@ def _find_body(text: str) -> str | None:
     return candidates[0][1]
 
 
+def _find_all_bodies(text: str) -> list[str]:
+    """顺序找出 text 里所有顶层平衡的 {...} 或 [...]。
+
+    找到一个就跳到它结束位置再找下一个，不会把嵌套的 {} 当独立 body。
+    """
+    bodies: list[str] = []
+    i = 0
+    n = len(text)
+    while i < n:
+        positions = [p for p in (text.find("{", i), text.find("[", i)) if p != -1]
+        if not positions:
+            break
+        start = min(positions)
+        open_ch = text[start]
+        close_ch = "}" if open_ch == "{" else "]"
+        depth = 0
+        end = -1
+        for j in range(start, n):
+            if text[j] == open_ch:
+                depth += 1
+            elif text[j] == close_ch:
+                depth -= 1
+                if depth == 0:
+                    end = j + 1
+                    break
+        if end > 0:
+            bodies.append(text[start:end])
+            i = end
+        else:
+            i = start + 1
+    return bodies
+
+
 _JSON_KEY_RE = re.compile(r'"([@A-Za-z_][\w@.\-]*)"\s*:')
 
 
@@ -130,20 +163,32 @@ def _json_all_keys(body_raw: str) -> list[str]:
 
 
 def parse_request_example(lines: list[str]) -> dict | None:
+    """解析"请求示例"子块。**多份**请求示例 (请求示例 1/2/3/…) 会合并解析：
+    method/uri 取第一个，header/body/path/query 取所有变体的并集（去重保序）。
+    """
     raw = "\n".join(lines).strip()
     if not raw:
         return None
-    m = _HTTP_FIRST_RE.search(raw)
-    if not m:
+    matches = list(_HTTP_FIRST_RE.finditer(raw))
+    if not matches:
         return None
-    method, uri = m.group(1), m.group(2)
-    after = raw[m.end() :]
 
-    body_raw = _find_body(after)
-    headers_section = after if body_raw is None else after.split(body_raw, 1)[0]
+    first = matches[0]
+    method, uri = first.group(1), first.group(2)
 
-    headers = _dedup_keep_order(hm.group(1) for hm in _HEADER_RE.finditer(headers_section))
-    body_keys = _json_all_keys(body_raw) if body_raw else []
+    all_headers: list[str] = []
+    all_body_keys: list[str] = []
+    for idx, m in enumerate(matches):
+        end_pos = matches[idx + 1].start() if idx + 1 < len(matches) else len(raw)
+        block = raw[m.end() : end_pos]
+        body_raw = _find_body(block)
+        headers_section = block if body_raw is None else block.split(body_raw, 1)[0]
+        all_headers.extend(hm.group(1) for hm in _HEADER_RE.finditer(headers_section))
+        if body_raw:
+            all_body_keys.extend(_json_all_keys(body_raw))
+
+    headers = _dedup_keep_order(all_headers)
+    body_keys = _dedup_keep_order(all_body_keys)
 
     path_keys = _PLACEHOLDER_RE.findall(uri)
     query_keys: list[str] = []
@@ -164,9 +209,14 @@ def parse_request_example(lines: list[str]) -> dict | None:
 
 
 def parse_response_example(lines: list[str]) -> list[str]:
+    """解析"响应示例"子块。**多份**响应示例的 JSON 顶层均被抓，结果取并集去重。"""
     raw = "\n".join(lines).strip()
-    body = _find_body(raw)
-    return _json_all_keys(body) if body else []
+    if not raw:
+        return []
+    all_keys: list[str] = []
+    for body in _find_all_bodies(raw):
+        all_keys.extend(_json_all_keys(body))
+    return _dedup_keep_order(all_keys)
 
 
 def build_interface(section: dict) -> Interface | None:

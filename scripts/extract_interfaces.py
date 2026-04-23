@@ -74,10 +74,12 @@ SECTION_MARKERS = (
     "请求参数", "请求示例", "响应参数", "响应示例",
     "返回值", "样例",
 )
-# 兼容带数字后缀的 marker，如 "响应示例1"/"响应示例2"/"请求示例1"。
-# 命中时把内容归到不带数字的基础 marker。
+# 兼容带数字后缀的 marker，例如：
+#   "响应示例1" / "响应示例 1" / "响应示例  2"
+#   "请求示例 3" / "响应参数 6"
+# 命中时把内容归到不带数字的基础 marker。\s* 允许 marker 和数字之间 0~N 空格。
 _MARKER_WITH_SUFFIX_RE = re.compile(
-    r"^(" + "|".join(re.escape(m) for m in SECTION_MARKERS) + r")\d*$"
+    r"^(" + "|".join(re.escape(m) for m in SECTION_MARKERS) + r")\s*\d*$"
 )
 
 
