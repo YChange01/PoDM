@@ -136,12 +136,17 @@ def split_subsections(lines: list[str]) -> dict[str, list[str]]:
 # =================== 表格解析（仅为了取"参数名称"首列） ===================
 
 REQUIRED_VALUES = {"是", "否", "必选", "可选"}
+# 白名单由 scripts/type_enum.py 扫描全文档"类型"列的真实取值，按出现次数 ≥2 的
+# 合法类型词归入而成。
 TYPE_VALUES = {
-    # 英文
-    "string", "int", "integer", "bool", "boolean", "array", "object", "float",
-    "number", "null", "list", "dict", "enum", "long", "short", "double", "map",
-    "byte", "timestamp",
-    # 中文基础类型
+    # --- 英文 ---
+    "string", "int", "integer", "uint", "bool", "boolean", "array", "object",
+    "float", "number", "null", "list", "dict", "enum", "long", "short",
+    "double", "map", "byte", "timestamp",
+    "String",  # 大写首字母变体
+    "URI",     # Redfish 把 URI 当类型用
+    "array[object]", "array[string]",  # 带方括号的数组语法
+    # --- 中文基础类型 ---
     "字符串", "字符", "字符型",
     "数字", "整数", "整型", "长整型", "短整型",
     "布尔", "布尔值", "布尔型",
@@ -150,10 +155,15 @@ TYPE_VALUES = {
     "数组", "列表", "对象", "字典", "集合", "映射",
     "自定义属性", "属性",
     "日期", "时间", "时间戳", "字节",
-    # 文档里把类名当类型用的情况
+    # --- 文档里把类名当类型用的情况 ---
     "用户", "角色", "权限", "权限集合",
+    # --- 联合/特殊写法 ---
+    "null或字符串",
+    # --- "-" 与 en-dash "–"：类型列留空用 "-" 占位（真实文档 350+43 次）---
+    "-", "–",
 }
-# "整型/字符型/浮点型" 等以 型 结尾的变体统一兜底；列表/数组/对象/集合/属性/字典/映射 原有
+# "整型/字符型/浮点型" 等以 型 结尾的变体统一兜底；
+# "xx列表/xx数组/xx对象/xx集合/xx属性/xx字典/xx映射" 类 domain-specific 类型也归这里
 TYPE_SUFFIX_RE = re.compile(r"^.{0,10}(列表|数组|对象|集合|属性|字典|映射|型)$")
 STATUS_CODE_PROSE_RE = re.compile(r"^返回状态码为\d+")
 
