@@ -1,4 +1,13 @@
-# ---- Internal / vendor-specific data (do NOT commit) ----
+# ---- Data & output folders: empty in public repo, local-only contents ----
+data/*
+!data/.gitkeep
+output/*
+!output/.gitkeep
+
+# ---- Private analysis scripts and reports ----
+analysis/
+
+# ---- Belt-and-suspenders guard for raw data at any path ----
 BMC.txt
 PoDM.txt
 compare_report.txt
@@ -7,10 +16,6 @@ sample.*.txt
 sample.*.yaml
 *.docx
 *.doc
-
-# ---- Local scripts kept out of the public tool ----
-compare.py
-make_test_docx.py
 
 # ---- Editor / IDE ----
 .vscode/

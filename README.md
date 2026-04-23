@@ -7,24 +7,44 @@
 > 不需要 `pandoc` / `python-docx` / `pip` 安装。
 > 若安装了 `PyYAML`，`extract_interfaces.py` 会用 YAML 输出，否则自动回退 JSON。
 
+## 目录结构
+
+```
+PoDM/
+├── README.md
+├── .gitignore
+├── scripts/          # 公共提取工具
+│   ├── extract_headings.py
+│   └── extract_interfaces.py
+├── data/             # 放原始文档（.docx / .txt），本地使用，不入库
+└── output/           # 脚本生成的结果（headings.txt / interfaces.yaml），不入库
+```
+
+`data/` 与 `output/` 目录保留空壳（`.gitkeep`），内部文件默认被 `.gitignore` 屏蔽。
+
 ## 工具
 
 | 脚本 | 作用 | 默认输出 |
 |---|---|---|
-| `extract_headings.py` | 提取 `X.Y.Z` 级章节标题，每个接口小节附带 `[METHOD] URI` | `<input>.headings.txt` |
-| `extract_interfaces.py` | 按接口小节提取 URI + 各表第一列（参数名称），分 path/header/body/query/response | `<input>.interfaces.yaml` |
+| `scripts/extract_headings.py` | 提取 `X.Y.Z` 级章节标题，每个接口小节附带 `[METHOD] URI` | `<input>.headings.txt` |
+| `scripts/extract_interfaces.py` | 按接口小节提取 URI + 各表第一列（参数名称），分 path/header/body/query/response | `<input>.interfaces.yaml` |
 
 ## 用法
 
+把原始文档放到 `data/`，输出落在 `output/`：
+
 ```bash
 # 标题树
-python3 extract_headings.py   PoDM_API.docx
+python3 scripts/extract_headings.py   data/PoDM_API.docx   output/PoDM_API.headings.txt
 
 # 接口参数
-python3 extract_interfaces.py PoDM_API.docx
-python3 extract_interfaces.py PoDM_API.docx  out.yaml          # 自定义输出
-python3 extract_interfaces.py PoDM_API.docx  out.json --format json
+python3 scripts/extract_interfaces.py data/PoDM_API.docx   output/PoDM_API.yaml
+
+# 也可指定 JSON 输出
+python3 scripts/extract_interfaces.py data/PoDM_API.docx   output/PoDM_API.json --format json
 ```
+
+不带第二个参数时，输出会写到与输入同名的 `.headings.txt` / `.interfaces.yaml`。
 
 ## 输出示例
 
