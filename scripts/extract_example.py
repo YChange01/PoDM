@@ -51,8 +51,6 @@ DEFAULT_OUTPUT_DIR = REPO_ROOT / "output"
 _HTTP_FIRST_RE = re.compile(r"(GET|POST|PUT|PATCH|DELETE)\s+(\S+)\s+HTTP/\S+")
 # header: "Name: value"，名字允许大小写字母、数字、短横线、下划线
 _HEADER_RE = re.compile(r"([A-Za-z][\w-]*)\s*:\s*\S+")
-# JSON key 允许 @odata.context / Members@odata.count / Id 等
-_JSON_KEY_RE = re.compile(r'"([@\w.\-]+)"\s*:')
 _PLACEHOLDER_RE = re.compile(r"\{([^{}]+)\}")
 
 
@@ -97,15 +95,71 @@ def _find_body(text: str) -> str | None:
     return candidates[0][1]
 
 
+def _scan_top_keys(body_raw: str) -> list[str]:
+    """手扫 {...} 体，只收 depth=1 的 "key":…… 的 key。
+
+    用来兜底 json.loads 失败（文档里常见漏逗号之类写法问题）。扫描时：
+    - 跟踪大括号/方括号深度；遇到 "…" 进入字符串态，忽略其中的 {}[]
+    - 字符串结束后如果紧跟 :（允许中间空白）且当时 depth==1，就作为 key 收下
+    """
+    n = len(body_raw)
+    i = 0
+    while i < n and body_raw[i] in " \t\n\r":
+        i += 1
+    if i >= n or body_raw[i] != "{":
+        return []
+    depth = 1
+    i += 1
+    in_string = False
+    escape = False
+    key_start = -1
+    keys: list[str] = []
+    seen: set[str] = set()
+
+    while i < n:
+        ch = body_raw[i]
+        if in_string:
+            if escape:
+                escape = False
+            elif ch == "\\":
+                escape = True
+            elif ch == '"':
+                in_string = False
+                if key_start >= 0 and depth == 1:
+                    j = i + 1
+                    while j < n and body_raw[j] in " \t\n\r":
+                        j += 1
+                    if j < n and body_raw[j] == ":":
+                        key = body_raw[key_start + 1 : i]
+                        if key not in seen:
+                            seen.add(key)
+                            keys.append(key)
+                key_start = -1
+        else:
+            if ch == '"':
+                in_string = True
+                key_start = i
+            elif ch in "{[":
+                depth += 1
+            elif ch == "}":
+                depth -= 1
+                if depth == 0:
+                    break
+            elif ch == "]":
+                depth -= 1
+        i += 1
+    return keys
+
+
 def _json_top_keys(body_raw: str) -> list[str]:
-    """优先 json.loads；失败（示例里值常为占位符不合法）时退化为 "key": 正则。"""
+    """优先 json.loads；失败退化到深度扫描（只收 depth=1 的 key，不误吞嵌套字段）。"""
     try:
         obj = json.loads(body_raw)
         if isinstance(obj, dict):
             return list(obj.keys())
     except Exception:
         pass
-    return _dedup_keep_order(m.group(1) for m in _JSON_KEY_RE.finditer(body_raw))
+    return _scan_top_keys(body_raw)
 
 
 def parse_request_example(lines: list[str]) -> dict | None:
