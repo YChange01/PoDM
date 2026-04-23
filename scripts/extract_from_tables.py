@@ -18,10 +18,12 @@
 
 用法：
     python3 extract_from_tables.py                             # 使用默认输入
-    python3 extract_from_tables.py <输入文件> [输出文件]
+    python3 extract_from_tables.py <输入文件> [输出yaml]
 
     默认输入：<仓库根>/data/Atlas PoDManager 1.0.0 Redfish 接口参考_最新.docx
-    默认输出：<仓库根>/output/<输入文件名>.interfaces.yaml
+    默认输出：
+      - <仓库根>/output/<输入文件名>.interfaces.yaml  （结构化）
+      - <仓库根>/output/<输入文件名>.uris.txt         （每行 "[METHOD] URI"，顺序与 yaml 一致）
 
 依赖：仅 Python 3 标准库；若安装了 PyYAML 则用 YAML 输出，否则自动回退 JSON。
 """
@@ -384,6 +386,16 @@ def _resolve_io(argv: list[str]) -> tuple[Path, Path]:
     return inp, out
 
 
+def _write_uris(interfaces: list[Interface], out: Path) -> None:
+    lines: list[str] = []
+    for iface in interfaces:
+        if iface.method:
+            lines.append(f"[{iface.method}] {iface.uri}")
+        else:
+            lines.append(iface.uri)
+    out.write_text("\n".join(lines) + ("\n" if lines else ""), encoding="utf-8")
+
+
 def main() -> None:
     inp, out = _resolve_io(sys.argv)
     if not inp.exists():
@@ -408,9 +420,18 @@ def main() -> None:
             interfaces.append(iface)
 
     data = {"interfaces": [asdict(i) for i in interfaces]}
-    final_path = dump_yaml(data, out)
+    final_yaml = dump_yaml(data, out)
+
+    # 顺带写 <stem>.uris.txt：每行 "[METHOD] URI"，顺序与 yaml 里的 interfaces 一致
+    # out.stem 对 "xxx.interfaces.yaml" 得到 "xxx.interfaces"；再 Path(...).stem 得到 "xxx"
+    base_stem = Path(out.stem).stem if "." in out.stem else out.stem
+    uris_path = out.parent / f"{base_stem}.uris.txt"
+    _write_uris(interfaces, uris_path)
+
     dup_note = f"，去重 {dropped} 条章节" if dropped else ""
-    print(f"已提取 {len(interfaces)} 个接口{dup_note} -> {final_path}")
+    print(f"已提取 {len(interfaces)} 个接口{dup_note}")
+    print(f"  YAML: {final_yaml}")
+    print(f"  URIs: {uris_path}")
 
 
 if __name__ == "__main__":

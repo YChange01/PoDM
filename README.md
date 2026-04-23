@@ -29,10 +29,9 @@ PoDM/
 ├── .gitignore
 ├── scripts/
 │   ├── _docx_utils.py                # 共享 .docx 读取 (跳 ToC + 合成 X.Y.Z 编号)
-│   ├── extract_headings.py           # 提取章节标题 + [METHOD] URI
-│   ├── extract_uris.py               # 从 headings.txt 抽纯 URI 列表
-│   ├── extract_from_tables.py        # 路径①：从表格提取 URI + 参数
-│   ├── extract_from_examples.py      # 路径②：从示例代码提取 URI + 参数
+│   ├── extract_headings.py           # 提取章节标题 + [METHOD] URI 的层级树
+│   ├── extract_from_tables.py        # 路径①：从表格提取 URI + 参数 (同时产出 uris.txt)
+│   ├── extract_from_examples.py      # 路径②：从示例代码提取 URI + 参数 (同时产出 uris.txt)
 │   ├── col_enum.py                   # 诊断：按列索引枚举表格某列取值
 │   ├── type_enum.py                  # 诊断：枚举参数表"类型"列的取值
 │   ├── docx_diag.py                  # 诊断：打印段落样式分布
@@ -53,10 +52,9 @@ PoDM/
 
 | 脚本 | 作用 | 默认输出 |
 |---|---|---|
-| `scripts/extract_headings.py` | 提取 `X.Y.Z` 级章节标题，每个接口小节附带 `[METHOD] URI` | `<input>.headings.txt` |
-| `scripts/extract_from_tables.py` | **表格路径**：从参数表抽 URI + path/header/body/query/response | `<input>.interfaces.yaml` |
-| `scripts/extract_from_examples.py` | **示例路径**：从请求/响应示例代码抽相同字段结构 | `<input>.example.interfaces.yaml` 和 `<input>.example.uris.txt` |
-| `scripts/extract_uris.py` | 从已生成的 `headings.txt` 里只抽出 URI，每行一个 | `<input>.uris.txt` |
+| `scripts/extract_headings.py` | 提取 `X.Y.Z` 级章节标题，每个接口小节附带 `[METHOD] URI`（层级树视图） | `<input>.headings.txt` |
+| `scripts/extract_from_tables.py` | **表格路径**：从参数表抽 URI + path/header/body/query/response | `<input>.interfaces.yaml` + `<input>.uris.txt` |
+| `scripts/extract_from_examples.py` | **示例路径**：从请求/响应示例代码抽相同字段结构 | `<input>.example.interfaces.yaml` + `<input>.example.uris.txt` |
 
 ## 用法
 
@@ -79,16 +77,13 @@ python3 scripts/extract_from_tables.py    data/你的文件.docx   output/你的
 python3 scripts/extract_from_examples.py  data/你的文件.docx
 ```
 
-只传输入、不传输出时，结果写到与输入同名的 `.headings.txt` / `.interfaces.yaml`。
+只传输入、不传输出时，结果写到约定的默认文件名。
 
-**从 headings.txt 再抽出纯 URI 列表**：
+两条主路径都**同时**产出 `.interfaces.yaml`（结构化参数清单）和 `.uris.txt`
+（每行 `[METHOD] URI`，顺序与 yaml 一致），分别给结构化 diff 和纯 URI
+集合对比用。
 
-```bash
-python3 scripts/extract_uris.py                                   # 默认读 output/<默认文件>.headings.txt
-python3 scripts/extract_uris.py output/你的文件.headings.txt        # 指定输入
-```
-
-如果要换默认输入，改 `scripts/extract_*.py` 里的 `DEFAULT_INPUT` 常量即可。
+如果要换默认输入，改 `scripts/extract_from_*.py` 里的 `DEFAULT_INPUT` 常量即可。
 
 ## 输出示例
 
