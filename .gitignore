@@ -9,6 +9,9 @@ BMC.txt
 PoDM.txt
 *.docx
 *.doc
+# analysis/ 下的 docx 是我们的生成报告 (非 source spec)，允许入库
+!analysis/*.docx
+!analysis/*.doc
 
 # ---- Editor / IDE ----
 .vscode/
