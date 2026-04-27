@@ -109,8 +109,13 @@ def is_interface_section(sec: dict) -> bool:
 
 # "操作类型：POST" / "操作类型: POST"
 _METHOD_LINE_RE = re.compile(r"^操作类型\s*[:：]\s*(\w+)\s*$")
-# "URL：https://..." / "URL:https://..." / "URL:" (URL 跨行情况)
-_URL_LINE_RE = re.compile(r"^URL\s*[:：]\s*(.*)$")
+# URL 行：兼容三种写法
+#   "URL：https://..."        基础
+#   "URL:https://..."         半角冒号
+#   "URL:"                    URL 跨行（value 在下一非空行）
+#   "新URL：https://..."      BMC 文档某些修订段用 "新URL" 前缀（22 个 section 中招）
+# 允许 marker 前 0-3 个中文字符前缀（"新"/"新版" 之类）。
+_URL_LINE_RE = re.compile(r"^[一-鿿]{0,3}URL\s*[:：]\s*(.*)$")
 # 请求头里的 "Name: value"（Name 取 ASCII 字母数字短横线下划线）
 _HEADER_LINE_RE = re.compile(r"^([A-Za-z][\w-]*)\s*:\s*\S+")
 # JSON 里 "key":
