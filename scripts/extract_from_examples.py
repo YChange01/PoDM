@@ -2,10 +2,10 @@
 
 与基于参数表的 extract_from_tables.py **平行**，区别只在数据源：
 - extract_from_tables.py 读"请求参数/响应参数"里的表格
-- extract_from_examples.py   读"请求示例/响应示例"里的 HTTP 报文和 JSON
+- extract_from_examples.py 读"请求示例/响应示例"里的 HTTP 报文和 JSON
 
-对同一份 docx 分别跑两个脚本，再 diff 两份 yaml，就能发现
-"表格写了但示例没发" / "示例发了但表格没列" 的文档不自洽。
+对同一份 docx 分别跑两个脚本，再 diff 两份 yaml，就能发现"表格写了但示例没发"
+/ "示例发了但表格没列" 的文档不自洽。
 
 提取规则：
 - method / uri      : 从 HTTP 首行 "METHOD /path HTTP/1.1"
@@ -14,17 +14,23 @@
 - params.header     : 首行后、body 之前所有 "Name: value" 里的 Name
 - params.body       : 请求 body JSON 中**所有深度**的 key（保序去重）
 - params.response   : 响应示例 JSON 中**所有深度**的 key（保序去重）
-  json.loads 失败（文档常见漏逗号等）时回退到 "key": 正则，结果等价。
+  json.loads 失败（文档常见漏逗号等）时回退到 "key": 正则。
 
-两份输出都写到 output/：
-  output/<stem>.example.uris.txt          每行 "[METHOD] URI"
-  output/<stem>.example.interfaces.yaml   字段同 interfaces.yaml
+输出（output/）：
+  <stem>.example.interfaces.yaml      字段同 interfaces.yaml
+  <stem>.example.uris.txt             每行 "[METHOD] URI"
+  <stem>.example.warnings.txt         整条丢弃的 section（如 4.10.4.2 缺 HTTP 首行；仅有时才创建）
 
 用法:
     python3 scripts/extract_from_examples.py                       # 默认输入
     python3 scripts/extract_from_examples.py <path.docx>
 
 依赖：仅 Python 3 标准库；装了 PyYAML 走 yaml，否则自动回退 JSON。
+
+模块组织：
+    - 文档结构识别（章节/marker/iter_tables）→ _doc_structure
+    - 数据类与文件输出（Params/Interface/dump_yaml）→ _yaml_io
+    - 本文件保留：HTTP 首行/header 正则、JSON 平衡括号、key 递归
 """
 from __future__ import annotations
 
@@ -36,63 +42,38 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _docx_utils import read_source  # noqa: E402
-from extract_from_tables import (  # noqa: E402
-    SECTION_MARKERS,
+from _doc_structure import (  # noqa: E402
+    dedup_sections,
+    section_has_uri,
+    split_sections,
+    split_subsections,
+)
+from _yaml_io import (  # noqa: E402
     Interface,
     Params,
-    _section_has_uri,
-    dedup_sections,
-    split_sections,
+    dedup_keep_order,
+    dump_yaml,
+    write_uris,
+    write_warnings,
 )
 
-
-# ---- 本脚本私有的 split_subsections ------------------------------------
-# 与 extract_from_tables.py 的版本的唯一区别：marker 与尾部数字之间允许空格。
-# 示例里的 "请求示例 1" / "响应示例 2" 带空格是常见写法，但表格版不需要
-# 这种兼容（原写死 "响应参数1"/"响应参数2" 居多），所以两边各自维护一份，
-# 互不影响。
-_EX_MARKER_RE = re.compile(
-    r"^(" + "|".join(re.escape(m) for m in SECTION_MARKERS) + r")\s*\d*$"
-)
+# 向后兼容别名：why_missing 还按 _split_subsections 名字 import；统一后两边同源。
+_split_subsections = split_subsections
 
 
-def _split_subsections(lines: list[str]) -> dict[str, list[str]]:
-    subs: dict[str, list[str]] = {m: [] for m in SECTION_MARKERS}
-    current: str | None = None
-    for line in lines:
-        stripped = line.strip()
-        m = _EX_MARKER_RE.match(stripped)
-        if m:
-            current = m.group(1)  # 归到基础 marker (去掉数字后缀)
-            continue
-        if current is not None:
-            subs[current].append(line)
-    return subs
-
-REPO_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_INPUT = REPO_ROOT / "data" / "Atlas PoDManager 1.0.0 Redfish 接口参考_最新.docx"
-DEFAULT_OUTPUT_DIR = REPO_ROOT / "output"
+# =================== HTTP 报文解析 ===================
 
 # 宽容匹配 HTTP 首行，兼容文档里常见的排版手滑：
 #   - METHOD 和 URI 之间缺空格： "POST/redfish/v1/..."           → \s* 允许 0 空格
 #   - URI 段中夹空格：           "... /Storage. ImportFC ..."   → URI 用 lazy .*?
 #   - URI 和 HTTP/x.y 粘连：      "...PoDImportConfigurationHTTP/1.1" → 后一个 \s* 也是 0 空格
 # 这样 examples 路径里能把文档作者这些小手滑抓进来，原样带 bug 输出——
-# diff_uris.py 能据此指出差异，作者按清单改 doc。
+# diff_uris.py 据此指出差异，作者按清单改 doc。
 _HTTP_FIRST_RE = re.compile(r"(GET|POST|PUT|PATCH|DELETE)\s*(\S.*?)\s*HTTP/\S+")
 # header: "Name: value"，名字允许大小写字母、数字、短横线、下划线
 _HEADER_RE = re.compile(r"([A-Za-z][\w-]*)\s*:\s*\S+")
 _PLACEHOLDER_RE = re.compile(r"\{([^{}]+)\}")
-
-
-def _dedup_keep_order(items: list[str]) -> list[str]:
-    seen: set[str] = set()
-    out: list[str] = []
-    for it in items:
-        if it not in seen:
-            seen.add(it)
-            out.append(it)
-    return out
+_JSON_KEY_RE = re.compile(r'"([@A-Za-z_][\w@.\-]*)"\s*:')
 
 
 def _extract_balanced(text: str, open_ch: str) -> str | None:
@@ -159,9 +140,6 @@ def _find_all_bodies(text: str) -> list[str]:
     return bodies
 
 
-_JSON_KEY_RE = re.compile(r'"([@A-Za-z_][\w@.\-]*)"\s*:')
-
-
 def _walk_keys(obj) -> list[str]:
     """递归收集 dict 里所有 key（含嵌套 list/dict），保留首次出现顺序。"""
     out: list[str] = []
@@ -182,14 +160,14 @@ def _walk_keys(obj) -> list[str]:
 def _json_all_keys(body_raw: str) -> list[str]:
     """抓 body 里所有 "key": 的 key（任意深度），保序去重。
 
-    先尝试 json.loads + 递归 walk；失败（文档里常见漏逗号之类小毛病）
-    退化到正则，把所有 "…": 形式的 key 抓下来。
+    先尝试 json.loads + 递归 walk；失败（文档里常见漏逗号 / 多余 `]` / `&nbsp;`
+    HTML 实体）退化到正则，把所有 "…": 形式的 key 抓下来。
     """
     try:
         raw = _walk_keys(json.loads(body_raw))
     except Exception:
         raw = [m.group(1) for m in _JSON_KEY_RE.finditer(body_raw)]
-    return _dedup_keep_order(raw)
+    return dedup_keep_order(raw)
 
 
 def parse_request_example(lines: list[str]) -> dict | None:
@@ -217,8 +195,8 @@ def parse_request_example(lines: list[str]) -> dict | None:
         if body_raw:
             all_body_keys.extend(_json_all_keys(body_raw))
 
-    headers = _dedup_keep_order(all_headers)
-    body_keys = _dedup_keep_order(all_body_keys)
+    headers = dedup_keep_order(all_headers)
+    body_keys = dedup_keep_order(all_body_keys)
 
     path_keys = _PLACEHOLDER_RE.findall(uri)
     query_keys: list[str] = []
@@ -246,51 +224,46 @@ def parse_response_example(lines: list[str]) -> list[str]:
     all_keys: list[str] = []
     for body in _find_all_bodies(raw):
         all_keys.extend(_json_all_keys(body))
-    return _dedup_keep_order(all_keys)
+    return dedup_keep_order(all_keys)
 
 
-def build_interface(section: dict) -> Interface | None:
-    subs = _split_subsections(section["lines"])
+# =================== 组装接口 ===================
+
+def build_interface(section: dict) -> tuple[Interface | None, str | None]:
+    """返回 (Interface, warning)。warning 非 None 时表示整条被跳过的原因。
+
+    跳过原因示例：
+      - "请求示例 段无 HTTP 首行 / 段为空"——4.10.4.2 是真实 case，作者没写
+        "POST /redfish/v1/SessionService/Sessions HTTP/1.1"
+    """
+    subs = split_subsections(section["lines"])
     req = parse_request_example(subs.get("请求示例", []))
     if req is None:
-        return None
+        return None, "请求示例 段无 HTTP 首行 / 段为空，整条丢弃"
     resp_keys = parse_response_example(subs.get("响应示例", []))
-    return Interface(
-        section=section["number"],
-        title=section["title"],
-        method=req["method"],
-        uri=req["uri"],
-        params=Params(
-            path=req["path"],
-            header=req["header"],
-            body=req["body"],
-            query=req["query"],
-            response=resp_keys,
+    return (
+        Interface(
+            section=section["number"],
+            title=section["title"],
+            method=req["method"],
+            uri=req["uri"],
+            params=Params(
+                path=req["path"],
+                header=req["header"],
+                body=req["body"],
+                query=req["query"],
+                response=resp_keys,
+            ),
         ),
+        None,
     )
 
 
-def dump_yaml(data: dict, out: Path) -> Path:
-    try:
-        import yaml
-    except ImportError:
-        print("提示：未安装 PyYAML，自动改输出 JSON。`pip install pyyaml` 可切回 YAML。",
-              file=sys.stderr)
-        out = out.with_suffix(".json")
-        out.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
-        return out
+# =================== 入口 ===================
 
-    def repr_str(dumper, value):
-        if "\n" in value:
-            return dumper.represent_scalar("tag:yaml.org,2002:str", value, style="|")
-        return dumper.represent_scalar("tag:yaml.org,2002:str", value)
-
-    yaml.add_representer(str, repr_str, Dumper=yaml.SafeDumper)
-    out.write_text(
-        yaml.safe_dump(data, allow_unicode=True, sort_keys=False, width=1000),
-        encoding="utf-8",
-    )
-    return out
+REPO_ROOT = Path(__file__).resolve().parent.parent
+DEFAULT_INPUT = REPO_ROOT / "data" / "Atlas PoDManager 1.0.0 Redfish 接口参考_最新.docx"
+DEFAULT_OUTPUT_DIR = REPO_ROOT / "output"
 
 
 def main() -> None:
@@ -302,35 +275,32 @@ def main() -> None:
     text = read_source(path)
     sections = dedup_sections(split_sections(text))
 
+    warnings: list[str] = []
     interfaces: list[Interface] = []
     for sec in sections:
-        if not _section_has_uri(sec):
+        if not section_has_uri(sec):
             continue
-        iface = build_interface(sec)
-        if iface is not None:
-            interfaces.append(iface)
+        iface, warn = build_interface(sec)
+        if warn:
+            warnings.append(f"{sec['number']}\t{sec['title']}\t{warn}")
+            continue
+        interfaces.append(iface)
 
     stem = path.stem
     DEFAULT_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
     yaml_path = DEFAULT_OUTPUT_DIR / f"{stem}.example.interfaces.yaml"
     uris_path = DEFAULT_OUTPUT_DIR / f"{stem}.example.uris.txt"
+    warn_path = DEFAULT_OUTPUT_DIR / f"{stem}.example.warnings.txt"
 
     final_yaml = dump_yaml({"interfaces": [asdict(i) for i in interfaces]}, yaml_path)
-
-    uri_lines: list[str] = []
-    for iface in interfaces:
-        if iface.method:
-            uri_lines.append(f"[{iface.method}] {iface.uri}")
-        else:
-            uri_lines.append(iface.uri)
-    uris_path.write_text(
-        "\n".join(uri_lines) + ("\n" if uri_lines else ""),
-        encoding="utf-8",
-    )
+    write_uris(interfaces, uris_path)
+    written_warn = write_warnings(warnings, warn_path)
 
     print(f"已提取 {len(interfaces)} 个示例接口")
     print(f"  YAML:  {final_yaml}")
     print(f"  URIs:  {uris_path}")
+    if written_warn:
+        print(f"  WARN:  {written_warn} ({len(warnings)} 条)")
 
 
 if __name__ == "__main__":
