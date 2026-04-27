@@ -76,10 +76,16 @@ SECTION_MARKERS = (
     "请求参数", "请求示例", "响应参数", "响应示例",
     "返回值", "样例",
 )
-# 兼容带数字后缀的 marker，如 "响应示例1"/"响应示例2"/"请求示例1"。
-# 命中时把内容归到不带数字的基础 marker。
+# 兼容三种 marker 写法，命中时把内容归到不带前缀/数字的基础 marker：
+#   "响应参数" / "响应参数1" / "响应参数 1"
+#       ↑ \s*\d* 允许数字与 marker 之间出现空格（4.2.39 多组示例 "请求示例 1/2/3"）
+#   "SMN板响应参数" / "业务板响应参数"
+#       ↑ \S{1,5}板 允许板型前缀（4.4.2 区分 SMN板 / 业务板 两套响应表）
+# 仅放宽，不引入误匹配——前缀必须以"板"结尾，普通正文句子（如"本接口请求参数"）不会命中。
 _MARKER_WITH_SUFFIX_RE = re.compile(
-    r"^(" + "|".join(re.escape(m) for m in SECTION_MARKERS) + r")\d*$"
+    r"^(?:\S{1,5}板)?("
+    + "|".join(re.escape(m) for m in SECTION_MARKERS)
+    + r")\s*\d*$"
 )
 
 
@@ -275,6 +281,11 @@ def classify_table(title: str) -> str:
 _TABLE_TITLE_RE = re.compile(
     r"^(?:表\s*[\d\-.]+\s+)?(?:Path|Header|Body|Query|Response)?参数列表\s*$"
 )
+# 任何 "表X-YYY <文字>" 形式的表标题。不要求"参数列表"结尾。
+# 用作 iter_tables 的"硬停止"——遇到下一张表就停，无论它是不是参数列表。
+# 修 4.4.7：表4-712 "支持自定义调速的刀片列表" 不以"参数列表"结尾，
+# 之前会被吃进上一张 Body 表，导致刀片型号 (TS200-2280 等) 误抓为 body 参数。
+_ANY_TABLE_HEADER_RE = re.compile(r"^表\s*[\d\-.]+\s+\S")
 
 
 def _is_table_title(s: str) -> bool:
@@ -295,6 +306,8 @@ def iter_tables(lines: list[str]):
         while j < n:
             tt = lines[j].strip()
             if _is_table_title(tt):
+                break
+            if _ANY_TABLE_HEADER_RE.match(tt):  # 4.4.7：遇到非参数列表的下一张表也停
                 break
             if tt in SECTION_MARKERS:
                 break
