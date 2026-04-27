@@ -222,8 +222,12 @@ def render_report(podm: list[dict], bmc: list[dict],
     # ---- 共有接口参数差异统计 ----
     lines.append("## 共有接口参数差异（按类别）\n")
     cat_stat: dict[str, Counter[str]] = {c: Counter() for c in CATS}
+    diff_records: list[tuple[int, dict, dict, dict]] = []  # (total_diff, p, b, d)
     for p, b, _ in matched:
         d = diff_params(p, b)
+        total = sum(len(d[c]["only_podm"]) + len(d[c]["only_bmc"]) for c in CATS)
+        if total > 0:
+            diff_records.append((total, p, b, d))
         for c in CATS:
             if d[c]["only_podm"]:
                 cat_stat[c]["only_podm_sections"] += 1
@@ -238,27 +242,54 @@ def render_report(podm: list[dict], bmc: list[dict],
         lines.append(f"| {c} | {cs['only_podm_sections']} 接口 / {cs['only_podm_total']} 字段 | {cs['only_bmc_sections']} 接口 / {cs['only_bmc_total']} 字段 |")
     lines.append("")
 
-    # ---- PoDM 改进建议（最显眼差异 top）----
-    lines.append("## PoDManager 修订建议（按 BMC 字段补充优先级）\n")
-    lines.append("> 选取 BMC 同名接口比 PoDM 多出 ≥3 个字段、且字段名有 Redfish 标准感（非业务私属）的条目。可直接拿来评估 PoDM 是否需要补响应字段。\n")
+    # ---- 共有接口参数差异 详细 ----
+    diff_records.sort(key=lambda x: -x[0])
+    lines.append(f"## 共有接口参数差异 详细列表（共 {len(diff_records)} 条，按差异字段总数降序）\n")
+    lines.append("> 每条接口列出每个类别下「仅 PoDM 有」和「仅 BMC 有」的字段。空类别省略。\n")
+
+    def join_fields(items: list[str]) -> str:
+        return ", ".join(f"`{x}`" for x in items) if items else "—"
+
+    for total, p, b, d in diff_records:
+        method_p = p.get("method") or "?"
+        method_b = b.get("method") or "?"
+        method_tag = f"`{method_p}`" if method_p == method_b else f"PoDM `{method_p}` / BMC `{method_b}`"
+        lines.append(f"### {p['section']} {p['title']}（差异 {total}）\n")
+        lines.append(f"- BMC section: `{b['section']}`  method: {method_tag}")
+        lines.append(f"- PoDM URI: `{normalize_uri(p['uri'])}`")
+        if normalize_uri(p["uri"]) != normalize_uri(b["uri"]):
+            lines.append(f"- BMC URI: `{normalize_uri(b['uri'])}`  ← URI 不一致")
+        lines.append("")
+        lines.append(f"| 类别 | 仅 PoDM | 仅 BMC |")
+        lines.append(f"|---|---|---|")
+        for c in CATS:
+            op = d[c]["only_podm"]
+            ob = d[c]["only_bmc"]
+            if not op and not ob:
+                continue
+            lines.append(f"| {c} | {join_fields(op)} | {join_fields(ob)} |")
+        lines.append("")
+
+    # ---- PoDM 改进建议（按 response 字段缺失全量列出）----
+    lines.append("## PoDManager 修订建议（按 BMC response 字段补充优先级）\n")
+    lines.append("> 列出所有 BMC 同名接口的 response 字段集合中、PoDM 没列出的字段。"
+                  "BMC 那边大多是真实响应数据，PoDM 漏列的字段大概率是 schema 表写漏。"
+                  "按缺失字段数降序。\n")
 
     suggestions = []
-    for p, b, via in matched:
+    for p, b, _ in matched:
         d = diff_params(p, b)
-        # 仅看 response：BMC 多出来的字段更可能是 PoDM 漏列
         bmc_extra_resp = d["response"]["only_bmc"]
-        if len(bmc_extra_resp) >= 3:
+        if bmc_extra_resp:
             suggestions.append((len(bmc_extra_resp), p, b, bmc_extra_resp))
     suggestions.sort(key=lambda x: -x[0])
 
-    lines.append(f"### 按 response 字段缺失数排序 top 30（共 {len(suggestions)} 条候选）\n")
-    lines.append(f"| PoDM section | 标题 | 缺失数 | BMC 多出来的字段（前 10）|")
+    lines.append(f"### 全量 {len(suggestions)} 条（PoDM response 比 BMC 缺字段的接口）\n")
+    lines.append(f"| PoDM section | 标题 | 缺失数 | BMC 多出的 response 字段 |")
     lines.append(f"|---|---|---:|---|")
-    for n, p, b, extras in suggestions[:30]:
-        sample = ", ".join(f"`{x}`" for x in extras[:10])
-        if len(extras) > 10:
-            sample += f" ... +{len(extras)-10}"
-        lines.append(f"| {p['section']} | {p['title'][:25]} | {n} | {sample} |")
+    for n, p, _, extras in suggestions:
+        cells = ", ".join(f"`{x}`" for x in extras)
+        lines.append(f"| {p['section']} | {p['title']} | {n} | {cells} |")
     lines.append("")
 
     # ---- 仅 PoDM 接口 ----
