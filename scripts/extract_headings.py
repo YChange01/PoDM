@@ -90,13 +90,22 @@ def _split_sections(text: str) -> list[_Section]:
 
 
 def _find_following(lines: list[str], marker: str) -> str:
-    """在 section 内容里找 marker 行，返回其后的第一条非空行。"""
+    """在 section 内容里找 marker，返回其后的第一条非空行。
+
+    兼容两种写法：
+      - PoDManager: marker 独占一行，value 在下一非空行
+      - BMC:        "marker：value" / "marker:value" 同一行
+    """
     for i, line in enumerate(lines):
-        if line.strip() == marker:
+        s = line.strip()
+        if s == marker:
             for j in range(i + 1, len(lines)):
                 if lines[j].strip():
                     return lines[j].strip()
             return ""
+        for sep in ("：", ":"):
+            if s.startswith(marker + sep):
+                return s[len(marker) + len(sep):].strip()
     return ""
 
 
@@ -104,8 +113,10 @@ def extract(text: str) -> list[Heading]:
     sections = _split_sections(text)
     out: list[Heading] = []
     for sec in sections:
-        uri = _find_following(sec.lines, "URI")
-        method = _find_following(sec.lines, "调用方法")
+        # PoDManager 用 "URI" / "调用方法"；BMC 用 "URL" / "操作类型"。
+        # 两套都试，谁先命中算谁。
+        uri = _find_following(sec.lines, "URI") or _find_following(sec.lines, "URL")
+        method = _find_following(sec.lines, "调用方法") or _find_following(sec.lines, "操作类型")
         out.append(Heading(number=sec.number, title=sec.title, method=method, uri=uri))
     return out
 
