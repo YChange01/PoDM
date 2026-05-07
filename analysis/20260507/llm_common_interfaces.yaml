@@ -1,0 +1,5101 @@
+llm_common_interfaces:
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 1
+    section: 3.1.1
+    title: 查询Redfish版本信息
+    method: GET
+    uri: https://device_ip/redfish
+  podm:
+    index: 1
+    section: 4.1.1
+    title: 查询Redfish版本信息
+    method: GET
+    uri: /redfish
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 2
+    section: 3.1.2
+    title: 查询当前根服务资源
+    method: GET
+    uri: https://device_ip/redfish/v1
+  podm:
+    index: 2
+    section: 4.1.2
+    title: 查询当前根服务资源
+    method: GET
+    uri: /redfish/v1
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 3
+    section: 3.1.3
+    title: 修改当前根服务资源
+    method: PATCH
+    uri: https://device_ip/redfish/v1
+  podm:
+    index: 3
+    section: 4.1.3
+    title: 修改当前根服务资源
+    method: PATCH
+    uri: /redfish/v1
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 4
+    section: 3.1.4
+    title: 查询Metadata文档
+    method: GET
+    uri: https://device_ip/redfish/v1/$metadata
+  podm:
+    index: 4
+    section: 4.1.4
+    title: 查询Metadata文档
+    method: GET
+    uri: /redfish/v1/$metadata
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 5
+    section: 3.1.5
+    title: 查询所有资源的Schema文件
+    method: GET
+    uri: https://device_ip/redfish/v1/JSONSchemas
+  podm:
+    index: 5
+    section: 4.1.5
+    title: 查询所有资源的Schema文件
+    method: GET
+    uri: /redfish/v1/JSONSchemas
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 6
+    section: 3.1.6
+    title: 查询单个Schema文件归档地址
+    method: GET
+    uri: https://device_ip/redfish/v1/JSONSchemas/member_id
+  podm:
+    index: 6
+    section: 4.1.6
+    title: 查询单个Schema文件归档地址
+    method: GET
+    uri: /redfish/v1/JSONSchemas/{member_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 7
+    section: 3.1.7
+    title: 查询单个Schema文件资源
+    method: GET
+    uri: https://device_ip/redfish/v1/SchemaStore/language_id/file_id
+  podm:
+    index: 7
+    section: 4.1.7
+    title: 查询单个Schema文件资源
+    method: GET
+    uri: /redfish/v1/SchemaStore/{language_id}/{file_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 8
+    section: 3.1.8
+    title: 查询所有归档资源
+    method: GET
+    uri: https://device_ip/redfish/v1/Registries
+  podm:
+    index: 8
+    section: 4.1.8
+    title: 查询所有归档资源
+    method: GET
+    uri: /redfish/v1/Registries
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 9
+    section: 3.1.9
+    title: 查询单个归档资源
+    method: GET
+    uri: https://device_ip/redfish/v1/Registries/registries_id
+  podm:
+    index: 9
+    section: 4.1.9
+    title: 查询单个归档资源
+    method: GET
+    uri: /redfish/v1/Registries/{registries_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 10
+    section: 3.1.10
+    title: 查询OData服务文档
+    method: GET
+    uri: https://device_ip/redfish/v1/odata
+  podm:
+    index: 10
+    section: 4.1.10
+    title: 查询OData服务文档
+    method: GET
+    uri: /redfish/v1/odata
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 11
+    section: 3.1.11
+    title: 查询系统概览信息
+    method: GET
+    uri: https://device_ip/redfish/v1/SystemOverview
+  podm:
+    index: 12
+    section: 4.1.12
+    title: 查询系统概览信息
+    method: GET
+    uri: /redfish/v1/SystemOverview
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 12
+    section: 3.1.12
+    title: 查询性能数据采集服务资源
+    method: GET
+    uri: https://device_ip/redfish/v1/PerformanceCollection
+  podm:
+    index: 13
+    section: 4.1.13
+    title: 查询性能数据采集服务资源
+    method: GET
+    uri: /redfish/v1/PerformanceCollection
+- score: 0.7692
+  confidence: low
+  method_same: true
+  bmc:
+    index: 14
+    section: 3.2.1
+    title: 查询管理集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers
+  podm:
+    index: 15
+    section: 4.2.1
+    title: 查询服务器当前管理集合资源的信息
+    method: GET
+    uri: /redfish/v1/Managers
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 15
+    section: 3.2.2
+    title: 查询指定管理资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id
+  podm:
+    index: 16
+    section: 4.2.2
+    title: 查询指定管理资源信息
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 16
+    section: 3.2.3
+    title: 修改指定管理资源信息
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Managers/manager_id
+  podm:
+    index: 17
+    section: 4.2.3
+    title: 修改指定管理资源信息
+    method: PATCH
+    uri: /redfish/v1/Managers/{manager_id}
+- score: 0.6316
+  confidence: medium
+  method_same: true
+  bmc:
+    index: 18
+    section: 3.2.5
+    title: 恢复出厂设置（自定义接口）
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/Actions/Oem/Huawei/Public/Manager.RestoreFactory
+  podm:
+    index: 27
+    section: 4.2.13
+    title: 恢复整框出厂设置
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/Actions/Oem/HuaweiPublic/Manager.RestoreFactory
+- score: 0.8837
+  confidence: medium
+  method_same: true
+  bmc:
+    index: 21
+    section: 3.2.8
+    title: 导入BIOS、BMC和RAID控制器配置
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/Actions/Oem/Huawei/Public/Manager.ImportConfiguration
+  podm:
+    index: 18
+    section: 4.2.4
+    title: 导入刀片服务器BIOS、BMC和RAID控制器配置
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/Actions/Oem/HuaweiPublic/Manager.ImportConfiguration
+- score: 0.8837
+  confidence: medium
+  method_same: true
+  bmc:
+    index: 22
+    section: 3.2.9
+    title: 导出BIOS、BMC和RAID控制器配置
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/Actions/Oem/Huawei/Public/Manager.ExportConfiguration
+  podm:
+    index: 19
+    section: 4.2.5
+    title: 导出刀片服务器BIOS、BMC和RAID控制器配置
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/Actions/Oem/HuaweiPublic/Manager.ExportConfiguration
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 23
+    section: 3.2.10
+    title: 下载BMC文件
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/Actions/Oem/Huawei/Public/Manager.GeneralDownload
+  podm:
+    index: 29
+    section: 4.2.15
+    title: 下载BMC文件
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/Actions/Oem/HuaweiPublic/Manager.GeneralDownload
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 24
+    section: 3.2.11
+    title: 进入最小系统
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/Actions/Oem/Huawei/Public/Manager.EnterRecoveryMode
+  podm:
+    index: 31
+    section: 4.2.17
+    title: 进入最小系统
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/Actions/Oem/HuaweiPublic/Manager.EnterRecoveryMode
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 25
+    section: 3.2.12
+    title: 查询虚拟媒体集合资源
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/VirtualMedia
+  podm:
+    index: 197
+    section: 4.3.54
+    title: 查询虚拟媒体集合资源
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/VirtualMedia
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 26
+    section: 3.2.13
+    title: 查询虚拟媒体资源
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/VirtualMedia/CD
+  podm:
+    index: 198
+    section: 4.3.55
+    title: 查询虚拟媒体资源
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/VirtualMedia/CD
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 27
+    section: 3.2.14
+    title: 连接虚拟媒体
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/VirtualMedia/CD/Oem/Huawei/Public/Actions/VirtualMedia.VmmControl
+  podm:
+    index: 200
+    section: 4.3.57
+    title: 连接虚拟媒体
+    method: POST
+    uri: /redfish/v1/Systems/{system_id}/VirtualMedia/CD/Oem/HuaweiPublic/Actions/VirtualMedia.VmmControl
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 28
+    section: 3.2.15
+    title: 断开虚拟媒体
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/VirtualMedia/CD/Oem/Huawei/Public/Actions/VirtualMedia.VmmControl
+  podm:
+    index: 201
+    section: 4.3.58
+    title: 断开虚拟媒体
+    method: POST
+    uri: /redfish/v1/Systems/{system_id}/VirtualMedia/CD/Oem/HuaweiPublic/Actions/VirtualMedia.VmmControl
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 29
+    section: 3.2.16
+    title: 查询虚拟SP U盘资源
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/VirtualMedia/USBStick
+  podm:
+    index: 202
+    section: 4.3.59
+    title: 查询虚拟SP U盘资源
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/VirtualMedia/USBStick
+- score: 0.7778
+  confidence: low
+  method_same: true
+  bmc:
+    index: 33
+    section: 3.2.20
+    title: 查询NTP配置资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/NtpService
+  podm:
+    index: 33
+    section: 4.2.19
+    title: 查询NTP资源
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/NtpService
+- score: 0.875
+  confidence: medium
+  method_same: true
+  bmc:
+    index: 34
+    section: 3.2.21
+    title: 修改NTP资源属性
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Managers/manager_id/NtpService
+  podm:
+    index: 34
+    section: 4.2.20
+    title: 修改NTP资源
+    method: PATCH
+    uri: /redfish/v1/Managers/{manager_id}/NtpService
+- score: 0.6667
+  confidence: high
+  method_same: true
+  bmc:
+    index: 35
+    section: 3.2.22
+    title: 上传NTP组密钥
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/NtpService/Actions/NtpService.ImportNtpKey
+  podm:
+    index: 35
+    section: 4.2.21
+    title: 导入NTP密钥
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/NtpService/Actions/NtpService.ImportNtpKey
+- score: 0.9
+  confidence: high
+  method_same: true
+  bmc:
+    index: 36
+    section: 3.2.23
+    title: 查询SNMP资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SnmpService
+  podm:
+    index: 36
+    section: 4.2.22
+    title: 查看SNMP资源信息
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/SnmpService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 37
+    section: 3.2.24
+    title: 修改SNMP资源属性
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SnmpService
+  podm:
+    index: 37
+    section: 4.2.23
+    title: 修改SNMP资源属性
+    method: PATCH
+    uri: /redfish/v1/Managers/{manager_id}/SnmpService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 38
+    section: 3.2.25
+    title: 修改指定用户SNMP v3加密密码
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SnmpService/Actions/SnmpService.ConfigSnmpV3PrivPasswd
+  podm:
+    index: 38
+    section: 4.2.24
+    title: 修改指定用户SNMP v3加密密码（未实现）
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/SnmpService/Actions/SnmpService.ConfigSnmpV3PrivPasswd
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 39
+    section: 3.2.26
+    title: SNMP发送测试事件
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SnmpService/Actions/SnmpService.SubmitTestEvent
+  podm:
+    index: 39
+    section: 4.2.25
+    title: SNMP发送测试事件
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/SnmpService/Actions/SnmpService.SubmitTestEvent
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 44
+    section: 3.2.31
+    title: 查询Syslog资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SyslogService
+  podm:
+    index: 58
+    section: 4.2.44
+    title: 查询Syslog资源信息
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/SyslogService
+- score: 0.9231
+  confidence: high
+  method_same: true
+  bmc:
+    index: 45
+    section: 3.2.32
+    title: 修改指定Syslog资源信息
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SyslogService
+  podm:
+    index: 59
+    section: 4.2.45
+    title: 修改Syslog资源信息
+    method: PATCH
+    uri: /redfish/v1/Managers/{manager_id}/SyslogService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 51
+    section: 3.2.38
+    title: 查询KVM资源
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/KvmService
+  podm:
+    index: 203
+    section: 4.3.60
+    title: 查询KVM资源
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/KvmService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 52
+    section: 3.2.39
+    title: 修改KVM资源属性
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Managers/manager_id/KvmService
+  podm:
+    index: 205
+    section: 4.3.62
+    title: 修改KVM资源属性
+    method: PATCH
+    uri: /redfish/v1/Systems/{system_id}/KvmService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 53
+    section: 3.2.40
+    title: 设置KVM Key
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/KvmService/Actions/KvmService.SetKvmKey
+  podm:
+    index: 204
+    section: 4.3.61
+    title: 设置KVM Key
+    method: POST
+    uri: /redfish/v1/Systems/{system_id}/KvmService/Actions/KvmService.SetKvmKey
+- score: 0.4571
+  confidence: high
+  method_same: true
+  bmc:
+    index: 54
+    section: 3.2.41
+    title: 查询iBMCBMC网口集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/EthernetInterfaces
+  podm:
+    index: 46
+    section: 4.2.32
+    title: 查询PoDManager网卡集合信息
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/EthernetInterfaces
+- score: 0.4
+  confidence: high
+  method_same: true
+  bmc:
+    index: 55
+    section: 3.2.42
+    title: 查询指定iBMCBMC网口资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/EthernetInterfaces/ethernetinterface_id
+  podm:
+    index: 47
+    section: 4.2.33
+    title: 查询PoDManager指定网卡信息
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/EthernetInterfaces/{ethernetinterface_id}
+- score: 0.4848
+  confidence: high
+  method_same: true
+  bmc:
+    index: 56
+    section: 3.2.43
+    title: 修改指定iBMCBMC网口信息
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Managers/manager_id/EthernetInterfaces/ethernetinterface_id
+  podm:
+    index: 48
+    section: 4.2.34
+    title: 修改指定PoDManager网卡信息
+    method: PATCH
+    uri: /redfish/v1/Managers/{manager_id}/EthernetInterfaces/{ethernetinterface_id}
+- score: 0.4828
+  confidence: high
+  method_same: true
+  bmc:
+    index: 57
+    section: 3.2.44
+    title: 查询iBMCBMC服务信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/NetworkProtocol
+  podm:
+    index: 49
+    section: 4.2.35
+    title: 查询PoDManager服务信息
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/NetworkProtocol
+- score: 0.4828
+  confidence: high
+  method_same: true
+  bmc:
+    index: 58
+    section: 3.2.45
+    title: 修改iBMCBMC服务信息
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Managers/manager_id/NetworkProtocol
+  podm:
+    index: 50
+    section: 4.2.36
+    title: 修改PoDManager服务信息
+    method: PATCH
+    uri: /redfish/v1/Managers/{manager_id}/NetworkProtocol
+- score: 0.8
+  confidence: low
+  method_same: true
+  bmc:
+    index: 59
+    section: 3.2.46
+    title: 重启iBMCBMC
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/Actions/Manager.Reset
+  podm:
+    index: 51
+    section: 4.2.37
+    title: 重启iBMC
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/Actions/Manager.Reset
+- score: 0.4
+  confidence: medium
+  method_same: true
+  bmc:
+    index: 60
+    section: 3.2.47
+    title: 切换iBMCBMC镜像
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/Actions/Oem/Huawei/Public/Manager.RollBack
+  podm:
+    index: 52
+    section: 4.2.38
+    title: 切换PoDManager镜像
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/Actions/Oem/HuaweiPublic/Manager.RollBack
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 61
+    section: 3.2.48
+    title: 查询安全服务集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SecurityService
+  podm:
+    index: 54
+    section: 4.2.40
+    title: 查询安全服务集合资源信息
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/SecurityService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 62
+    section: 3.2.49
+    title: 修改安全服务集合资源信息
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SecurityService
+  podm:
+    index: 55
+    section: 4.2.41
+    title: 修改安全服务集合资源信息
+    method: PATCH
+    uri: /redfish/v1/Managers/{manager_id}/SecurityService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 65
+    section: 3.2.52
+    title: 更新系统主密钥
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SecurityService/Actions/SecurityService.UpdateMasterKey
+  podm:
+    index: 368
+    section: 4.10.3.8.2
+    title: 更新系统主密钥
+    method: POST
+    uri: /redfish/v1/Managers/manager_id/SecurityService/Actions/SecurityService.UpdateMasterKey
+- score: 0.7778
+  confidence: high
+  method_same: true
+  bmc:
+    index: 69
+    section: 3.2.56
+    title: 查询SSL证书资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SecurityService/HttpsCert
+  podm:
+    index: 349
+    section: 4.10.3.5.2
+    title: 查询SSL证书
+    method: GET
+    uri: /redfish/v1/Managers/manager_id/SecurityService/HttpsCert
+- score: 0.6
+  confidence: high
+  method_same: true
+  bmc:
+    index: 70
+    section: 3.2.57
+    title: 生成CSR
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SecurityService/HttpsCert/Actions/HttpsCert.GenerateCSR
+  podm:
+    index: 350
+    section: 4.10.3.5.3
+    title: CSR生成
+    method: POST
+    uri: /redfish/v1/Managers/manager_id/SecurityService/HttpsCert/Actions/HttpsCert.GenerateCSR
+- score: 0.6
+  confidence: high
+  method_same: true
+  bmc:
+    index: 71
+    section: 3.2.58
+    title: 导出CSR
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SecurityService/HttpsCert/Actions/HttpsCert.ExportCSR
+  podm:
+    index: 351
+    section: 4.10.3.5.4
+    title: CSR导出
+    method: POST
+    uri: /redfish/v1/Managers/manager_id/SecurityService/HttpsCert/Actions/HttpsCert.ExportCSR
+- score: 0.8235
+  confidence: low
+  method_same: true
+  bmc:
+    index: 72
+    section: 3.2.59
+    title: 导入服务器证书
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SecurityService/HttpsCert/Actions/HttpsCert.ImportServerCertificate
+  podm:
+    index: 352
+    section: 4.10.3.5.5
+    title: 导入SSL服务器证书
+    method: POST
+    uri: /redfish/v1/Managers/manager_id/SecurityService/HttpsCert/Actions/HttpsCert.ImportServerCertificate
+- score: 0.8235
+  confidence: low
+  method_same: true
+  bmc:
+    index: 73
+    section: 3.2.60
+    title: 导入自定义证书
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SecurityService/HttpsCert/Actions/HttpsCert.ImportCustomCertificate
+  podm:
+    index: 348
+    section: 4.10.3.5.1
+    title: 导入SSL自定义证书
+    method: POST
+    uri: /redfish/v1/Managers/manager_id/SecurityService/HttpsCert/Actions/HttpsCert.ImportCustomCertificate
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 74
+    section: 3.2.61
+    title: 查询SSL证书更新服务资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SecurityService/ CertUpdateService
+  podm:
+    index: 334
+    section: 4.10.3.2.7
+    title: 查询SSL证书更新服务资源信息
+    method: GET
+    uri: /redfish/v1/Managers/manager_id/SecurityService/CertUpdateService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 75
+    section: 3.2.62
+    title: 修改SSL证书更新服务资源信息
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SecurityService/CertUpdateService
+  podm:
+    index: 335
+    section: 4.10.3.2.8
+    title: 修改SSL证书更新服务资源信息
+    method: PATCH
+    uri: /redfish/v1/Managers/manager_id/SecurityService/CertUpdateService
+- score: 0.25
+  confidence: high
+  method_same: true
+  bmc:
+    index: 80
+    section: 3.2.67
+    title: 更新BMC证书
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SecurityService/CertUpdateService/Actions/CertUpdateService.UpdateCertFromCA
+  podm:
+    index: 353
+    section: 4.10.3.5.6
+    title: SSL证书在线更新
+    method: POST
+    uri: /redfish/v1/Managers/manager_id/SecurityService/CertUpdateService/Actions/CertUpdateService.UpdateCertFromCA
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 81
+    section: 3.2.68
+    title: 查询VNC资源
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/VncService
+  podm:
+    index: 206
+    section: 4.3.63
+    title: 查询VNC资源
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/VncService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 82
+    section: 3.2.69
+    title: 修改VNC资源属性
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Managers/manager_id/VNCService
+  podm:
+    index: 207
+    section: 4.3.64
+    title: 修改VNC资源属性
+    method: PATCH
+    uri: /redfish/v1/Systems/{system_id}/VncService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 83
+    section: 3.2.70
+    title: 查询SP服务资源
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SPService
+  podm:
+    index: 60
+    section: 4.2.46
+    title: 查询SP服务资源
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/SPService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 84
+    section: 3.2.71
+    title: 修改SP服务资源属性
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SPService
+  podm:
+    index: 61
+    section: 4.2.47
+    title: 修改SP服务资源属性
+    method: PATCH
+    uri: /redfish/v1/Managers/{manager_id}/SPService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 85
+    section: 3.2.72
+    title: 删除SP服务的升级文件或者配置文件
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SPService/Actions/SPService.DeleteFile
+  podm:
+    index: 62
+    section: 4.2.48
+    title: 删除SP服务的升级文件或者配置文件
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/SPService/Actions/SPService.DeleteFile
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 86
+    section: 3.2.73
+    title: 触发导出SP服务的RAID当前配置
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SPService/Actions/SPService.ExportSPRAIDConfigurations
+  podm:
+    index: 63
+    section: 4.2.49
+    title: 触发导出SP服务的RAID当前配置
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/SPService/Actions/SPService.ExportSPRAIDConfigurations
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 87
+    section: 3.2.74
+    title: 更新SP相关的schema文件
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SPService/Actions/SPService.UpdateSchemaFiles
+  podm:
+    index: 64
+    section: 4.2.50
+    title: 更新SP相关的schema文件
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/SPService/Actions/SPService.UpdateSchemaFiles
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 88
+    section: 3.2.75
+    title: 收集SP相关的日志信息
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SPService/Actions/SPService.Dump
+  podm:
+    index: 65
+    section: 4.2.51
+    title: 收集SP相关的日志信息
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/SPService/Actions/SPService.Dump
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 89
+    section: 3.2.76
+    title: 查询SP服务的OS安装配置集合资源
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SPService/SPOSInstallPara
+  podm:
+    index: 66
+    section: 4.2.52
+    title: 查询SP服务的OS安装配置集合资源
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/SPService/SPOSInstallPara
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 90
+    section: 3.2.77
+    title: 创建SP服务的OS安装配置
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SPService/SPOSInstallPara
+  podm:
+    index: 67
+    section: 4.2.53
+    title: 创建SP服务的OS安装配置
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/SPService/SPOSInstallPara
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 91
+    section: 3.2.78
+    title: 查询SP服务的OS安装配置资源
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SPService/SPOSInstallPara/osid
+  podm:
+    index: 68
+    section: 4.2.54
+    title: 查询SP服务的OS安装配置资源
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/SPService/SPOSInstallPara/{osid}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 92
+    section: 3.2.79
+    title: 查询SP服务的升级集合资源
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SPService/SPFWUpdate
+  podm:
+    index: 69
+    section: 4.2.55
+    title: 查询SP服务的升级集合资源
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/SPService/SPFWUpdate
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 93
+    section: 3.2.80
+    title: 查询SP服务的升级资源
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SPService/SPFWUpdate/updateid
+  podm:
+    index: 70
+    section: 4.2.56
+    title: 查询SP服务的升级资源
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/SPService/SPFWUpdate/{updateid}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 94
+    section: 3.2.81
+    title: 升级SP或者升级固件
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SPService/SPFWUpdate/update_id/Actions/SPFWUpdate.SimpleUpdate
+  podm:
+    index: 71
+    section: 4.2.57
+    title: 升级SP或者升级固件
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/SPService/SPFWUpdate/{updateid}/Actions/SPFWUpdate.SimpleUpdate
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 95
+    section: 3.2.82
+    title: 查询SP服务的硬件信息资源
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SPService/DeviceInfo
+  podm:
+    index: 72
+    section: 4.2.58
+    title: 查询SP服务的硬件信息资源
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/SPService/DeviceInfo
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 96
+    section: 3.2.83
+    title: 查询SP服务的配置结果集合资源
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SPService/SPResult
+  podm:
+    index: 73
+    section: 4.2.59
+    title: 查询SP服务的配置结果集合资源
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/SPService/SPResult
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 97
+    section: 3.2.84
+    title: 查询SP服务的配置结果资源
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SPService/SPResult/result_id
+  podm:
+    index: 74
+    section: 4.2.60
+    title: 查询SP服务的配置结果资源
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/SPService/SPResult/{result_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 98
+    section: 3.2.85
+    title: 查询SP服务的配置信息集合资源
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SPService/SPCfg
+  podm:
+    index: 75
+    section: 4.2.61
+    title: 查询SP服务的配置信息集合资源
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/SPService/SPCfg
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 99
+    section: 3.2.86
+    title: 查询SP服务的配置信息资源
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SPService/SPCfg/cfg_id
+  podm:
+    index: 76
+    section: 4.2.62
+    title: 查询SP服务的配置信息资源
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/SPService/SPCfg/{cfg_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 100
+    section: 3.2.87
+    title: 查询SP服务的诊断配置集合资源
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SPService/SPDiagnose
+  podm:
+    index: 77
+    section: 4.2.63
+    title: 查询SP服务的诊断配置集合资源
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/SPService/SPDiagnose
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 101
+    section: 3.2.88
+    title: 创建SP服务的诊断配置
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SPService/SPDiagnose
+  podm:
+    index: 78
+    section: 4.2.64
+    title: 创建SP服务的诊断配置
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/SPService/SPDiagnose
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 102
+    section: 3.2.89
+    title: 查询SP服务的诊断配置资源
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SPService/SPDiagnose/1
+  podm:
+    index: 79
+    section: 4.2.65
+    title: 查询SP服务的诊断配置资源
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/SPService/SPDiagnose/1
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 103
+    section: 3.2.90
+    title: 查询SP服务的硬盘擦除配置集合资源
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SPService/SPDriveErase
+  podm:
+    index: 80
+    section: 4.2.66
+    title: 查询SP服务的硬盘擦除配置集合资源
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/SPService/SPDriveErase
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 104
+    section: 3.2.91
+    title: 创建SP服务的硬盘擦除配置
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SPService/SPDriveErase
+  podm:
+    index: 81
+    section: 4.2.67
+    title: 创建SP服务的硬盘擦除配置
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/SPService/SPDriveErase
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 105
+    section: 3.2.92
+    title: 查询SP服务的硬盘擦除配置资源
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SPService/SPDriveErase/1
+  podm:
+    index: 82
+    section: 4.2.68
+    title: 查询SP服务的硬盘擦除配置资源
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/SPService/SPDriveErase/1
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 106
+    section: 3.2.93
+    title: 查询SP系统擦除配置集合资源
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SPService/SystemErase
+  podm:
+    index: 83
+    section: 4.2.69
+    title: 查询SP系统擦除配置集合资源
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/SPService/SystemErase
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 107
+    section: 3.2.94
+    title: 创建SP系统擦除配置
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SPService/SystemErase
+  podm:
+    index: 84
+    section: 4.2.70
+    title: 创建SP系统擦除配置
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/SPService/SystemErase
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 108
+    section: 3.2.95
+    title: 查询指定SP系统擦除配置
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SPService/SystemErase/member_id
+  podm:
+    index: 85
+    section: 4.2.71
+    title: 查询指定SP系统擦除配置
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/SPService/SystemErase/{member_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 109
+    section: 3.2.96
+    title: 查询SP插件集合资源
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SPService/Plugins
+  podm:
+    index: 88
+    section: 4.2.74
+    title: 查询SP插件集合资源
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/SPService/Plugins
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 110
+    section: 3.2.97
+    title: 查询SP插件资源
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SPService//Plugins/plugin_id
+  podm:
+    index: 89
+    section: 4.2.75
+    title: 查询SP插件资源
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/SPService/Plugins/{plugin_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 111
+    section: 3.2.98
+    title: 安装SP插件
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SPService/Plugins
+  podm:
+    index: 87
+    section: 4.2.73
+    title: 安装SP插件
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/SPService/Plugins
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 112
+    section: 3.2.99
+    title: 删除SP插件资源
+    method: DELETE
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SPService//Plugins/plugin_id
+  podm:
+    index: 90
+    section: 4.2.76
+    title: 删除SP插件资源
+    method: DELETE
+    uri: /redfish/v1/Managers/{manager_id}/SPService/Plugins/{plugin_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 113
+    section: 3.2.100
+    title: 查询诊断服务资源
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/DiagnosticService
+  podm:
+    index: 91
+    section: 4.2.77
+    title: 查询诊断服务资源
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/DiagnosticService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 114
+    section: 3.2.101
+    title: 修改诊断服务资源
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Managers/manager_id/DiagnosticService
+  podm:
+    index: 92
+    section: 4.2.78
+    title: 修改诊断服务资源
+    method: PATCH
+    uri: /redfish/v1/Managers/{manager_id}/DiagnosticService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 115
+    section: 3.2.102
+    title: 停止录像回放
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/DiagnosticService/Actions/DiagnosticService.StopVideoPlayback
+  podm:
+    index: 93
+    section: 4.2.79
+    title: 停止录像回放
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/DiagnosticService/Actions/DiagnosticService.StopVideoPlayback
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 116
+    section: 3.2.103
+    title: 导出录像
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/DiagnosticService/Actions/DiagnosticService.ExportVideo
+  podm:
+    index: 94
+    section: 4.2.80
+    title: 导出录像
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/DiagnosticService/Actions/DiagnosticService.ExportVideo
+- score: 0.5
+  confidence: high
+  method_same: true
+  bmc:
+    index: 117
+    section: 3.2.104
+    title: 截屏
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/DiagnosticService/Actions/DiagnosticService.CaptureScreenShot
+  podm:
+    index: 95
+    section: 4.2.81
+    title: 截图
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/DiagnosticService/Actions/DiagnosticService.CaptureScreenShot
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 118
+    section: 3.2.105
+    title: 删除截屏
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/DiagnosticService/Actions/DiagnosticService.DeleteScreenShot
+  podm:
+    index: 96
+    section: 4.2.82
+    title: 删除截屏
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/DiagnosticService/Actions/DiagnosticService.DeleteScreenShot
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 119
+    section: 3.2.106
+    title: 导出黑匣子
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/DiagnosticService/Actions/DiagnosticService.ExportBlackBox
+  podm:
+    index: 97
+    section: 4.2.83
+    title: 导出黑匣子
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/DiagnosticService/Actions/DiagnosticService.ExportBlackBox
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 120
+    section: 3.2.107
+    title: 导出串口数据
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/DiagnosticService/Actions/DiagnosticService.ExportSerialPortData
+  podm:
+    index: 98
+    section: 4.2.84
+    title: 导出串口数据
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/DiagnosticService/Actions/DiagnosticService.ExportSerialPortData
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 121
+    section: 3.2.108
+    title: 导出NPU日志
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/DiagnosticService/Actions/DiagnosticService.ExportNPULog
+  podm:
+    index: 99
+    section: 4.2.85
+    title: 导出NPU日志
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/DiagnosticService/Actions/DiagnosticService.ExportNPULog
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 122
+    section: 3.2.109
+    title: 导出NPU运行日志
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/DiagnosticService/Actions/DiagnosticService.ExportNPUDeviceLog
+  podm:
+    index: 100
+    section: 4.2.86
+    title: 导出NPU运行日志
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/DiagnosticService/Actions/DiagnosticService.ExportNPUDeviceLog
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 124
+    section: 3.2.111
+    title: 添加工作记录
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/DiagnosticService/WorkRecord/Actions/WorkRecord.AddRecord
+  podm:
+    index: 101
+    section: 4.2.87
+    title: 添加工作记录
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/DiagnosticService/WorkRecord/Actions/WorkRecord.AddRecord
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 125
+    section: 3.2.112
+    title: 删除工作记录
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/DiagnosticService/WorkRecord/Actions/WorkRecord.DeleteRecord
+  podm:
+    index: 102
+    section: 4.2.88
+    title: 删除工作记录
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/DiagnosticService/WorkRecord/Actions/WorkRecord.DeleteRecord
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 126
+    section: 3.2.113
+    title: 修改工作记录
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/DiagnosticService/WorkRecord/Actions/WorkRecord.ModifyRecord
+  podm:
+    index: 103
+    section: 4.2.89
+    title: 修改工作记录
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/DiagnosticService/WorkRecord/Actions/WorkRecord.ModifyRecord
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 127
+    section: 3.2.114
+    title: 查询日志服务集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/LogServices
+  podm:
+    index: 108
+    section: 4.2.94
+    title: 查询日志服务集合资源信息
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/LogServices
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 128
+    section: 3.2.115
+    title: 查询指定日志服务资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/LogServices/logservices_id
+  podm:
+    index: 109
+    section: 4.2.95
+    title: 查询指定日志服务资源信息
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/LogServices/{logservices_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 129
+    section: 3.2.116
+    title: 导出日志信息
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/LogServices/logservice_id/Actions/Oem/Huawei/Public/LogService.ExportLog
+  podm:
+    index: 110
+    section: 4.2.96
+    title: 导出日志信息
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/LogServices/{logservices_id}/Actions/Oem/HuaweiPublic/LogService.ExportLog
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 130
+    section: 3.2.117
+    title: 查询日志集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/LogServices/logservice_id/Entries
+  podm:
+    index: 56
+    section: 4.2.42
+    title: 查询日志集合资源信息
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/LogServices/{logservices_id}/Entries
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 131
+    section: 3.2.118
+    title: 查询日志资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/LogServices/LogService_id/Entries/Entries_id
+  podm:
+    index: 57
+    section: 4.2.43
+    title: 查询日志资源信息
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/LogServices/{logservices_id}/Entries/{Entries_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 137
+    section: 3.2.124
+    title: 查询FDMService服务资源
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/FDMService
+  podm:
+    index: 116
+    section: 4.2.102
+    title: 查询FDMService服务资源
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/FDMService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 138
+    section: 3.2.125
+    title: 修改FDMService服务资源属性
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Managers/manager_id/FDMService
+  podm:
+    index: 117
+    section: 4.2.103
+    title: 修改FDMService服务资源属性
+    method: PATCH
+    uri: /redfish/v1/Managers/{manager_id}/FDMService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 142
+    section: 3.2.129
+    title: 查询LLDP服务资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/LldpService
+  podm:
+    index: 40
+    section: 4.2.26
+    title: 查询LLDP服务资源信息
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/LldpService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 143
+    section: 3.2.130
+    title: 修改LLDP服务资源信息
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Managers/manager_id/LldpService
+  podm:
+    index: 41
+    section: 4.2.27
+    title: 修改LLDP服务资源信息
+    method: PATCH
+    uri: /redfish/v1/Managers/{manager_id}/LldpService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 144
+    section: 3.2.131
+    title: 查询SMS服务资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SmsService
+  podm:
+    index: 42
+    section: 4.2.28
+    title: 查询SMS服务资源信息
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/SmsService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 145
+    section: 3.2.132
+    title: 修改SMS服务资源信息
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SmsService
+  podm:
+    index: 43
+    section: 4.2.29
+    title: 修改SMS服务资源信息
+    method: PATCH
+    uri: /redfish/v1/Managers/{manager_id}/SmsService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 147
+    section: 3.2.134
+    title: 查询USB管理服务资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/USBMgmtService
+  podm:
+    index: 118
+    section: 4.2.104
+    title: 查询USB管理服务资源信息
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/USBMgmtService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 148
+    section: 3.2.135
+    title: 修改USB管理服务资源信息
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Managers/manager_id/USBMgmtService
+  podm:
+    index: 119
+    section: 4.2.105
+    title: 修改USB管理服务资源信息
+    method: PATCH
+    uri: /redfish/v1/Managers/{manager_id}/USBMgmtService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 149
+    section: 3.2.136
+    title: 查询FPCService服务资源
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/FPCService
+  podm:
+    index: 120
+    section: 4.2.106
+    title: 查询FPCService服务资源
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/FPCService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 150
+    section: 3.2.137
+    title: 查询FPC内存健康状态信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/FPCService/Memory
+  podm:
+    index: 121
+    section: 4.2.107
+    title: 查询FPC内存健康状态信息
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/FPCService/Memory
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 151
+    section: 3.2.138
+    title: 内存隔离联动模式下发隔离任务
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/FPCService/Memory/Actions/Memory.ExecuteIsolation
+  podm:
+    index: 122
+    section: 4.2.108
+    title: 内存隔离联动模式下发隔离任务
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/FPCService/Memory/Actions/Memory.ExecuteIsolation
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 152
+    section: 3.2.139
+    title: 查询场景化智能节能信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/EnergySavingService
+  podm:
+    index: 123
+    section: 4.2.109
+    title: 查询场景化智能节能信息
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/EnergySavingService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 153
+    section: 3.2.140
+    title: 智能节能场景配置
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/EnergySavingService/Actions/EnergySavingService.SetScene
+  podm:
+    index: 124
+    section: 4.2.110
+    title: 智能节能场景配置
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/EnergySavingService/Actions/EnergySavingService.SetScene
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 154
+    section: 3.2.141
+    title: 创建SP服务的RAID配置
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SPService/SPRAID
+  podm:
+    index: 86
+    section: 4.2.72
+    title: 创建SP服务的RAID配置
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/SPService/SPRAID
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 155
+    section: 3.2.142
+    title: 报废处置
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/Actions/Oem/Huawei/Public/Manager.RetireSystem
+  podm:
+    index: 125
+    section: 4.2.111
+    title: 报废处置
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/Actions/Oem/HuaweiPublic/Manager.RetireSystem
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 161
+    section: 3.2.148
+    title: 查询TPCM服务信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SecurityService/TpcmService
+  podm:
+    index: 135
+    section: 4.2.121
+    title: 查询TPCM服务信息
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/SecurityService/TpcmService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 162
+    section: 3.2.149
+    title: 设置TPCM服务信息
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Managers/manager_id/SecurityService/TpcmService
+  podm:
+    index: 136
+    section: 4.2.122
+    title: 设置TPCM服务信息
+    method: PATCH
+    uri: /redfish/v1/Managers/{manager_id}/SecurityService/TpcmService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 163
+    section: 3.2.150
+    title: 查询CA证书集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/Certificates
+  podm:
+    index: 362
+    section: 4.10.3.7.3
+    title: 查询CA证书集合资源信息
+    method: GET
+    uri: /redfish/v1/Managers/manager_id/Certificates
+- score: 0.96
+  confidence: high
+  method_same: true
+  bmc:
+    index: 164
+    section: 3.2.151
+    title: 查询指定CA证书资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/Certificates/certificate_id
+  podm:
+    index: 363
+    section: 4.10.3.7.4
+    title: 查询指定CA证书的资源信息
+    method: GET
+    uri: /redfish/v1/Managers/manager_id/Certificates/certificate_id
+- score: 0.9524
+  confidence: high
+  method_same: true
+  bmc:
+    index: 165
+    section: 3.2.152
+    title: 删除CA证书的吊销列表
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/Certificates/certificate_id/Actions/Certificate.DeleteCACertificateCRL
+  podm:
+    index: 366
+    section: 4.10.3.7.7
+    title: 删除CA证书吊销列表
+    method: POST
+    uri: /redfish/v1/Managers/manager_id/Certificates/cert_id/Actions/Certificate.DeleteCACertificateCRL
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 166
+    section: 3.2.153
+    title: 查询全量告警信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/LogServices/EventLog
+  podm:
+    index: 112
+    section: 4.2.98
+    title: 查询全量告警信息
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/LogServices/EventLog
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 169
+    section: 3.2.156
+    title: 查询PRBS测试对象集合的资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/DiagnosticService/PRBSTest/TestObjects
+  podm:
+    index: 111
+    section: 4.2.97
+    title: 查询PRBS测试对象集合的资源信息
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/DiagnosticService/PRBSTest/TestObjects
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 171
+    section: 3.2.158
+    title: 查询PRBS测试信息
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/DiagnosticService/PRBSTest/Actions/PRBSTest.QueryInfo
+  podm:
+    index: 126
+    section: 4.2.112
+    title: 查询PRBS测试信息
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/DiagnosticService/PRBSTest/Actions/PRBSTest.QueryInfo
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 172
+    section: 3.2.159
+    title: 下发PRBS测试配置
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/DiagnosticService/PRBSTest/Actions/PRBSTest.Config
+  podm:
+    index: 127
+    section: 4.2.113
+    title: 下发PRBS测试配置
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/DiagnosticService/PRBSTest/Actions/PRBSTest.Config
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 173
+    section: 3.2.160
+    title: 清除PRBS测试统计
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/DiagnosticService/PRBSTest/Actions/PRBSTest.ClearStatistics
+  podm:
+    index: 128
+    section: 4.2.114
+    title: 清除PRBS测试统计
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/DiagnosticService/PRBSTest/Actions/PRBSTest.ClearStatistics
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 174
+    section: 3.2.161
+    title: 终止PRBS测试
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/DiagnosticService/PRBSTest/Actions/PRBSTest.Shutdown
+  podm:
+    index: 129
+    section: 4.2.115
+    title: 终止PRBS测试
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/DiagnosticService/PRBSTest/Actions/PRBSTest.Shutdown
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 182
+    section: 3.2.169
+    title: 下发入侵检测配置信息
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/Actions/Oem/Huawei/Public/Manager.ImportIntrusionDetectionConfiguration
+  podm:
+    index: 130
+    section: 4.2.116
+    title: 下发入侵检测配置信息 （未实现）
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/Actions/Oem/HuaweiPublic/Manager.ImportIntrusionDetectionConfiguration
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 183
+    section: 3.2.170
+    title: 查询系统日志集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/LogServices/EventLog/Entries
+  podm:
+    index: 114
+    section: 4.2.100
+    title: 查询系统日志集合资源信息
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/LogServices/EventLog/Entries
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 184
+    section: 3.2.171
+    title: 查询系统日志资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Managers/manager_id/LogServices/EventLog/Entries/entries_id
+  podm:
+    index: 115
+    section: 4.2.101
+    title: 查询系统日志资源信息
+    method: GET
+    uri: /redfish/v1/Managers/{manager_id}/LogServices/EventLog/Entries/{entries_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 186
+    section: 3.2.173
+    title: 设置BMC吊销版本列表
+    method: POST
+    uri: https://device_ip/redfish/v1/Managers/manager_id/Actions/Oem/Huawei/Public/Manager.ImportRevokedVersion
+  podm:
+    index: 131
+    section: 4.2.117
+    title: 设置BMC吊销版本列表
+    method: POST
+    uri: /redfish/v1/Managers/{manager_id}/Actions/Oem/HuaweiPublic/Manager.ImportRevokedVersion
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 200
+    section: 3.3.1
+    title: 查询系统集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems
+  podm:
+    index: 144
+    section: 4.3.1
+    title: 查询系统集合资源信息
+    method: GET
+    uri: /redfish/v1/Systems
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 201
+    section: 3.3.2
+    title: 查询指定系统资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id
+  podm:
+    index: 145
+    section: 4.3.2
+    title: 查询指定系统资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 202
+    section: 3.3.3
+    title: 修改指定系统资源属性
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Systems/system_id
+  podm:
+    index: 146
+    section: 4.3.3
+    title: 修改指定系统资源属性
+    method: PATCH
+    uri: /redfish/v1/Systems/{system_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 203
+    section: 3.3.4
+    title: 重启服务器
+    method: POST
+    uri: https://device_ip/redfish/v1/Systems/system_id/Actions/ComputerSystem.Reset
+  podm:
+    index: 147
+    section: 4.3.4
+    title: 重启服务器
+    method: POST
+    uri: /redfish/v1/Systems/{system_id}/Actions/ComputerSystem.Reset
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 204
+    section: 3.3.5
+    title: FRU上下电控制
+    method: POST
+    uri: https://device_ip/redfish/v1/Systems/system_id/Actions/Oem/Huawei/Public/ComputerSystem.FruControl
+  podm:
+    index: 148
+    section: 4.3.5
+    title: FRU上下电控制
+    method: POST
+    uri: /redfish/v1/Systems/{system_id}/Actions/Oem/HuaweiPublic/ComputerSystem.FruControl
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 205
+    section: 3.3.6
+    title: 查询主机以太网接口集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/EthernetInterfaces
+  podm:
+    index: 149
+    section: 4.3.6
+    title: 查询主机以太网接口集合资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/EthernetInterfaces
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 206
+    section: 3.3.7
+    title: 查询指定主机以太网接口资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/EthernetInterfaces/ethernetinterface_id
+  podm:
+    index: 150
+    section: 4.3.7
+    title: 查询指定主机以太网接口资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/EthernetInterfaces/{ethernetinterface_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 207
+    section: 3.3.8
+    title: 配置以太网
+    method: POST
+    uri: https://device_ip/redfish/v1/Systems/system_id/EthernetInterfaces/ethernetinterface_id/Actions/Oem/Huawei/Public/EthernetInterface.Configure
+  podm:
+    index: 151
+    section: 4.3.8
+    title: 配置以太网
+    method: POST
+    uri: /redfish/v1/Systems/{system_id}/EthernetInterfaces/{ethernetinterface_id}/Actions/Oem/HuaweiPublic/EthernetInterface.Configure
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 208
+    section: 3.3.9
+    title: 查询Bond集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/NetworkBondings
+  podm:
+    index: 152
+    section: 4.3.9
+    title: 查询Bond集合资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/NetworkBondings
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 209
+    section: 3.3.10
+    title: 查询Bond资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/NetworkBondings/bond_id
+  podm:
+    index: 153
+    section: 4.3.10
+    title: 查询Bond资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/NetworkBondings/{bond_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 210
+    section: 3.3.11
+    title: 配置Bond
+    method: POST
+    uri: https://device_ip/redfish/v1/Systems/system_id/NetworkBondings/bond_id/Actions/NetworkBonding.Configure
+  podm:
+    index: 154
+    section: 4.3.11
+    title: 配置Bond
+    method: POST
+    uri: /redfish/v1/Systems/{system_id}/NetworkBondings/{bond_id}/Actions/NetworkBonding.Configure
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 211
+    section: 3.3.12
+    title: 查询网络桥接集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/NetworkBridge
+  podm:
+    index: 155
+    section: 4.3.12
+    title: 查询网络桥接集合资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/NetworkBridge
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 212
+    section: 3.3.13
+    title: 查询网络桥接资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/NetworkBridge/bridge _id
+  podm:
+    index: 156
+    section: 4.3.13
+    title: 查询网络桥接资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/NetworkBridge/{bridge _id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 213
+    section: 3.3.14
+    title: 查询内存集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/Memory
+  podm:
+    index: 157
+    section: 4.3.14
+    title: 查询内存集合资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/Memory
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 214
+    section: 3.3.15
+    title: 查询指定内存资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/Memory/memory_id
+  podm:
+    index: 158
+    section: 4.3.15
+    title: 查询指定内存资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/Memory/{memory_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 215
+    section: 3.3.16
+    title: 查询指定内存指标资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/Memory/memory_id/MemoryMetrics
+  podm:
+    index: 159
+    section: 4.3.16
+    title: 查询指定内存指标资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/Memory/{memory_id}/MemoryMetrics
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 216
+    section: 3.3.17
+    title: 查询VLAN集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/EthernetInterfaces/ethernetinterface_id/VLANs
+  podm:
+    index: 160
+    section: 4.3.17
+    title: 查询VLAN集合资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/EthernetInterfaces/{ethernetinterface_id}/VLANs
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 217
+    section: 3.3.18
+    title: 查询VLAN资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/EthernetInterfaces/ethernetinterface_id/VLANs/vlan_id
+  podm:
+    index: 161
+    section: 4.3.18
+    title: 查询VLAN资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/EthernetInterfaces/{ethernetinterface_id}/VLANs/{vlan_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 219
+    section: 3.3.20
+    title: 配置VLAN
+    method: POST
+    uri: https://device_ip/redfish/v1/Systems/system_id/EthernetInterfaces/ethernetinterface_id/VLANs/vlan_id/Actions/Oem/Huawei/Public/VLanNetworkInterface.Configure
+  podm:
+    index: 162
+    section: 4.3.19
+    title: 配置VLAN
+    method: POST
+    uri: /redfish/v1/Systems/{system_id}/EthernetInterfaces/{ethernetinterface_id}/VLANs/{vlan_id}/Actions/Oem/HuaweiPublic/VLanNetworkInterface.Configure
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 220
+    section: 3.3.21
+    title: 查询存储集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/Storages
+  podm:
+    index: 163
+    section: 4.3.20
+    title: 查询存储集合资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/Storages
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 221
+    section: 3.3.22
+    title: 查询指定存储资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/Storages/storage_id
+  podm:
+    index: 164
+    section: 4.3.21
+    title: 查询指定存储资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/Storages/{storage_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 224
+    section: 3.3.25
+    title: 修改指定控制器资源信息
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Systems/system_id/Storages/storage_id
+  podm:
+    index: 165
+    section: 4.3.22
+    title: 修改指定控制器资源信息
+    method: PATCH
+    uri: /redfish/v1/Systems/{system_id}/Storages/{storage_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 225
+    section: 3.3.26
+    title: 恢复指定控制器的默认配置
+    method: POST
+    uri: https://device_ip/redfish/v1/Systems/system_id/Storages/storage_id/Actions/Oem/Huawei/Public/Storage.RestoreStorageControllerDefaultSettings
+  podm:
+    index: 166
+    section: 4.3.23
+    title: 恢复指定控制器的默认配置
+    method: POST
+    uri: /redfish/v1/Systems/{system_id}/Storages/{storage_id}/Actions/Oem/HuaweiPublic/Storage.RestoreStorageControllerDefaultSettings
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 227
+    section: 3.3.28
+    title: 查询逻辑盘集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/Storages/storage_id/Volumes
+  podm:
+    index: 167
+    section: 4.3.24
+    title: 查询逻辑盘集合资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/Storages/{storage_id}/Volumes
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 228
+    section: 3.3.29
+    title: 查询指定逻辑盘资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/Storages/storage_id/Volumes/volume_id
+  podm:
+    index: 168
+    section: 4.3.25
+    title: 查询指定逻辑盘资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/Storages/{storage_id}/Volumes/{volume_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 229
+    section: 3.3.30
+    title: 修改指定逻辑盘资源属性
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Systems/system_id/Storages/storage_id/Volumes/volume_id
+  podm:
+    index: 169
+    section: 4.3.26
+    title: 修改指定逻辑盘资源属性
+    method: PATCH
+    uri: /redfish/v1/Systems/{system_id}/Storages/{storage_id}/Volumes/{volume_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 230
+    section: 3.3.31
+    title: 初始化指定逻辑盘
+    method: POST
+    uri: https://device_ip/redfish/v1/Systems/system_id/Storages/storage_id/Volumes/volume_id/Actions/Volume.Initialize
+  podm:
+    index: 170
+    section: 4.3.27
+    title: 初始化指定逻辑盘
+    method: POST
+    uri: /redfish/v1/Systems/{system_id}/Storages/{storage_id}/Volumes/{volume_id}/Actions/Volume.Initialize
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 231
+    section: 3.3.32
+    title: 删除指定逻辑盘
+    method: DELETE
+    uri: https://device_ip/redfish/v1/Systems/system_id/Storages/storage_id/Volumes/volume_id
+  podm:
+    index: 171
+    section: 4.3.28
+    title: 删除指定逻辑盘
+    method: DELETE
+    uri: /redfish/v1/Systems/{system_id}/Storages/{storage_id}/Volumes/{volume_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 232
+    section: 3.3.33
+    title: 创建逻辑盘
+    method: POST
+    uri: https://device_ip/redfish/v1/Systems/system_id/Storages/storage_id/Volumes
+  podm:
+    index: 172
+    section: 4.3.29
+    title: 创建逻辑盘
+    method: POST
+    uri: /redfish/v1/Systems/{system_id}/Storages/{storage_id}/Volumes
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 233
+    section: 3.3.34
+    title: 查询BIOS资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/Bios
+  podm:
+    index: 173
+    section: 4.3.30
+    title: 查询BIOS资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/Bios
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 234
+    section: 3.3.35
+    title: 恢复BIOS属性默认值
+    method: POST
+    uri: https://device_ip/redfish/v1/Systems/system_id/Bios/Actions/Bios.ResetBios
+  podm:
+    index: 174
+    section: 4.3.31
+    title: 恢复BIOS属性默认值
+    method: POST
+    uri: /redfish/v1/Systems/{system_id}/Bios/Actions/Bios.ResetBios
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 235
+    section: 3.3.36
+    title: 修改BIOS密码
+    method: POST
+    uri: https://device_ip/redfish/v1/Systems/system_id/Bios/Actions/Bios.ChangePassword
+  podm:
+    index: 175
+    section: 4.3.32
+    title: 修改BIOS密码
+    method: POST
+    uri: /redfish/v1/Systems/{system_id}/Bios/Actions/Bios.ChangePassword
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 236
+    section: 3.3.37
+    title: 查询BIOS设置资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/Bios/Settings
+  podm:
+    index: 176
+    section: 4.3.33
+    title: 查询BIOS设置资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/Bios/Settings
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 237
+    section: 3.3.38
+    title: 修改BIOS设置资源属性
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Systems/system_id/Bios/Settings
+  podm:
+    index: 177
+    section: 4.3.34
+    title: 修改BIOS设置资源属性
+    method: PATCH
+    uri: /redfish/v1/Systems/{system_id}/Bios/Settings
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 238
+    section: 3.3.39
+    title: 清除未生效的BIOS配置
+    method: POST
+    uri: https://device_ip/redfish/v1/Systems/system_id/Bios/Settings/Actions/Oem/Huawei/Public/Settings.Revoke
+  podm:
+    index: 178
+    section: 4.3.35
+    title: 清除未生效的BIOS配置
+    method: POST
+    uri: /redfish/v1/Systems/{system_id}/Bios/Settings/Actions/Oem/HuaweiPublic/Settings.Revoke
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 239
+    section: 3.3.40
+    title: 查询BIOS策略重配资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/Bios/PolicyConfig
+  podm:
+    index: 179
+    section: 4.3.36
+    title: 查询BIOS策略重配资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/Bios/PolicyConfig
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 240
+    section: 3.3.41
+    title: 查询BIOS策略重配设置资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/Bios/PolicyConfig/Settings
+  podm:
+    index: 180
+    section: 4.3.37
+    title: 查询BIOS策略重配设置资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/Bios/PolicyConfig/Settings
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 241
+    section: 3.3.42
+    title: 修改BIOS策略重配设置资源属性
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Systems/system_id/Bios/PolicyConfig/Settings
+  podm:
+    index: 181
+    section: 4.3.38
+    title: 修改BIOS策略重配设置资源属性
+    method: PATCH
+    uri: /redfish/v1/Systems/{system_id}/Bios/PolicyConfig/Settings
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 249
+    section: 3.3.50
+    title: 查询处理器集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/Processors
+  podm:
+    index: 182
+    section: 4.3.39
+    title: 查询处理器集合资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/Processors
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 250
+    section: 3.3.51
+    title: 查询指定处理器资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/Processors/processor_id
+  podm:
+    index: 183
+    section: 4.3.40
+    title: 查询指定处理器资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/Processors/{processor_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 251
+    section: 3.3.52
+    title: 修改指定CPU资源属性
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Systems/system_id/Processors/cpu_id
+  podm:
+    index: 184
+    section: 4.3.41
+    title: 修改指定CPU资源属性
+    method: PATCH
+    uri: /redfish/v1/Systems/{system_id}/Processors/{cpu_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 255
+    section: 3.3.56
+    title: 查询网络接口集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/NetworkInterfaces
+  podm:
+    index: 185
+    section: 4.3.42
+    title: 查询网络接口集合资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/NetworkInterfaces
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 256
+    section: 3.3.57
+    title: 查询网络接口资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/NetworkInterfaces/networkinterface_id
+  podm:
+    index: 186
+    section: 4.3.43
+    title: 查询网络接口资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/NetworkInterfaces/{networkinterface_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 257
+    section: 3.3.58
+    title: 查询网络端口集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/NetworkInterfaces/networkinterface_id/NetworkPorts
+  podm:
+    index: 187
+    section: 4.3.44
+    title: 查询网络端口集合资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/NetworkInterfaces/{networkinterface_id}/NetworkPorts
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 266
+    section: 3.3.67
+    title: 查询CPU历史占用率资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/ProcessorsHistoryUsageRate
+  podm:
+    index: 188
+    section: 4.3.45
+    title: 查询CPU历史占用率资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/ProcessorsHistoryUsageRate
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 267
+    section: 3.3.68
+    title: 查询内存历史占用率资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/MemoryHistoryUsageRate
+  podm:
+    index: 189
+    section: 4.3.46
+    title: 查询内存历史占用率资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/MemoryHistoryUsageRate
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 268
+    section: 3.3.69
+    title: 查询网口历史占用率资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/NetworkHistoryUsageRate
+  podm:
+    index: 190
+    section: 4.3.47
+    title: 查询网口历史占用率资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/NetworkHistoryUsageRate
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 269
+    section: 3.3.70
+    title: 清空网口历史占用率资源信息
+    method: POST
+    uri: https://device_ip/redfish/v1/Systems/system_id/Actions/Oem/Huawei/Public/ComputerSystem.ClearNetworkHistoryUsageRate
+  podm:
+    index: 191
+    section: 4.3.48
+    title: 清空网口历史占用率资源信息
+    method: POST
+    uri: /redfish/v1/Systems/{system_id}/Actions/Oem/HuaweiPublic/ComputerSystem.ClearNetworkHistoryUsageRate
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 270
+    section: 3.3.71
+    title: 批量查询处理器资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/ProcessorView
+  podm:
+    index: 192
+    section: 4.3.49
+    title: 批量查询处理器资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/ProcessorView
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 271
+    section: 3.3.72
+    title: 批量查询内存资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/MemoryView
+  podm:
+    index: 193
+    section: 4.3.50
+    title: 批量查询内存资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/MemoryView
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 272
+    section: 3.3.73
+    title: 查询电子保单信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/DigitalWarranty
+  podm:
+    index: 268
+    section: 4.4.59
+    title: 查询电子保单信息
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/DigitalWarranty
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 273
+    section: 3.3.74
+    title: 修改电子保单信息
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Systems/system_id/DigitalWarranty
+  podm:
+    index: 269
+    section: 4.4.60
+    title: 修改电子保单信息
+    method: PATCH
+    uri: /redfish/v1/Chassis/{chassis_id}/DigitalWarranty
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 274
+    section: 3.3.75
+    title: 导入Foreign配置
+    method: POST
+    uri: https://device_ip/redfish/v1/Systems/system_id/Storages/storage_id/Actions/Oem/Huawei/Public/Storage. ImportForeignConfig
+  podm:
+    index: 194
+    section: 4.3.51
+    title: 导入Foreign配置
+    method: POST
+    uri: /redfish/v1/Systems/{system_id}/Storages/{storage_id}/Actions/Oem/HuaweiPublic/Storage. ImportForeignConfig
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 276
+    section: 3.3.77
+    title: 查询IB集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/InfiniBandInterfaces
+  podm:
+    index: 195
+    section: 4.3.52
+    title: 查询IB集合资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/InfiniBandInterfaces
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 277
+    section: 3.3.78
+    title: 查询IB资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Systems/system_id/InfiniBandInterfaces/ib_id
+  podm:
+    index: 196
+    section: 4.3.53
+    title: 查询IB资源信息
+    method: GET
+    uri: /redfish/v1/Systems/{system_id}/InfiniBandInterfaces/{ib_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 280
+    section: 3.3.81
+    title: 设置虚拟媒体资源
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Systems/system_id /VirtualMedia/CD
+  podm:
+    index: 199
+    section: 4.3.56
+    title: 设置虚拟媒体资源
+    method: PATCH
+    uri: /redfish/v1/Systems/{system_id}/VirtualMedia/CD
+- score: 0.9
+  confidence: high
+  method_same: true
+  bmc:
+    index: 294
+    section: 3.4.1
+    title: 查询机箱集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis
+  podm:
+    index: 210
+    section: 4.4.1
+    title: 查询机柜集合资源信息
+    method: GET
+    uri: /redfish/v1/Chassis
+- score: 0.9
+  confidence: high
+  method_same: true
+  bmc:
+    index: 295
+    section: 3.4.2
+    title: 查询指定机箱资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id
+  podm:
+    index: 211
+    section: 4.4.2
+    title: 查询指定机柜资源信息
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}
+- score: 0.9
+  confidence: high
+  method_same: true
+  bmc:
+    index: 296
+    section: 3.4.3
+    title: 修改指定机箱资源信息
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id
+  podm:
+    index: 212
+    section: 4.4.3
+    title: 修改指定机柜资源信息（评）
+    method: PATCH
+    uri: /redfish/v1/Chassis/{chassis_id}
+- score: 0.9091
+  confidence: high
+  method_same: true
+  bmc:
+    index: 298
+    section: 3.4.5
+    title: 控制机箱定位指示灯状态
+    method: POST
+    uri: https://device_ip/redfish/v1/Chassis/Chassis_id/Oem/Huawei/Public/Actions/Chassis.ControlIndicatorLED
+  podm:
+    index: 213
+    section: 4.4.4
+    title: 控制机柜定位指示灯状态
+    method: POST
+    uri: /redfish/v1/Chassis/{chassis_id}/Oem/HuaweiPublic/Actions/Chassis.ControlIndicatorLED
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 299
+    section: 3.4.6
+    title: 恢复超节点配置信息为默认值
+    method: POST
+    uri: https://device_ip/redfish/v1/Chassis/Chassis_id/Oem/Huawei/Public/Actions/Chassis.SuperPodLabelRestoreDefaults
+  podm:
+    index: 214
+    section: 4.4.5
+    title: 恢复超节点配置信息为默认值
+    method: POST
+    uri: /redfish/v1/Chassis/{chassis_id}/Oem/HuaweiPublic/Actions/Chassis.SuperPodLabelRestoreDefaults
+- score: 0.9167
+  confidence: high
+  method_same: true
+  bmc:
+    index: 300
+    section: 3.4.7
+    title: 查询指定机箱散热资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/Thermal
+  podm:
+    index: 215
+    section: 4.4.6
+    title: 查询指定机柜散热资源信息
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/Thermal
+- score: 0.9167
+  confidence: high
+  method_same: true
+  bmc:
+    index: 301
+    section: 3.4.8
+    title: 修改指定机箱散热资源信息
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/Thermal
+  podm:
+    index: 216
+    section: 4.4.7
+    title: 修改指定机柜散热资源信息
+    method: PATCH
+    uri: /redfish/v1/Chassis/{chassis_id}/Thermal
+- score: 0.9565
+  confidence: high
+  method_same: true
+  bmc:
+    index: 302
+    section: 3.4.9
+    title: 清空进风口历史温度数据
+    method: POST
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/Thermal/Oem/Huawei/Public/Actions/Thermal.ClearInletHistoryTemperature
+  podm:
+    index: 217
+    section: 4.4.8
+    title: 清空进风口历史温度的数据
+    method: POST
+    uri: /redfish/v1/Chassis/{chassis_id}/Thermal/Oem/HuaweiPublic/Actions/Thermal.ClearInletHistoryTemperature
+- score: 0.9
+  confidence: high
+  method_same: true
+  bmc:
+    index: 303
+    section: 3.4.10
+    title: 查询指定机箱电源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/Power
+  podm:
+    index: 218
+    section: 4.4.9
+    title: 查询指定机柜电源信息
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/Power
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 304
+    section: 3.4.11
+    title: 修改指定电源属性
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/Power
+  podm:
+    index: 219
+    section: 4.4.10
+    title: 修改指定电源属性
+    method: PATCH
+    uri: /redfish/v1/Chassis/{chassis_id}/Power
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 305
+    section: 3.4.12
+    title: 清空历史功率数据
+    method: POST
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/Power/Oem/Huawei/Public/Actions/Power.ResetHistoryData
+  podm:
+    index: 220
+    section: 4.4.11
+    title: 清空历史功率数据
+    method: POST
+    uri: /redfish/v1/Chassis/{chassis_id}/Power/Oem/HuaweiPublic/Actions/Power.ResetHistoryData
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 306
+    section: 3.4.13
+    title: 重新统计功率数据
+    method: POST
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/Power/Oem/Huawei/Public/Actions/Power.ResetStatistics
+  podm:
+    index: 221
+    section: 4.4.12
+    title: 重新统计功率数据
+    method: POST
+    uri: /redfish/v1/Chassis/{chassis_id}/Power/Oem/HuaweiPublic/Actions/Power.ResetStatistics
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 307
+    section: 3.4.14
+    title: 收集功率统计数据
+    method: POST
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/Power/Oem/Huawei/Public/Actions/Power.CollectHistoryData
+  podm:
+    index: 222
+    section: 4.4.13
+    title: 收集功率统计数据
+    method: POST
+    uri: /redfish/v1/Chassis/{chassis_id}/Power/Oem/HuaweiPublic/Actions/Power.CollectHistoryData
+- score: 0.9231
+  confidence: high
+  method_same: true
+  bmc:
+    index: 308
+    section: 3.4.15
+    title: 查询指定机箱电源子系统信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/PowerSubsystem
+  podm:
+    index: 223
+    section: 4.4.14
+    title: 查询指定机柜电源子系统信息
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/PowerSubsystem
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 309
+    section: 3.4.16
+    title: 查询电源转换器集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/PowerSubsystem/Oem/Huawei/Public/PowerConverters
+  podm:
+    index: 226
+    section: 4.4.17
+    title: 查询电源转换器集合资源信息
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/PowerSubsystem/Oem/HuaweiPublic/PowerConverters
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 310
+    section: 3.4.17
+    title: 查询电源转换器单个资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/PowerSubsystem/Oem/Huawei/Public/PowerConverters/powerconverter_id
+  podm:
+    index: 227
+    section: 4.4.18
+    title: 查询电源转换器单个资源信息
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/PowerSubsystem/Oem/HuaweiPublic/PowerConverters/{powerconverter_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 311
+    section: 3.4.18
+    title: 查询网络适配器集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/NetworkAdapters
+  podm:
+    index: 228
+    section: 4.4.19
+    title: 查询网络适配器集合资源信息
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/NetworkAdapters
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 312
+    section: 3.4.19
+    title: 查询网络适配器单个资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/NetworkAdapters/networkadapters_id
+  podm:
+    index: 229
+    section: 4.4.20
+    title: 查询网络适配器单个资源信息
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/NetworkAdapters/{networkadapters_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 313
+    section: 3.4.20
+    title: 修改网络适配器单个资源信息
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/NetworkAdapters/networkadapters_id
+  podm:
+    index: 230
+    section: 4.4.21
+    title: 修改网络适配器单个资源信息
+    method: PATCH
+    uri: /redfish/v1/Chassis/{chassis_id}/NetworkAdapters/{networkadapters_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 320
+    section: 3.4.27
+    title: 查询网络端口集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/NetworkAdapters/networkadapters_id/NetworkPorts
+  podm:
+    index: 231
+    section: 4.4.22
+    title: 查询网络端口集合资源信息
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/NetworkAdapters/{networkadapters_id}/NetworkPorts
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 321
+    section: 3.4.28
+    title: 查询网络端口单个资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/NetworkAdapters/networkadapters_id/NetworkPorts/networkports_id
+  podm:
+    index: 232
+    section: 4.4.23
+    title: 查询网络端口单个资源信息
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/NetworkAdapters/{networkadapters_id}/NetworkPorts/{networkports_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 322
+    section: 3.4.29
+    title: 修改网络端口单个资源信息
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/NetworkAdapters/networkadapters_id/NetworkPorts/networkports_id
+  podm:
+    index: 233
+    section: 4.4.24
+    title: 修改网络端口单个资源信息
+    method: PATCH
+    uri: /redfish/v1/Chassis/{chassis_id}/NetworkAdapters/{networkadapters_id}/NetworkPorts/{networkports_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 324
+    section: 3.4.31
+    title: 查询网络端口上接的光模块资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/Transceivers/transceivers_id
+  podm:
+    index: 235
+    section: 4.4.26
+    title: 查询网络端口上接的光模块资源信息
+    method: GET
+    uri: 新URL：/redfish/v1/Chassis/{chassis_id}/Transceivers/{transceivers_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 325
+    section: 3.4.32
+    title: 查询网络端口上接的光模块集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/Transceivers
+  podm:
+    index: 234
+    section: 4.4.25
+    title: 查询网络端口上接的光模块集合资源信息
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/Transceivers
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 328
+    section: 3.4.35
+    title: 查询驱动器集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/Drives
+  podm:
+    index: 236
+    section: 4.4.27
+    title: 查询驱动器集合资源信息
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/Drives
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 329
+    section: 3.4.36
+    title: 查询指定驱动器资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/drives/drive_id
+  podm:
+    index: 237
+    section: 4.4.28
+    title: 查询指定驱动器资源信息
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/Drives/{drive_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 330
+    section: 3.4.37
+    title: 修改指定驱动器属性
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/Drives/drives_id
+  podm:
+    index: 238
+    section: 4.4.29
+    title: 修改指定驱动器属性
+    method: PATCH
+    uri: /redfish/v1/Chassis/{chassis_id}/Drives/{drive_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 333
+    section: 3.4.40
+    title: 加密盘的数据安全擦除
+    method: POST
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/Drives/drives_id/Actions/Oem/Huawei/Public/Drive.CryptoErase
+  podm:
+    index: 239
+    section: 4.4.30
+    title: 加密盘的数据安全擦除
+    method: POST
+    uri: /redfish/v1/Chassis/{chassis_id}/Drives/{drive_id}/Actions/Oem/HuaweiPublic/Drive.CryptoErase
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 334
+    section: 3.4.41
+    title: 查询扩展板卡集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/Boards
+  podm:
+    index: 240
+    section: 4.4.31
+    title: 查询扩展板卡集合资源信息
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/Boards
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 335
+    section: 3.4.42
+    title: 查询指定扩展板卡资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/Boards/board_id
+  podm:
+    index: 241
+    section: 4.4.32
+    title: 查询指定扩展板卡资源信息
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/Boards/{board_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 336
+    section: 3.4.43
+    title: 修改指定拓展板卡资源属性
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/Boards/board_id
+  podm:
+    index: 242
+    section: 4.4.33
+    title: 修改指定拓展板卡资源属性
+    method: PATCH
+    uri: /redfish/v1/Chassis/{chassis_id}/Boards/{board_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 337
+    section: 3.4.44
+    title: NPU模组复位
+    method: POST
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/Boards/board_id/Actions/NPUBoard.NPUBoardReset
+  podm:
+    index: 243
+    section: 4.4.34
+    title: NPU模组复位
+    method: POST
+    uri: /redfish/v1/Chassis/{chassis_id}/Boards/{board_id}/Actions/NpuBoard.NpuBoardReset
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 339
+    section: 3.4.46
+    title: 查询PCIe设备集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/PCIeDevices
+  podm:
+    index: 244
+    section: 4.4.35
+    title: 查询PCIe设备集合资源信息
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/PCIeDevices
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 340
+    section: 3.4.47
+    title: 查询指定PCIe设备资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/PCIeDevices/pciedevices_id
+  podm:
+    index: 245
+    section: 4.4.36
+    title: 查询指定PCIe设备资源信息
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/PCIeDevices/{pciedevices_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 341
+    section: 3.4.48
+    title: 修改指定PCIe设备资源信息
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/PCIeDevices/pciedevices_id
+  podm:
+    index: 246
+    section: 4.4.37
+    title: 修改指定PCIe设备资源信息
+    method: PATCH
+    uri: /redfish/v1/Chassis/{chassis_id}/PCIeDevices/{pciedevices_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 342
+    section: 3.4.49
+    title: 复位指定SDI卡
+    method: POST
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/PCIeDevices/pciedevices_id/Actions/Oem/Huawei/Public/PCIeDevices.Reset
+  podm:
+    index: 247
+    section: 4.4.38
+    title: 复位指定SDI卡
+    method: POST
+    uri: /redfish/v1/Chassis/{chassis_id}/PCIeDevices/{pciedevices_id}/Actions/Oem/HuaweiPublic/PCIeDevices.Reset
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 343
+    section: 3.4.50
+    title: 设置指定SDI卡电源状态
+    method: POST
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/PCIeDevices/pciedevices_id/Actions/Oem/Huawei/Public/PCIeDevices.SetPowerState
+  podm:
+    index: 248
+    section: 4.4.39
+    title: 设置指定SDI卡电源状态
+    method: POST
+    uri: /redfish/v1/Chassis/{chassis_id}/PCIeDevices/{pciedevices_id}/Actions/Oem/HuaweiPublic/PCIeDevices.SetPowerState
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 344
+    section: 3.4.51
+    title: 指定PCIe设备资源导入https证书
+    method: POST
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/PCIeDevices/pciedevices_id /Actions/Oem/Huawei/Public/PCIeDevices.ImportHttpsCert
+  podm:
+    index: 249
+    section: 4.4.40
+    title: 指定PCIe设备资源导入https证书
+    method: POST
+    uri: /redfish/v1/Chassis/{chassis_id}/PCIeDevices/{pciedevices_id}/Actions/Oem/HuaweiPublic/PCIeDevices.ImportHttpsCert
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 346
+    section: 3.4.53
+    title: 查询指定PCIe功能资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/PCIeDevices/pciedevices_id/PCIeFunctions/functions_id（推荐使用）
+  podm:
+    index: 250
+    section: 4.4.41
+    title: 查询指定PCIe功能资源信息
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/PCIeDevices/{pciedevices_id}/Functions/{functions_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 347
+    section: 3.4.54
+    title: 查询进风口历史温度资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/Thermal/InletHistoryTemperature
+  podm:
+    index: 251
+    section: 4.4.42
+    title: 查询进风口历史温度资源信息
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/Thermal/InletHistoryTemperature
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 348
+    section: 3.4.56
+    title: 查询门限传感器列表资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/ThresholdSensors
+  podm:
+    index: 253
+    section: 4.4.44
+    title: 查询门限传感器列表资源信息
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/ThresholdSensors
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 349
+    section: 3.4.57
+    title: 查询离散型传感器列表资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/DiscreteSensors
+  podm:
+    index: 254
+    section: 4.4.45
+    title: 查询离散型传感器列表资源信息
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/DiscreteSensors
+- score: 0.9091
+  confidence: high
+  method_same: true
+  bmc:
+    index: 352
+    section: 3.4.60
+    title: 查询指定机箱泵资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/ThermalSubsystem
+  podm:
+    index: 255
+    section: 4.4.46
+    title: 查询指定机柜泵资源信息
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/ThermalSubsystem
+- score: 0.9091
+  confidence: high
+  method_same: true
+  bmc:
+    index: 353
+    section: 3.4.61
+    title: 修改指定机箱泵资源信息
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/ThermalSubsystem
+  podm:
+    index: 256
+    section: 4.4.47
+    title: 修改指定机柜泵资源信息
+    method: PATCH
+    uri: /redfish/v1/Chassis/{chassis_id}/ThermalSubsystem
+- score: 0.7143
+  confidence: high
+  method_same: true
+  bmc:
+    index: 354
+    section: 3.4.62
+    title: 重启整机服务器
+    method: POST
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/Actions/Chassis.Reset
+  podm:
+    index: 257
+    section: 4.4.48
+    title: 重启刀片服务器
+    method: POST
+    uri: /redfish/v1/Chassis/{chassis_id}/Actions/Chassis.Reset
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 355
+    section: 3.4.63
+    title: 查询漏液检测系统信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/ThermalSubsystem/LeakDetection
+  podm:
+    index: 258
+    section: 4.4.49
+    title: 查询漏液检测系统信息
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/ThermalSubsystem/LeakDetection
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 356
+    section: 3.4.64
+    title: 查询漏液检测器集合
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/LeakDetectors
+  podm:
+    index: 259
+    section: 4.4.50
+    title: 查询漏液检测器集合
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/ThermalSubsystem/LeakDetection/LeakDetectors
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 357
+    section: 3.4.65
+    title: 查询漏液检测
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/LeakDetectors/LeakDetector_id
+  podm:
+    index: 260
+    section: 4.4.51
+    title: 查询漏液检测
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/ThermalSubsystem/LeakDetection/LeakDetectors/{LeakDetector_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 358
+    section: 3.4.66
+    title: 查询风扇集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/ThermalSubsystem/Fans
+  podm:
+    index: 261
+    section: 4.4.52
+    title: 查询风扇集合资源信息
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/ThermalSubsystem/Fans
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 359
+    section: 3.4.67
+    title: 查询风扇单个资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/ThermalSubsystem/Fans/fan_id
+  podm:
+    index: 262
+    section: 4.4.53
+    title: 查询风扇单个资源信息
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/ThermalSubsystem/Fans/{fan_id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 360
+    section: 3.4.68
+    title: 设置风扇组、泵组转速批量下发
+    method: POST
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/ThermalSubsystem/Actions/Oem/{{OemIdentifier}}/ThermalControlUnitGroup.SetExpectedSpeedPercent
+  podm:
+    index: 263
+    section: 4.4.54
+    title: 设置风扇组、泵组转速批量下发
+    method: POST
+    uri: /redfish/v1/Chassis/{chassis_id}/ThermalSubsystem/Actions/Oem/HuaweiPublic/ThermalControlUnitGroup.SetExpectedSpeedPercent
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 361
+    section: 3.4.69
+    title: 查询Sensors集合资源
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/Sensors
+  podm:
+    index: 264
+    section: 4.4.55
+    title: 查询Sensors集合资源
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/Sensors
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 362
+    section: 3.4.70
+    title: 查询指定Sensor资源信息
+    method: GET
+    uri: https://device_ip/ redfish/v1/Chassis/chassis_id/Sensors/sensor_id
+  podm:
+    index: 265
+    section: 4.4.56
+    title: 查询指定Sensor资源信息
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/Sensors/{sensor_id}
+- score: 0.9286
+  confidence: high
+  method_same: true
+  bmc:
+    index: 363
+    section: 3.4.71
+    title: 查询指定机箱散热度量资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/ThermalSubsystem/ThermalMetrics
+  podm:
+    index: 224
+    section: 4.4.15
+    title: 查询指定机柜散热度量资源信息
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/ThermalSubsystem/ThermalMetrics
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 364
+    section: 3.4.72
+    title: 重新统计散热组件累计耗电量数据
+    method: POST
+    uri: https://device_ip/redfish/v1/Chassis/chassis_id/ThermalSubsystem/ThermalMetrics/Actions/ThermalMetrics.ResetMetrics
+  podm:
+    index: 225
+    section: 4.4.16
+    title: 重新统计散热组件累计耗电量数据
+    method: POST
+    uri: /redfish/v1/Chassis/{chassis_id}/ThermalSubsystem/ThermalMetrics/Actions/ThermalMetrics.ResetMetrics
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 366
+    section: 3.4.74
+    title: 查询单个电源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/ChassisId/PowerSubsystem/PowerSupplies/PowerSupplyId
+  podm:
+    index: 266
+    section: 4.4.57
+    title: 查询单个电源信息
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/PowerSubsystem/PowerSupplies/{PowerSupply_Id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 367
+    section: 3.4.75
+    title: 查询单个电源度量信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Chassis/ChassisId/PowerSubsystem/PowerSupplies/PowerSupplyId/Metrics
+  podm:
+    index: 267
+    section: 4.4.58
+    title: 查询单个电源度量信息
+    method: GET
+    uri: /redfish/v1/Chassis/{chassis_id}/PowerSubsystem/PowerSupplies/{PowerSupply_Id}/Metrics
+- score: 0.5714
+  confidence: high
+  method_same: true
+  bmc:
+    index: 381
+    section: 3.5.1
+    title: 查询会话服务信息
+    method: GET
+    uri: https://device_ip/redfish/v1/SessionService
+  podm:
+    index: 330
+    section: 4.10.3.2.3
+    title: 查询会话策略
+    method: GET
+    uri: /redfish/v1/SessionService
+- score: 0.5714
+  confidence: high
+  method_same: true
+  bmc:
+    index: 382
+    section: 3.5.2
+    title: 修改会话服务信息
+    method: PATCH
+    uri: https://device_ip/redfish/v1/SessionService
+  podm:
+    index: 331
+    section: 4.10.3.2.4
+    title: 修改会话策略
+    method: PATCH
+    uri: /redfish/v1/SessionService
+- score: 0.8
+  confidence: low
+  method_same: true
+  bmc:
+    index: 383
+    section: 3.5.3
+    title: 创建会话
+    method: POST
+    uri: https://device_ip/redfish/v1/SessionService/Sessions
+  podm:
+    index: 344
+    section: 4.10.3.4.2
+    title: 创建会话（登录）
+    method: POST
+    uri: /redfish/v1/SessionService/Sessions
+- score: 0.5
+  confidence: high
+  method_same: true
+  bmc:
+    index: 384
+    section: 3.5.4
+    title: 查询会话集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/SessionService/Sessions
+  podm:
+    index: 343
+    section: 4.10.3.4.1
+    title: 查询全量会话
+    method: GET
+    uri: /redfish/v1/SessionService/Sessions
+- score: 0.75
+  confidence: low
+  method_same: true
+  bmc:
+    index: 385
+    section: 3.5.5
+    title: 查询指定会话资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/SessionService/Sessions/session_id
+  podm:
+    index: 345
+    section: 4.10.3.4.3
+    title: 查询指定会话
+    method: GET
+    uri: /redfish/v1/SessionService/Sessions/session_id
+- score: 0.8
+  confidence: low
+  method_same: true
+  bmc:
+    index: 386
+    section: 3.5.6
+    title: 删除指定会话
+    method: DELETE
+    uri: https://device_ip/redfish/v1/SessionService/Sessions/session_id
+  podm:
+    index: 346
+    section: 4.10.3.4.4
+    title: 删除会话
+    method: DELETE
+    uri: /redfish/v1/SessionService/Sessions/session_id
+- score: 0.7273
+  confidence: medium
+  method_same: true
+  bmc:
+    index: 389
+    section: 3.5.9
+    title: Web二次认证
+    method: POST
+    uri: https://device_ip/redfish/v1/AccountService/Accounts
+  podm:
+    index: 324
+    section: 4.10.3.1.6
+    title: 二次认证
+    method: POST
+    uri: /redfish/v1/AccountService/check
+- score: 0.4286
+  confidence: high
+  method_same: true
+  bmc:
+    index: 390
+    section: 3.6.1
+    title: 查询用户服务信息
+    method: GET
+    uri: https://device_ip/redfish/v1/AccountService
+  podm:
+    index: 328
+    section: 4.10.3.2.1
+    title: 查询账户策略
+    method: GET
+    uri: /redfish/v1/AccountService
+- score: 0.4286
+  confidence: high
+  method_same: true
+  bmc:
+    index: 391
+    section: 3.6.2
+    title: 修改用户服务信息
+    method: PATCH
+    uri: https://device_ip/redfish/v1/AccountService
+  podm:
+    index: 329
+    section: 4.10.3.2.2
+    title: 修改账户策略
+    method: PATCH
+    uri: /redfish/v1/AccountService
+- score: 0.5
+  confidence: high
+  method_same: true
+  bmc:
+    index: 392
+    section: 3.6.3
+    title: 查询用户集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/AccountService/Accounts
+  podm:
+    index: 322
+    section: 4.10.3.1.4
+    title: 查询全量用户
+    method: GET
+    uri: /redfish/v1/AccountService/Accounts
+- score: 0.75
+  confidence: low
+  method_same: true
+  bmc:
+    index: 393
+    section: 3.6.4
+    title: 查询指定用户资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/AccountService/Accounts/member_id
+  podm:
+    index: 323
+    section: 4.10.3.1.5
+    title: 查询指定用户
+    method: GET
+    uri: /redfish/v1/AccountService/Accounts/member_id
+- score: 0.8889
+  confidence: medium
+  method_same: true
+  bmc:
+    index: 394
+    section: 3.6.5
+    title: 创建新用户
+    method: POST
+    uri: https://device_ip/redfish/v1/AccountService/Accounts
+  podm:
+    index: 319
+    section: 4.10.3.1.1
+    title: 创建用户
+    method: POST
+    uri: /redfish/v1/AccountService/Accounts
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 395
+    section: 3.6.6
+    title: 删除用户
+    method: DELETE
+    uri: https://device_ip/redfish/v1/AccountService/Accounts/account_id
+  podm:
+    index: 321
+    section: 4.10.3.1.3
+    title: 删除用户
+    method: DELETE
+    uri: /redfish/v1/AccountService/Accounts/{account_id}
+- score: 0.6667
+  confidence: high
+  method_same: true
+  bmc:
+    index: 396
+    section: 3.6.7
+    title: 修改指定用户信息
+    method: PATCH
+    uri: https://device_ip/redfish/v1/AccountService/Accounts/account_id
+  podm:
+    index: 320
+    section: 4.10.3.1.2
+    title: 修改用户
+    method: PATCH
+    uri: /redfish/v1/AccountService/Accounts/{account_id}
+- score: 0.56
+  confidence: high
+  method_same: true
+  bmc:
+    index: 399
+    section: 3.6.10
+    title: 双因素认证的用户的客户端证书导入
+    method: POST
+    uri: https://device_ip/redfish/v1/AccountService/Accounts/account_id/Oem/Huawei/Public/Actions/Account.ImportMutualAuthClientCert
+  podm:
+    index: 325
+    section: 4.10.3.1.7
+    title: 导入用户客户端证书
+    method: POST
+    uri: /redfish/v1/AccountService/Accounts/account_id/Oem/Huawei/Actions/Account.ImportMutualAuthClientCert
+- score: 0.56
+  confidence: high
+  method_same: true
+  bmc:
+    index: 400
+    section: 3.6.11
+    title: 双因素认证的用户的客户端证书删除
+    method: POST
+    uri: https://device_ip/redfish/v1/AccountService/Accounts/account_id/Oem/Huawei/Public/Actions/Account.DeleteMutualAuthClientCert
+  podm:
+    index: 326
+    section: 4.10.3.1.8
+    title: 删除用户客户端证书
+    method: POST
+    uri: /redfish/v1/AccountService/Accounts/account_id/Oem/Huawei/Actions/Account.DeleteMutualAuthClientCert
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 403
+    section: 3.6.14
+    title: SSH公钥导入
+    method: POST
+    uri: https://device_ip/redfish/v1/AccountService/Accounts/account_id/Oem/Huawei/Public/Actions/Account.ImportSSHPublicKey
+  podm:
+    index: 327
+    section: 4.10.3.1.9
+    title: SSH公钥导入
+    method: POST
+    uri: /redfish/v1/AccountService/Accounts/account_id/Oem/Huawei/Public/Actions/Account.ImportSSHPublicKey
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 405
+    section: 3.6.16
+    title: 查询角色集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/AccountService/Roles
+  podm:
+    index: 340
+    section: 4.10.3.3.1
+    title: 查询角色集合资源信息
+    method: GET
+    uri: /redfish/v1/AccountService/Roles
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 406
+    section: 3.6.17
+    title: 查询指定角色信息
+    method: GET
+    uri: https://device_ip/redfish/v1/AccountService/Roles/role_id
+  podm:
+    index: 341
+    section: 4.10.3.3.2
+    title: 查询指定角色信息
+    method: GET
+    uri: /redfish/v1/AccountService/Roles/role_id
+- score: 0.5333
+  confidence: high
+  method_same: true
+  bmc:
+    index: 407
+    section: 3.6.18
+    title: 修改自定义角色权限
+    method: PATCH
+    uri: https://device_ip/redfish/v1/AccountService/Roles/role_id
+  podm:
+    index: 342
+    section: 4.10.3.3.3
+    title: 角色绑定权限
+    method: PATCH
+    uri: /redfish/v1/AccountService/Roles/role_id
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 410
+    section: 3.6.21
+    title: 查询Ldap服务资源
+    method: GET
+    uri: https://device_ip/redfish/v1/AccountService/LdapService
+  podm:
+    index: 369
+    section: 4.10.3.9.1
+    title: 查询Ldap服务资源
+    method: GET
+    uri: /redfish/v1/AccountService/LdapService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 411
+    section: 3.6.22
+    title: 修改Ldap功能开启使能
+    method: PATCH
+    uri: https://device_ip/redfish/v1/AccountService/LdapService
+  podm:
+    index: 370
+    section: 4.10.3.9.2
+    title: 修改Ldap功能开启使能
+    method: PATCH
+    uri: PATCH /redfish/v1/AccountService/LdapService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 412
+    section: 3.6.23
+    title: 查询Ldap域控制器集合信息
+    method: GET
+    uri: https://device_ip/redfish/v1/AccountService/LdapService/LdapControllers
+  podm:
+    index: 371
+    section: 4.10.3.9.3
+    title: 查询Ldap域控制器集合信息
+    method: GET
+    uri: /redfish/v1/AccountService/LdapService/LdapControllers
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 413
+    section: 3.6.24
+    title: 查询具体域控制器的信息
+    method: GET
+    uri: https://device_ip/redfish/v1/AccountService/LdapService/LdapControllers/member_id
+  podm:
+    index: 372
+    section: 4.10.3.9.4
+    title: 查询具体域控制器的信息
+    method: GET
+    uri: /redfish/v1/AccountService/LdapService/LdapControllers/member_id
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 414
+    section: 3.6.25
+    title: 修改具体域控制器的信息
+    method: PATCH
+    uri: https://device_ip/redfish/v1/AccountService/LdapService/LdapControllers/member_id
+  podm:
+    index: 373
+    section: 4.10.3.9.5
+    title: 修改具体域控制器的信息
+    method: PATCH
+    uri: /redfish/v1/AccountService/LdapService/LdapControllers/member_id
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 424
+    section: 3.7.1
+    title: 查询升级服务资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/UpdateService
+  podm:
+    index: 270
+    section: 4.5.1
+    title: 查询升级服务资源信息
+    method: GET
+    uri: /redfish/v1/UpdateService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 426
+    section: 3.7.3
+    title: 查询可升级固件集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/UpdateService/FirmwareInventory
+  podm:
+    index: 271
+    section: 4.5.2
+    title: 查询可升级固件集合资源信息
+    method: GET
+    uri: /redfish/v1/UpdateService/FirmwareInventory
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 427
+    section: 3.7.4
+    title: 查询指定可升级固件资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/UpdateService/FirmwareInventory/softid
+  podm:
+    index: 272
+    section: 4.5.3
+    title: 查询指定可升级固件资源信息
+    method: GET
+    uri: /redfish/v1/UpdateService/FirmwareInventory/{softid}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 429
+    section: 3.7.6
+    title: 文件上传
+    method: POST
+    uri: https://device_ip/redfish/v1/UpdateService/FirmwareInventory
+  podm:
+    index: 275
+    section: 4.5.6
+    title: 文件上传
+    method: POST
+    uri: /redfish/v1/UpdateService/FirmwareInventory
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 430
+    section: 3.7.7
+    title: 生效固件
+    method: POST
+    uri: https://device_ip/redfish/v1/UpdateService/Actions/Oem/Huawei/Public/UpdateService.StartActivate
+  podm:
+    index: 274
+    section: 4.5.5
+    title: 生效固件
+    method: POST
+    uri: /redfish/v1/UpdateService/Actions/Oem/HuaweiPublic/UpdateService.StartActivate
+- score: 0.4
+  confidence: high
+  method_same: true
+  bmc:
+    index: 431
+    section: 3.7.8
+    title: 并行升级
+    method: POST
+    uri: https://device_ip/redfish/v1/UpdateService/Actions/Oem/Huawei/UpdateService.ParallelUpdate
+  podm:
+    index: 273
+    section: 4.5.4
+    title: 批量升级固件（评）
+    method: POST
+    uri: /redfish/v1/UpdateService/Actions/Oem/HuaweiPublic/UpdateService.ParallelUpdate
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 437
+    section: 3.8.1
+    title: 查询任务服务资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/TaskService
+  podm:
+    index: 277
+    section: 4.6.1
+    title: 查询任务服务资源信息
+    method: GET
+    uri: /redfish/v1/TaskService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 439
+    section: 3.8.3
+    title: 查询任务集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/TaskService/Tasks
+  podm:
+    index: 278
+    section: 4.6.2
+    title: 查询任务集合资源信息
+    method: GET
+    uri: /redfish/v1/TaskService/Tasks
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 440
+    section: 3.8.4
+    title: 查询指定任务资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/TaskService/Tasks/taskid
+  podm:
+    index: 279
+    section: 4.6.3
+    title: 查询指定任务资源信息
+    method: GET
+    uri: /redfish/v1/TaskService/Tasks/{taskid}
+- score: 0.5217
+  confidence: high
+  method_same: true
+  bmc:
+    index: 441
+    section: 3.8.5
+    title: 查询指定Monitor信息
+    method: GET
+    uri: https://device_ip/redfish/v1/TaskService/Tasks/task_id/Monitor
+  podm:
+    index: 280
+    section: 4.6.4
+    title: 查询指定任务运行信息
+    method: GET
+    uri: /redfish/v1/TaskService/Tasks/{taskid}/Monitor
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 442
+    section: 3.8.6
+    title: 查询指定子任务集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/TaskService/Tasks/{taskid}/SubTasks
+  podm:
+    index: 281
+    section: 4.6.5
+    title: 查询指定子任务集合资源信息
+    method: GET
+    uri: /redfish/v1/TaskService/Tasks/{taskid}/SubTasks
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 443
+    section: 3.8.7
+    title: 查询指定子任务资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/TaskService/Tasks/{taskid}/SubTasks/{subtaskid}
+  podm:
+    index: 282
+    section: 4.6.6
+    title: 查询指定子任务资源信息
+    method: GET
+    uri: /redfish/v1/TaskService/Tasks/{taskid}/SubTasks/{subtaskid}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 444
+    section: 3.9.1
+    title: 查询事件服务资源
+    method: GET
+    uri: https://device_ip/redfish/v1/EventService
+  podm:
+    index: 283
+    section: 4.7.1
+    title: 查询事件服务资源
+    method: GET
+    uri: /redfish/v1/EventService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 445
+    section: 3.9.2
+    title: 修改事件服务资源
+    method: PATCH
+    uri: https://device_ip/redfish/v1/EventService
+  podm:
+    index: 284
+    section: 4.7.2
+    title: 修改事件服务资源
+    method: PATCH
+    uri: /redfish/v1/EventService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 446
+    section: 3.9.3
+    title: 模拟测试事件
+    method: POST
+    uri: https://device_ip/redfish/v1/EventService/Actions/EventService.SubmitTestEvent
+  podm:
+    index: 285
+    section: 4.7.3
+    title: 模拟测试事件
+    method: POST
+    uri: /redfish/v1/EventService/Actions/EventService.SubmitTestEvent
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 447
+    section: 3.9.4
+    title: 对未恢复的事件重新上报
+    method: POST
+    uri: https://device_ip/redfish/v1/EventService/Actions/Oem/Huawei/Public/EventService.Rearm
+  podm:
+    index: 286
+    section: 4.7.4
+    title: 对未恢复的事件重新上报
+    method: POST
+    uri: /redfish/v1/EventService/Actions/Oem/HuaweiPublic/EventService.Rearm
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 448
+    section: 3.9.5
+    title: 模拟精准告警
+    method: POST
+    uri: https://device_ip/redfish/v1/EventService/Actions/Oem/Huawei/Public/EventService.MockPreciseAlarm
+  podm:
+    index: 287
+    section: 4.7.5
+    title: 模拟精准告警
+    method: POST
+    uri: /redfish/v1/EventService/Actions/Oem/HuaweiPublic/EventService.MockPreciseAlarm
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 449
+    section: 3.9.6
+    title: 查询事件订阅集合资源
+    method: GET
+    uri: https://device_ip/redfish/v1/EventService/Subscriptions
+  podm:
+    index: 288
+    section: 4.7.6
+    title: 查询事件订阅集合资源
+    method: GET
+    uri: /redfish/v1/EventService/Subscriptions
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 450
+    section: 3.9.7
+    title: 创建事件订阅资源
+    method: POST
+    uri: https://device_ip/redfish/v1/EventService/Subscriptions
+  podm:
+    index: 289
+    section: 4.7.7
+    title: 创建事件订阅资源
+    method: POST
+    uri: /redfish/v1/EventService/Subscriptions
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 451
+    section: 3.9.8
+    title: 查询事件订阅资源
+    method: GET
+    uri: https://device_ip/redfish/v1/EventService/Subscriptions/id
+  podm:
+    index: 290
+    section: 4.7.8
+    title: 查询事件订阅资源
+    method: GET
+    uri: /redfish/v1/EventService/Subscriptions/{id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 452
+    section: 3.9.9
+    title: 修改事件订阅资源
+    method: PATCH
+    uri: https://device_ip/redfish/v1/EventService/Subscriptions/id
+  podm:
+    index: 291
+    section: 4.7.9
+    title: 修改事件订阅资源
+    method: PATCH
+    uri: /redfish/v1/EventService/Subscriptions/{id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 453
+    section: 3.9.10
+    title: 删除事件订阅资源
+    method: DELETE
+    uri: https://device_ip/redfish/v1/EventService/Subscriptions/id
+  podm:
+    index: 292
+    section: 4.7.10
+    title: 删除事件订阅资源
+    method: DELETE
+    uri: /redfish/v1/EventService/Subscriptions/{id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 454
+    section: 3.9.11
+    title: 屏蔽系统事件上报
+    method: POST
+    uri: https://device_ip/redfish/v1/EventService/Actions/Oem/Huawei/Public/EventService.ShieldSystemAlert
+  podm:
+    index: 293
+    section: 4.7.11
+    title: 屏蔽系统事件上报
+    method: POST
+    uri: /redfish/v1/EventService/Actions/Oem/HuaweiPublic/EventService.ShieldSystemAlert
+- score: 0.875
+  confidence: medium
+  method_same: true
+  bmc:
+    index: 455
+    section: 3.9.12
+    title: 配置事件告警级别
+    method: POST
+    uri: https://device_ip/redfish/v1/EventService/Actions/Oem/Huawei/Public/EventService.SetEventSeverityLevel
+  podm:
+    index: 294
+    section: 4.7.12
+    title: 设置事件告警级别
+    method: POST
+    uri: /redfish/v1/EventService/Actions/Oem/HuaweiPublic/EventService.SetEventSeverityLevel
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 467
+    section: 3.10.10
+    title: 文件上传操作
+    method: POST
+    uri: http://device_ip/redfish/v1/Sms/1/UpdateService/Actions/UpdateService.UploadFile
+  podm:
+    index: 276
+    section: 4.5.7
+    title: 文件上传操作（评）
+    method: POST
+    uri: /redfish/v1/UpdateService/Actions/Oem/HuaweiPublic/UpdateService.Upload
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 473
+    section: 3.11.1
+    title: 查询数据采集服务资源
+    method: GET
+    uri: https://device_ip/redfish/v1/DataAcquisitionService
+  podm:
+    index: 295
+    section: 4.8.1
+    title: 查询数据采集服务资源
+    method: GET
+    uri: /redfish/v1/DataAcquisitionService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 474
+    section: 3.11.2
+    title: 修改数据采集服务开关状态
+    method: PATCH
+    uri: https://device_ip/redfish/v1/DataAcquisitionService
+  podm:
+    index: 296
+    section: 4.8.2
+    title: 修改数据采集服务开关状态
+    method: PATCH
+    uri: /redfish/v1/DataAcquisitionService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 477
+    section: 3.11.6
+    title: 清空“数据采集点信息表”
+    method: POST
+    uri: https://device_ip/redfish/v1/DataAcquisitionService/Actions/HwDataAcquisitionService.ClearHistoryData
+  podm:
+    index: 297
+    section: 4.8.3
+    title: 清空“数据采集点信息表”
+    method: POST
+    uri: /redfish/v1/DataAcquisitionService/Actions/HwDataAcquisitionService.ClearHistoryData
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 478
+    section: 3.11.8
+    title: 查询数据表资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/DataAcquisitionService/DataAcquisitionReport?ComponentType=component&MetricType=metric&StartTime=start_time&EndTime=end_time&SerialNumber=serial_number
+  podm:
+    index: 298
+    section: 4.8.5
+    title: 查询数据表资源信息
+    method: GET
+    uri: /redfish/v1/DataAcquisitionService/DataAcquisitionReport?ComponentType={component}&MetricType={metric}&StartTime={start_time}&EndTime={end_time}&SerialNumber={serial_number}
+- score: 0.5714
+  confidence: high
+  method_same: true
+  bmc:
+    index: 481
+    section: 3.12.1
+    title: 查询证书服务信息
+    method: GET
+    uri: https://device_ip/redfish/v1/CertificateService
+  podm:
+    index: 332
+    section: 4.10.3.2.5
+    title: 查询证书策略
+    method: GET
+    uri: /redfish/v1/CertificateService
+- score: 0.5714
+  confidence: high
+  method_same: true
+  bmc:
+    index: 482
+    section: 3.12.2
+    title: 修改证书服务信息
+    method: PATCH
+    uri: https://device_ip/redfish/v1/CertificateService
+  podm:
+    index: 333
+    section: 4.10.3.2.6
+    title: 修改证书策略
+    method: PATCH
+    uri: /redfish/v1/CertificateService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 483
+    section: 3.12.3
+    title: 查询证书路径信息
+    method: GET
+    uri: https://device_ip/redfish/v1/CertificateService/CertificateLocations
+  podm:
+    index: 364
+    section: 4.10.3.7.5
+    title: 查询证书路径信息
+    method: GET
+    uri: /redfish/v1/CertificateService/CertificateLocations
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 484
+    section: 3.12.4
+    title: 导入CA证书
+    method: POST
+    uri: https://device_ip/redfish/v1/CertificateService/Actions/CertificateService.ImportCACertificate
+  podm:
+    index: 360
+    section: 4.10.3.7.1
+    title: 导入CA证书
+    method: POST
+    uri: /redfish/v1/CertificateService/Actions/CertificateService.ImportCACertificate
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 485
+    section: 3.12.5
+    title: 删除CA证书
+    method: POST
+    uri: https://device_ip/redfish/v1/CertificateService/Actions/CertificateService.DeleteCACertificate
+  podm:
+    index: 361
+    section: 4.10.3.7.2
+    title: 删除CA证书
+    method: POST
+    uri: /redfish/v1/CertificateService/Actions/CertificateService.DeleteCACertificate
+- score: 0.9524
+  confidence: high
+  method_same: true
+  bmc:
+    index: 486
+    section: 3.12.6
+    title: 导入CA证书的吊销列表
+    method: POST
+    uri: https://device_ip/redfish/v1/CertificateService/Actions/CertificateService.ImportCACertificateCRL
+  podm:
+    index: 365
+    section: 4.10.3.7.6
+    title: 导入CA证书吊销列表
+    method: POST
+    uri: /redfish/v1/CertificateService/Actions/CertificateService.ImportCACertificateCRL
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 489
+    section: 3.13.1
+    title: 查询资源服务信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Oem/Huawei/Public/AssetService
+  podm:
+    index: 384
+    section: 4.12.1
+    title: 查询资源服务信息
+    method: GET
+    uri: /redfish/v1/Oem/HuaweiPublic/AssetService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 490
+    section: 3.13.2
+    title: 查询硬件资产清单信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Oem/Huawei/Public/AssetService/AssetList
+  podm:
+    index: 385
+    section: 4.12.2
+    title: 查询硬件资产清单信息
+    method: GET
+    uri: /redfish/v1/Oem/HuaweiPublic/AssetService/AssetList
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 491
+    section: 3.13.3
+    title: 查询硬件资产变更信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Oem/Huawei/Public/AssetService/AssetChange
+  podm:
+    index: 386
+    section: 4.12.3
+    title: 查询硬件资产变更信息
+    method: GET
+    uri: /redfish/v1/Oem/HuaweiPublic/AssetService/AssetChange
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 492
+    section: 3.13.4
+    title: 刷新硬件资产变更信息
+    method: POST
+    uri: https://device_ip/redfish/v1/Oem/Huawei/Public/AssetService/AssetChange/Actions/AssetChange.UpdateTrustStatus
+  podm:
+    index: 387
+    section: 4.12.4
+    title: 刷新硬件资产变更信息
+    method: POST
+    uri: /redfish/v1/Oem/HuaweiPublic/AssetService/AssetChange/Actions/AssetChange.UpdateTrustStatus
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 493
+    section: 3.13.5
+    title: 确认供应链配置检查信息
+    method: POST
+    uri: https://device_ip/redfish/v1/Oem/Huawei/Public/AssetService/Actions/AssetService.ConfirmTrustedSupplyChain
+  podm:
+    index: 388
+    section: 4.12.5
+    title: 确认供应链配置检查信息
+    method: POST
+    uri: /redfish/v1/Oem/HuaweiPublic/AssetService/Actions/AssetService.ConfirmTrustedSupplyChain
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 501
+    section: 3.15.1
+    title: 查询遥测服务资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/TelemetryService
+  podm:
+    index: 299
+    section: 4.9.1
+    title: 查询遥测服务资源信息
+    method: GET
+    uri: /redfish/v1/TelemetryService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 502
+    section: 3.15.2
+    title: 修改遥测服务资源信息
+    method: PATCH
+    uri: https://device_ip/redfish/v1/TelemetryService
+  podm:
+    index: 300
+    section: 4.9.2
+    title: 修改遥测服务资源信息
+    method: PATCH
+    uri: /redfish/v1/TelemetryService
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 503
+    section: 3.15.3
+    title: 查询指标项资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/TelemetryService/MetricDefinitions
+  podm:
+    index: 301
+    section: 4.9.3
+    title: 查询指标项资源信息
+    method: GET
+    uri: /redfish/v1/TelemetryService/MetricDefinitions
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 504
+    section: 3.15.4
+    title: 查询指定指标定义资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/TelemetryService/MetricDefinitions/id
+  podm:
+    index: 302
+    section: 4.9.4
+    title: 查询指定指标定义资源信息
+    method: GET
+    uri: /redfish/v1/TelemetryService/MetricDefinitions/{id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 505
+    section: 3.15.5
+    title: 查询指标报告定义资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/TelemetryService/MetricReportDefinitions
+  podm:
+    index: 303
+    section: 4.9.5
+    title: 查询指标报告定义资源信息
+    method: GET
+    uri: /redfish/v1/TelemetryService/MetricReportDefinitions
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 506
+    section: 3.15.6
+    title: 创建指标报告定义资源信息
+    method: POST
+    uri: https://device_ip/redfish/v1/TelemetryService/MetricReportDefinitions
+  podm:
+    index: 304
+    section: 4.9.6
+    title: 创建指标报告定义资源信息
+    method: POST
+    uri: /redfish/v1/TelemetryService/MetricReportDefinitions
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 507
+    section: 3.15.7
+    title: 修改指定指标报告定义资源信息
+    method: PATCH
+    uri: https://device_ip/redfish/v1/TelemetryService/MetricReportDefinitions/id
+  podm:
+    index: 305
+    section: 4.9.7
+    title: 修改指定指标报告定义资源信息
+    method: PATCH
+    uri: /redfish/v1/TelemetryService/MetricReportDefinitions/{id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 508
+    section: 3.15.8
+    title: 删除指定指标报告定义
+    method: DELETE
+    uri: https://device_ip/redfish/v1/TelemetryService/MetricReportDefinitions/id
+  podm:
+    index: 306
+    section: 4.9.8
+    title: 删除指定指标报告定义
+    method: DELETE
+    uri: /redfish/v1/TelemetryService/MetricReportDefinitions/{id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 509
+    section: 3.15.9
+    title: 查询指定指标报告定义资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/TelemetryService/MetricReportDefinitions/id
+  podm:
+    index: 307
+    section: 4.9.9
+    title: 查询指定指标报告定义资源信息
+    method: GET
+    uri: /redfish/v1/TelemetryService/MetricReportDefinitions/{id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 510
+    section: 3.15.10
+    title: 查询指标报告集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/TelemetryService/MetricReports
+  podm:
+    index: 308
+    section: 4.9.10
+    title: 查询指标报告集合资源信息
+    method: GET
+    uri: /redfish/v1/TelemetryService/MetricReports
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 511
+    section: 3.15.11
+    title: 查询指定指标报告资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/TelemetryService/MetricReports/id
+  podm:
+    index: 309
+    section: 4.9.11
+    title: 查询指定指标报告资源信息
+    method: GET
+    uri: /redfish/v1/TelemetryService/MetricReports/{id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 512
+    section: 3.15.12
+    title: 查询触发器集合资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/TelemetryService/Triggers
+  podm:
+    index: 310
+    section: 4.9.12
+    title: 查询触发器集合资源信息
+    method: GET
+    uri: /redfish/v1/TelemetryService/Triggers
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 513
+    section: 3.15.13
+    title: 创建触发器
+    method: POST
+    uri: https://device_ip/redfish/v1/TelemetryService/Triggers
+  podm:
+    index: 311
+    section: 4.9.13
+    title: 创建触发器
+    method: POST
+    uri: /redfish/v1/TelemetryService/Triggers
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 514
+    section: 3.15.14
+    title: 查询指定触发器资源信息
+    method: GET
+    uri: https://device_ip/redfish/v1/TelemetryService/Triggers/id
+  podm:
+    index: 312
+    section: 4.9.14
+    title: 查询指定触发器资源信息
+    method: GET
+    uri: /redfish/v1/TelemetryService/Triggers/{id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 515
+    section: 3.15.15
+    title: 修改指定触发器资源信息
+    method: PATCH
+    uri: https://device_ip/redfish/v1/TelemetryService/Triggers/id
+  podm:
+    index: 313
+    section: 4.9.15
+    title: 修改指定触发器资源信息
+    method: PATCH
+    uri: /redfish/v1/TelemetryService/Triggers/{id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 516
+    section: 3.15.16
+    title: 删除指定触发器
+    method: DELETE
+    uri: https://device_ip/redfish/v1/TelemetryService/Triggers/id
+  podm:
+    index: 314
+    section: 4.9.16
+    title: 删除指定触发器
+    method: DELETE
+    uri: /redfish/v1/TelemetryService/Triggers/{id}
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 517
+    section: 3.15.17
+    title: 提交测试指标报告上报
+    method: POST
+    uri: https://device_ip/redfish/v1/TelemetryService/Actions/TelemetryService.SubmitTestMetricReport
+  podm:
+    index: 315
+    section: 4.9.17
+    title: 提交测试指标报告上报
+    method: POST
+    uri: /redfish/v1/TelemetryService/Actions/TelemetryService.SubmitTestMetricReport
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 518
+    section: 3.15.18
+    title: 清除指标报告
+    method: POST
+    uri: https://device_ip/redfish/v1/TelemetryService/Actions/TelemetryService.ClearMetricReports
+  podm:
+    index: 316
+    section: 4.9.18
+    title: 清除指标报告（未开发）
+    method: POST
+    uri: /redfish/v1/TelemetryService/Actions/TelemetryService.ClearMetricReports
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 519
+    section: 3.15.19
+    title: 恢复指标报告定义到默认值
+    method: POST
+    uri: https://device_ip/redfish/v1/TelemetryService/Actions/TelemetryService.ResetMetricReportDefinitionsToDefaults
+  podm:
+    index: 317
+    section: 4.9.19
+    title: 恢复指标报告定义到默认值 （未开发）
+    method: POST
+    uri: /redfish/v1/TelemetryService/Actions/TelemetryService.ResetMetricReportDefinitionsToDefaults
+- score: 1.0
+  confidence: high
+  method_same: true
+  bmc:
+    index: 520
+    section: 3.15.20
+    title: 恢复触发器到默认值
+    method: POST
+    uri: https://device_ip/redfish/v1/TelemetryService/Actions/TelemetryService.ResetTriggersToDefaults
+  podm:
+    index: 318
+    section: 4.9.20
+    title: 恢复触发器到默认值 (未开发)
+    method: POST
+    uri: /redfish/v1/TelemetryService/Actions/TelemetryService.ResetTriggersToDefaults
+- score: 0.7857
+  confidence: low
+  method_same: true
+  bmc:
+    index: 521
+    section: 3.16.1
+    title: 查询LCNService资源
+    method: GET
+    uri: https://device_ip/redfish/v1/Oem/Huawei/LCNService
+  podm:
+    index: 375
+    section: 4.11.1
+    title: 查询UBMService资源
+    method: GET
+    uri: /redfish/v1/Oem/HuaweiPublic/UBMService
+- score: 0.7273
+  confidence: medium
+  method_same: true
+  bmc:
+    index: 522
+    section: 3.16.2
+    title: 查询LCN设备集合信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Oem/Huawei/LCNService/LCNDevices
+  podm:
+    index: 376
+    section: 4.11.2
+    title: 查询UBM设备集合信息
+    method: GET
+    uri: /redfish/v1/Oem/HuaweiPublic/UBMService/UBMDevices
+- score: 0.7273
+  confidence: medium
+  method_same: true
+  bmc:
+    index: 523
+    section: 3.16.3
+    title: 查询指定LCN设备信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Oem/Huawei/LCNService/LCNDevices/device_id
+  podm:
+    index: 377
+    section: 4.11.3
+    title: 查询指定UBM设备信息
+    method: GET
+    uri: /redfish/v1/Oem/HuaweiPublic/UBMService/UBMDevices/{device_id}
+- score: 0.7273
+  confidence: medium
+  method_same: true
+  bmc:
+    index: 524
+    section: 3.16.4
+    title: 修改指定LCN设备信息
+    method: PATCH
+    uri: https://device_ip/redfish/v1/Oem/Huawei/LCNService/LCNDevices/device_id
+  podm:
+    index: 378
+    section: 4.11.4
+    title: 修改指定UBM设备信息
+    method: PATCH
+    uri: /redfish/v1/Oem/HuaweiPublic/UBMService/UBMDevices/{device_id}
+- score: 0.7692
+  confidence: low
+  method_same: true
+  bmc:
+    index: 525
+    section: 3.16.5
+    title: 查询LCN设备子卡集合信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Oem/Huawei/LCNService/LCNDevices/device_id/SubCards
+  podm:
+    index: 379
+    section: 4.11.5
+    title: 查询UBM设备子卡集合信息
+    method: GET
+    uri: /redfish/v1/Oem/HuaweiPublic/UBMService/UBMDevices/{device_id}/SubCards
+- score: 0.7692
+  confidence: low
+  method_same: true
+  bmc:
+    index: 526
+    section: 3.16.6
+    title: 查询指定LCN设备子卡信息
+    method: GET
+    uri: https://device_ip/redfish/v1/Oem/Huawei/LCNService/LCNDevices/device_id/SubCards/card_id
+  podm:
+    index: 380
+    section: 4.11.6
+    title: 查询指定UBM设备子卡信息
+    method: GET
+    uri: /redfish/v1/Oem/HuaweiPublic/UBMService/UBMDevices/{device_id}/SubCards/{card_id}
+- score: 0.64
+  confidence: medium
+  method_same: true
+  bmc:
+    index: 528
+    section: 3.16.8
+    title: 导出指定LCN设备日志
+    method: POST
+    uri: https://device_ip/redfish/v1/Oem/Huawei/LCNService/LCNDevices/device_id/Actions/LCN.ExportLog
+  podm:
+    index: 381
+    section: 4.11.7
+    title: 导出指定UBM设备日志 (待更新)
+    method: POST
+    uri: /redfish/v1/Oem/HuaweiPublic/UBMService/UBMDevices/{device_id}/Actions/UBM.ExportLog

@@ -47,6 +47,8 @@ PoDM/
 │   ├── error_cases.md / .docx
 │   ├── cross_doc_diff.md / .docx
 │   └── why_missing_classification.md
+├── .codex/skills/                    # 项目本地 Codex skill
+│   └── redfish-interface-match-review # BMC/PoDM 接口归属分析流程
 ├── data/                             # 原始文档（.docx / .txt），不入库
 ├── output/                           # 脚本生成的结果，不入库
 └── tests/                            # 标准库 unittest 冒烟测试
