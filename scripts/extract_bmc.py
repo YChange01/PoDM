@@ -36,6 +36,7 @@ from dataclasses import asdict
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _defaults import BMC_DOCX, OUTPUT_DIR  # noqa: E402
 from _docx_utils import read_source  # noqa: E402
 from _doc_structure import (  # noqa: E402
     HEADING_RE,
@@ -294,9 +295,8 @@ def build_interface(section: dict) -> tuple[Interface | None, str | None]:
 
 # ===================== 入口 =====================
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_INPUT = REPO_ROOT / "data" / "华为服务器 iBMC300 Redfish 接口说明_最新.docx"
-DEFAULT_OUTPUT_DIR = REPO_ROOT / "output"
+DEFAULT_INPUT = BMC_DOCX
+DEFAULT_OUTPUT_DIR = OUTPUT_DIR
 
 
 def main() -> None:

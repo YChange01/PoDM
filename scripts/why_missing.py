@@ -27,6 +27,7 @@ from collections import Counter
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _defaults import OUTPUT_DIR, PODM_DOCX  # noqa: E402
 from _docx_utils import read_source  # noqa: E402
 from extract_from_tables import (  # noqa: E402
     _section_has_uri,
@@ -40,9 +41,8 @@ from extract_from_examples import (  # noqa: E402
     parse_request_example,
 )
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_INPUT = REPO_ROOT / "data" / "Atlas PoDManager 1.0.0 Redfish 接口参考_最新.docx"
-DEFAULT_OUTPUT = REPO_ROOT / "output" / "why_missing.txt"
+DEFAULT_INPUT = PODM_DOCX
+DEFAULT_OUTPUT = OUTPUT_DIR / "why_missing.txt"
 
 _EMPTY_SIGNALS = {"略", "无", "暂无", "-", "—", "…"}
 _HTTP_LOOSE_RE = re.compile(r"\bHTTP\s*/\s*\d", re.IGNORECASE)

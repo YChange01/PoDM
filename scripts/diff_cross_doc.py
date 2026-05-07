@@ -25,10 +25,11 @@ import sys
 from pathlib import Path
 from collections import Counter
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_BMC = REPO_ROOT / "output" / "华为服务器 iBMC300 Redfish 接口说明_最新.bmc.interfaces.yaml"
-DEFAULT_PODM = REPO_ROOT / "output" / "Atlas PoDManager 1.0.0 Redfish 接口参考_最新.interfaces.yaml"
-DEFAULT_OUT = REPO_ROOT / "analysis" / "cross_doc_diff.md"
+from _defaults import ANALYSIS_DIR, BMC_STEM, OUTPUT_DIR, PODM_STEM
+
+DEFAULT_BMC = OUTPUT_DIR / f"{BMC_STEM}.bmc.interfaces.yaml"
+DEFAULT_PODM = OUTPUT_DIR / f"{PODM_STEM}.interfaces.yaml"
+DEFAULT_OUT = ANALYSIS_DIR / "cross_doc_diff.md"
 
 CATS = ("path", "header", "body", "query", "response")
 PATH_KEYWORDS = {"redfish", "v1", "actions", "oem", "huawei", "public"}

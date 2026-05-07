@@ -29,6 +29,7 @@ PoDM/
 ├── .gitignore
 ├── scripts/
 │   ├── _docx_utils.py                # 共享 .docx 读取 (跳 ToC + 合成 X.Y.Z 编号)
+│   ├── _defaults.py                  # 默认文档名 / data-output-analysis 路径
 │   ├── extract_headings.py           # 提取章节标题 + [METHOD] URI 的层级树
 │   ├── extract_from_tables.py        # 路径①：从表格提取 URI + 参数 (同时产出 uris.txt)
 │   ├── extract_from_examples.py      # 路径②：从示例代码提取 URI + 参数 (同时产出 uris.txt)
@@ -60,10 +61,11 @@ PoDM/
 
 把原始文档放到 `data/`，输出落在 `output/`。
 
-**不带参数**会直接跑仓库默认的输入文件（写死在脚本里），输出到 `output/` 下：
+**不带参数**会直接跑 `scripts/_defaults.py` 定义的仓库默认输入文件，输出到
+`output/` 下：
 
 ```bash
-# 默认输入：data/Atlas PoDManager 1.0.0 Redfish 接口参考_最新.docx
+# 默认输入：data/Atlas PoDManager 1.0.0 Redfish 接口参考-20260507.docx
 python3 scripts/extract_headings.py
 python3 scripts/extract_from_tables.py
 python3 scripts/extract_from_examples.py
@@ -83,7 +85,8 @@ python3 scripts/extract_from_examples.py  data/你的文件.docx
 （每行 `[METHOD] URI`，顺序与 yaml 一致），分别给结构化 diff 和纯 URI
 集合对比用。
 
-如果要换默认输入，改 `scripts/extract_from_*.py` 里的 `DEFAULT_INPUT` 常量即可。
+如果要换默认输入，改 `scripts/_defaults.py` 里的 `PODM_DOCX_NAME` / `BMC_DOCX_NAME`
+常量即可，所有 extractor 和 diff 脚本会共用同一份默认文件名。
 
 ## 输出示例
 

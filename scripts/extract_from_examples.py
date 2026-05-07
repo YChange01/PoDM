@@ -41,6 +41,7 @@ from dataclasses import asdict
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _defaults import OUTPUT_DIR, PODM_DOCX  # noqa: E402
 from _docx_utils import read_source  # noqa: E402
 from _doc_structure import (  # noqa: E402
     dedup_sections,
@@ -261,9 +262,8 @@ def build_interface(section: dict) -> tuple[Interface | None, str | None]:
 
 # =================== 入口 ===================
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_INPUT = REPO_ROOT / "data" / "Atlas PoDManager 1.0.0 Redfish 接口参考_最新.docx"
-DEFAULT_OUTPUT_DIR = REPO_ROOT / "output"
+DEFAULT_INPUT = PODM_DOCX
+DEFAULT_OUTPUT_DIR = OUTPUT_DIR
 
 
 def main() -> None:

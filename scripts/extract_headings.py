@@ -7,7 +7,7 @@
     python3 extract_headings.py                      # 使用默认输入
     python3 extract_headings.py <输入文件> [输出文件]
 
-    默认输入：<仓库根>/data/Atlas PoDManager 1.0.0 Redfish 接口参考_最新.docx
+    默认输入：<仓库根>/data/Atlas PoDManager 1.0.0 Redfish 接口参考-20260507.docx
     默认输出：<仓库根>/output/<输入文件名>.headings.txt
               （当显式传入输入但未传输出时）输出写到与输入同名的 .headings.txt
 
@@ -21,6 +21,7 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _defaults import OUTPUT_DIR, PODM_DOCX  # noqa: E402
 from _docx_utils import read_source  # noqa: E402
 
 # X.Y 或更深，后面紧跟一段可读标题（不以 /{ 空格 开头，且不含 / { }）
@@ -160,9 +161,8 @@ def format_tree(headings: list[Heading]) -> str:
 
 # ---------- 入口 ----------
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_INPUT = REPO_ROOT / "data" / "Atlas PoDManager 1.0.0 Redfish 接口参考_最新.docx"
-DEFAULT_OUTPUT_DIR = REPO_ROOT / "output"
+DEFAULT_INPUT = PODM_DOCX
+DEFAULT_OUTPUT_DIR = OUTPUT_DIR
 
 
 def _resolve_io(argv: list[str]) -> tuple[Path, Path]:

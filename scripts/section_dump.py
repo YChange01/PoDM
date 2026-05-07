@@ -15,10 +15,10 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _defaults import PODM_DOCX  # noqa: E402
 from _docx_utils import read_source  # noqa: E402
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_INPUT = REPO_ROOT / "data" / "Atlas PoDManager 1.0.0 Redfish 接口参考_最新.docx"
+DEFAULT_INPUT = PODM_DOCX
 
 _HEADING = re.compile(r"^\s*(\d+(?:\.\d+)+)\s+")
 

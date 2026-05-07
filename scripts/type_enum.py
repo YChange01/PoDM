@@ -25,6 +25,7 @@ from collections import Counter
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _defaults import OUTPUT_DIR, PODM_DOCX  # noqa: E402
 from _docx_utils import read_source  # noqa: E402
 from extract_from_tables import (  # noqa: E402
     iter_tables,
@@ -33,9 +34,8 @@ from extract_from_tables import (  # noqa: E402
     split_subsections,
 )
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_INPUT = REPO_ROOT / "data" / "Atlas PoDManager 1.0.0 Redfish 接口参考_最新.docx"
-DEFAULT_OUTPUT = REPO_ROOT / "output" / "types.txt"
+DEFAULT_INPUT = PODM_DOCX
+DEFAULT_OUTPUT = OUTPUT_DIR / "types.txt"
 
 _TYPE_HEADER_KEYS = ("类型", "参数类型", "类 型")  # 可能的表头关键字
 

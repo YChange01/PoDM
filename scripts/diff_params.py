@@ -10,8 +10,8 @@
     python3 scripts/diff_params.py <tables.yaml> <examples.yaml>
 
 默认输入：
-    output/Atlas PoDManager 1.0.0 Redfish 接口参考_最新.interfaces.yaml
-    output/Atlas PoDManager 1.0.0 Redfish 接口参考_最新.example.interfaces.yaml
+    output/Atlas PoDManager 1.0.0 Redfish 接口参考-20260507.interfaces.yaml
+    output/Atlas PoDManager 1.0.0 Redfish 接口参考-20260507.example.interfaces.yaml
 默认输出：
     output/param_diff.txt   (UTF-8，完整明细)
 stdout 只打摘要，避免 Windows GBK 控制台出错。
@@ -30,11 +30,11 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_INPUT_STEM = "Atlas PoDManager 1.0.0 Redfish 接口参考_最新"
-DEFAULT_TABLES = REPO_ROOT / "output" / f"{DEFAULT_INPUT_STEM}.interfaces.yaml"
-DEFAULT_EXAMPLES = REPO_ROOT / "output" / f"{DEFAULT_INPUT_STEM}.example.interfaces.yaml"
-DEFAULT_OUTPUT = REPO_ROOT / "output" / "param_diff.txt"
+from _defaults import OUTPUT_DIR, PODM_STEM
+
+DEFAULT_TABLES = OUTPUT_DIR / f"{PODM_STEM}.interfaces.yaml"
+DEFAULT_EXAMPLES = OUTPUT_DIR / f"{PODM_STEM}.example.interfaces.yaml"
+DEFAULT_OUTPUT = OUTPUT_DIR / "param_diff.txt"
 
 CATEGORIES = ("path", "header", "body", "query", "response")
 

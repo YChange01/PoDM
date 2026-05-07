@@ -16,9 +16,10 @@ import zipfile
 from collections import Counter
 from pathlib import Path
 
+from _defaults import PODM_DOCX
+
 W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
-REPO_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_INPUT = REPO_ROOT / "data" / "Atlas PoDManager 1.0.0 Redfish 接口参考_最新.docx"
+DEFAULT_INPUT = PODM_DOCX
 
 
 def _style(p_elem) -> str:

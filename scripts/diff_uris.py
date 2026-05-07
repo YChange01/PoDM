@@ -27,11 +27,11 @@ import sys
 from collections import Counter
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_INPUT_STEM = "Atlas PoDManager 1.0.0 Redfish 接口参考_最新"
-DEFAULT_TABLES = REPO_ROOT / "output" / f"{DEFAULT_INPUT_STEM}.interfaces.yaml"
-DEFAULT_EXAMPLES = REPO_ROOT / "output" / f"{DEFAULT_INPUT_STEM}.example.interfaces.yaml"
-DEFAULT_OUTPUT = REPO_ROOT / "output" / "uri_diff.txt"
+from _defaults import OUTPUT_DIR, PODM_STEM
+
+DEFAULT_TABLES = OUTPUT_DIR / f"{PODM_STEM}.interfaces.yaml"
+DEFAULT_EXAMPLES = OUTPUT_DIR / f"{PODM_STEM}.example.interfaces.yaml"
+DEFAULT_OUTPUT = OUTPUT_DIR / "uri_diff.txt"
 
 _BRACE_RE = re.compile(r"\{[^{}]+\}")
 

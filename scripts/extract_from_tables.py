@@ -20,7 +20,7 @@
     python3 extract_from_tables.py                             # 使用默认输入
     python3 extract_from_tables.py <输入文件> [输出yaml]
 
-    默认输入：<仓库根>/data/Atlas PoDManager 1.0.0 Redfish 接口参考_最新.docx
+    默认输入：<仓库根>/data/Atlas PoDManager 1.0.0 Redfish 接口参考-20260507.docx
     默认输出（output/）：
       - <stem>.interfaces.yaml         结构化
       - <stem>.uris.txt                每行 "[METHOD] URI"，顺序与 yaml 一致
@@ -41,6 +41,7 @@ from dataclasses import asdict
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+from _defaults import OUTPUT_DIR, PODM_DOCX  # noqa: E402
 from _docx_utils import read_source  # noqa: E402
 from _doc_structure import (  # noqa: E402  (部分名字也对外 re-export 给 col_enum/type_enum/why_missing)
     dedup_sections,
@@ -214,9 +215,8 @@ def build_interface(section: dict) -> Interface:
 
 # =================== 入口 ===================
 
-REPO_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_INPUT = REPO_ROOT / "data" / "Atlas PoDManager 1.0.0 Redfish 接口参考_最新.docx"
-DEFAULT_OUTPUT_DIR = REPO_ROOT / "output"
+DEFAULT_INPUT = PODM_DOCX
+DEFAULT_OUTPUT_DIR = OUTPUT_DIR
 
 
 def _resolve_io(argv: list[str]) -> tuple[Path, Path]:
