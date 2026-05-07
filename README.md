@@ -37,6 +37,7 @@ PoDM/
 │   ├── extract_from_tables.py        # 路径①：从表格提取 URI + 参数 (同时产出 uris.txt)
 │   ├── extract_from_examples.py      # 路径②：从示例代码提取 URI + 参数 (同时产出 uris.txt)
 │   ├── extract_bmc.py                # BMC：提取接口 + 参数
+│   ├── run_pipeline.py               # 一键跑完整提取流水线
 │   ├── check.py                      # 编译 + 单元测试
 │   ├── col_enum.py                   # 诊断：按列索引枚举表格某列取值
 │   ├── type_enum.py                  # 诊断：枚举参数表"类型"列的取值
@@ -67,13 +68,41 @@ PoDM/
 | `scripts/extract_from_tables.py` | **表格路径**：从参数表抽 URI + path/header/body/query/response | `<input>.interfaces.yaml` + `<input>.uris.txt` |
 | `scripts/extract_from_examples.py` | **示例路径**：从请求/响应示例代码抽相同字段结构 | `<input>.example.interfaces.yaml` + `<input>.example.uris.txt` |
 | `scripts/extract_bmc.py` | BMC：从命令格式 / 输出说明抽 URI + 参数 | `<input>.bmc.interfaces.yaml` + `<input>.bmc.uris.txt` |
+| `scripts/run_pipeline.py` | 一键跑两份文档的接口清单和接口+参数提取 | `output/<date>/` |
 
 ## 用法
 
-把原始文档放到 `data/`，输出落在 `output/`。
+把原始文档放到 `data/<日期>/`，输出落在 `output/<日期>/`。
 
-**不带参数**会直接跑 `scripts/_defaults.py` 定义的仓库默认输入文件，输出到
-`output/` 下：
+**一键执行**需要传日期参数。脚本会读取 `data/<日期>/` 下的固定文件名，并输出到
+`output/<日期>/`：
+
+```bash
+python3 scripts/run_pipeline.py 20260507
+```
+
+输入文件应为：
+
+```text
+data/20260507/Atlas PoDManager 1.0.0 Redfish 接口参考.docx
+data/20260507/华为服务器 iBMC300 Redfish 接口说明.docx
+```
+
+输出目录为：
+
+```text
+output/20260507/
+```
+
+如需指定非默认文件路径：
+
+```bash
+python3 scripts/run_pipeline.py 20260507 \
+  --podm data/20260507/Atlas PoDManager 1.0.0 Redfish 接口参考.docx \
+  --bmc data/20260507/华为服务器 iBMC300 Redfish 接口说明.docx
+```
+
+**单独执行某一步**时，不带参数会直接跑默认输入文件：
 
 ```bash
 # 默认输入见 scripts/_defaults.py
@@ -89,7 +118,8 @@ python3 scripts/extract_from_examples.py
 python3 scripts/extract_podm_interface_list.py data/你的PoDM文件.docx output/你的PoDM文件.interface-list.yaml
 python3 scripts/extract_bmc_interface_list.py  data/你的BMC文件.docx  output/你的BMC文件.interface-list.yaml
 python3 scripts/extract_from_tables.py    data/你的文件.docx   output/你的文件.interfaces.yaml
-python3 scripts/extract_from_examples.py  data/你的文件.docx
+python3 scripts/extract_from_examples.py  data/你的文件.docx   output/你的文件.example.interfaces.yaml
+python3 scripts/extract_bmc.py            data/你的BMC文件.docx output/你的BMC文件.bmc.interfaces.yaml
 ```
 
 只传输入、不传输出时，结果写到约定的默认文件名。
@@ -98,8 +128,8 @@ python3 scripts/extract_from_examples.py  data/你的文件.docx
 （每行 `[METHOD] URI`，顺序与 yaml 一致），分别给结构化 diff 和纯 URI
 集合对比用。
 
-如果要换默认输入，改 `scripts/_defaults.py` 里的 `PODM_DOCX_NAME` / `BMC_DOCX_NAME`
-常量即可，所有 extractor 和 diff 脚本会共用同一份默认文件名。
+如果要换默认文件名，改 `scripts/_defaults.py` 里的 `PODM_DOCX_NAME` /
+`BMC_DOCX_NAME` 常量即可。
 
 ## 验证
 

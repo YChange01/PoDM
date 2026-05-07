@@ -20,7 +20,7 @@
     python3 extract_from_tables.py                             # 使用默认输入
     python3 extract_from_tables.py <输入文件> [输出yaml]
 
-    默认输入：<仓库根>/data/Atlas PoDManager 1.0.0 Redfish 接口参考-20260507.docx
+    默认输入：<仓库根>/data/20260507/Atlas PoDManager 1.0.0 Redfish 接口参考.docx
     默认输出（output/）：
       - <stem>.interfaces.yaml         结构化
       - <stem>.uris.txt                每行 "[METHOD] URI"，顺序与 yaml 一致

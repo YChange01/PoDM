@@ -10,8 +10,8 @@
     python3 scripts/diff_params.py <tables.yaml> <examples.yaml>
 
 默认输入：
-    output/Atlas PoDManager 1.0.0 Redfish 接口参考-20260507.interfaces.yaml
-    output/Atlas PoDManager 1.0.0 Redfish 接口参考-20260507.example.interfaces.yaml
+    output/Atlas PoDManager 1.0.0 Redfish 接口参考.interfaces.yaml
+    output/Atlas PoDManager 1.0.0 Redfish 接口参考.example.interfaces.yaml
 默认输出：
     output/param_diff.txt   (UTF-8，完整明细)
 stdout 只打摘要，避免 Windows GBK 控制台出错。

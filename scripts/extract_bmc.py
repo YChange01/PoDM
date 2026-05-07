@@ -24,7 +24,7 @@ $expand/$select / 错误码等说明文档），不算接口，跳过。
 
 用法：
     python3 scripts/extract_bmc.py
-    python3 scripts/extract_bmc.py <docx_path>
+    python3 scripts/extract_bmc.py <docx_path> [输出yaml]
 
 依赖：仅 Python 3 标准库 + PyYAML（已在 _yaml_io 处理）。
 """
@@ -299,9 +299,22 @@ DEFAULT_INPUT = BMC_DOCX
 DEFAULT_OUTPUT_DIR = OUTPUT_DIR
 
 
+def _resolve_io(argv: list[str]) -> tuple[Path, Path]:
+    if len(argv) >= 1:
+        inp = Path(argv[0])
+        out = (
+            Path(argv[1])
+            if len(argv) > 1
+            else DEFAULT_OUTPUT_DIR / f"{inp.stem}.bmc.interfaces.yaml"
+        )
+    else:
+        inp = DEFAULT_INPUT
+        out = DEFAULT_OUTPUT_DIR / f"{inp.stem}.bmc.interfaces.yaml"
+    return inp, out
+
+
 def main() -> None:
-    args = sys.argv[1:]
-    path = Path(args[0]) if args else DEFAULT_INPUT
+    path, yaml_path = _resolve_io(sys.argv[1:])
     if not path.exists():
         sys.exit(f"输入文件不存在: {path}")
 
@@ -321,11 +334,10 @@ def main() -> None:
             continue
         interfaces.append(iface)
 
-    stem = path.stem
-    DEFAULT_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
-    yaml_path = DEFAULT_OUTPUT_DIR / f"{stem}.bmc.interfaces.yaml"
-    uris_path = DEFAULT_OUTPUT_DIR / f"{stem}.bmc.uris.txt"
-    warn_path = DEFAULT_OUTPUT_DIR / f"{stem}.bmc.warnings.txt"
+    yaml_path.parent.mkdir(parents=True, exist_ok=True)
+    base_stem = Path(yaml_path.stem).stem if "." in yaml_path.stem else yaml_path.stem
+    uris_path = yaml_path.parent / f"{base_stem}.uris.txt"
+    warn_path = yaml_path.parent / f"{base_stem}.warnings.txt"
 
     final_yaml = dump_yaml(
         {"interfaces": [asdict(i) for i in interfaces]}, yaml_path
