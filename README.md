@@ -1,6 +1,6 @@
 # PoDM 接口文档提取工具
 
-从 Redfish 接口文档（Word `.docx` 或纯文本 `.txt`）中提取章节结构与接口参数，
+从 Redfish 接口文档（Word `.docx` 或纯文本 `.txt`）中提取接口清单与接口参数，
 方便后续做跨版本 / 跨产品（如 BMC vs PoDM）的对比分析。
 
 > 零第三方依赖：仅用 Python 3 标准库（`zipfile` + `xml.etree`）直读 `.docx`，
@@ -27,35 +27,46 @@
 PoDM/
 ├── README.md
 ├── .gitignore
+├── pyproject.toml
 ├── scripts/
 │   ├── _docx_utils.py                # 共享 .docx 读取 (跳 ToC + 合成 X.Y.Z 编号)
 │   ├── _defaults.py                  # 默认文档名 / data-output-analysis 路径
-│   ├── extract_headings.py           # 提取章节标题 + [METHOD] URI 的层级树
+│   ├── _interface_list.py            # 接口清单 YAML 输出
+│   ├── extract_podm_interface_list.py # PoDM：提取接口清单（不含参数）
+│   ├── extract_bmc_interface_list.py  # BMC：提取接口清单（不含参数）
 │   ├── extract_from_tables.py        # 路径①：从表格提取 URI + 参数 (同时产出 uris.txt)
 │   ├── extract_from_examples.py      # 路径②：从示例代码提取 URI + 参数 (同时产出 uris.txt)
+│   ├── extract_bmc.py                # BMC：提取接口 + 参数
+│   ├── check.py                      # 编译 + 单元测试
 │   ├── col_enum.py                   # 诊断：按列索引枚举表格某列取值
 │   ├── type_enum.py                  # 诊断：枚举参数表"类型"列的取值
 │   ├── docx_diag.py                  # 诊断：打印段落样式分布
 │   └── section_dump.py               # 诊断：导出指定章节的原文
 ├── analysis/                         # 一次性对比分析 (BMC vs PoDM)
-│   ├── compare.py
-│   ├── compare_report.txt
-│   └── BMC_vs_PoDM_分析.txt
+│   ├── error_cases.md / .docx
+│   ├── cross_doc_diff.md / .docx
+│   └── why_missing_classification.md
 ├── data/                             # 原始文档（.docx / .txt），不入库
-└── output/                           # 脚本生成的结果，不入库
+├── output/                           # 脚本生成的结果，不入库
+└── tests/                            # 标准库 unittest 冒烟测试
 ```
 
 `data/` 与 `output/` 目录只保留空壳（`.gitkeep`），内部文件默认被 `.gitignore` 屏蔽。
-`analysis/compare.py` 依赖 `data/BMC.txt` 和 `data/PoDM.txt` 运行，公开仓库里跑
-不起来是预期的——报告本身可读即可。
 
 ## 主工作流
 
+本项目现在按两类任务管理：
+
+1. **提取接口清单**：只输出 `index / section / title / method / uri`，不含参数。
+2. **提取接口 + 参数**：输出接口元数据和 `path/header/body/query/response` 参数。
+
 | 脚本 | 作用 | 默认输出 |
 |---|---|---|
-| `scripts/extract_headings.py` | 提取 `X.Y.Z` 级章节标题，每个接口小节附带 `[METHOD] URI`（层级树视图） | `<input>.headings.txt` |
+| `scripts/extract_podm_interface_list.py` | PoDManager：提取接口清单（index/section/title/method/uri，不含参数） | `<PoDM stem>.interface-list.yaml` |
+| `scripts/extract_bmc_interface_list.py` | BMC：提取接口清单（index/section/title/method/uri，不含参数） | `<BMC stem>.interface-list.yaml` |
 | `scripts/extract_from_tables.py` | **表格路径**：从参数表抽 URI + path/header/body/query/response | `<input>.interfaces.yaml` + `<input>.uris.txt` |
 | `scripts/extract_from_examples.py` | **示例路径**：从请求/响应示例代码抽相同字段结构 | `<input>.example.interfaces.yaml` + `<input>.example.uris.txt` |
+| `scripts/extract_bmc.py` | BMC：从命令格式 / 输出说明抽 URI + 参数 | `<input>.bmc.interfaces.yaml` + `<input>.bmc.uris.txt` |
 
 ## 用法
 
@@ -65,8 +76,9 @@ PoDM/
 `output/` 下：
 
 ```bash
-# 默认输入：data/Atlas PoDManager 1.0.0 Redfish 接口参考-20260507.docx
-python3 scripts/extract_headings.py
+# 默认输入见 scripts/_defaults.py
+python3 scripts/extract_podm_interface_list.py
+python3 scripts/extract_bmc_interface_list.py
 python3 scripts/extract_from_tables.py
 python3 scripts/extract_from_examples.py
 ```
@@ -74,29 +86,45 @@ python3 scripts/extract_from_examples.py
 **传参数**可处理任何文件：
 
 ```bash
-python3 scripts/extract_headings.py       data/你的文件.docx   output/你的文件.headings.txt
+python3 scripts/extract_podm_interface_list.py data/你的PoDM文件.docx output/你的PoDM文件.interface-list.yaml
+python3 scripts/extract_bmc_interface_list.py  data/你的BMC文件.docx  output/你的BMC文件.interface-list.yaml
 python3 scripts/extract_from_tables.py    data/你的文件.docx   output/你的文件.interfaces.yaml
 python3 scripts/extract_from_examples.py  data/你的文件.docx
 ```
 
 只传输入、不传输出时，结果写到约定的默认文件名。
 
-两条主路径都**同时**产出 `.interfaces.yaml`（结构化参数清单）和 `.uris.txt`
+两条接口+参数路径都**同时**产出 `.interfaces.yaml`（结构化参数清单）和 `.uris.txt`
 （每行 `[METHOD] URI`，顺序与 yaml 一致），分别给结构化 diff 和纯 URI
 集合对比用。
 
 如果要换默认输入，改 `scripts/_defaults.py` 里的 `PODM_DOCX_NAME` / `BMC_DOCX_NAME`
 常量即可，所有 extractor 和 diff 脚本会共用同一份默认文件名。
 
+## 验证
+
+提交前跑统一检查：
+
+```bash
+conda run -n base python scripts/check.py
+```
+
+检查内容：
+
+- 编译 `scripts/*.py`
+- 运行 `tests/` 下的标准库 `unittest`
+
 ## 输出示例
 
-**headings.txt**
+**interface-list.yaml**
 
-```
-    4.2.25 导出日志信息
-        [POST] /redfish/v1/Managers/{manager_id}/LogServices/{logservices_id}/Actions/Oem/Huawei/LogService.ExportLog
-    4.2.26 查询日志集合资源信息
-        [GET] /redfish/v1/Managers/{manager_id}/LogServices/{logservices_id}/Entries
+```yaml
+interfaces:
+- index: 1
+  section: 3.19.3
+  title: 基于SPDM协议获取组件签名测量值
+  method: POST
+  uri: https://device_ip/redfish/v1/ComponentIntegrity/component_integrity_id/Actions/ComponentIntegrity.SPDMGetSignedMeasurements
 ```
 
 **interfaces.yaml**

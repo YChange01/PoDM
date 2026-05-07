@@ -53,7 +53,7 @@
     Cross-doc pair matcher  → pair_interfaces（4 阶段配对：title > uri+method > uri > skeleton）
     Diff renderer           → diff_params / render_report（统一 only_X / common 三态）
     Warning collector       → 整流 silent failure，统一写 *.warnings.txt
-```
+```claude
 
 ---
 
@@ -65,7 +65,7 @@
 |---|---|
 | `[Rule]` `coding-style.md` | 共享识别逻辑独立成 `_doc_structure.py`（194 行 < 800 上限），避免 PoDM/BMC 两 extractor 漂移 |
 | `[Skill]` `_docx_utils.read_source` | docx → 行级文本 |
-| `[Skill]` `extract_headings` | 先看目录，掌握 chapter 3 接口 / chapter 4 附录的边界 |
+| `[Skill]` `extract_podm_interface_list` / `extract_bmc_interface_list` | 先提取接口清单，掌握 PoDM / BMC 接口边界 |
 | `[Agent]` Section splitter | `HEADING_RE` 识别 `\d+(\.\d+)+ + 标题`；标题首字符禁 `/` 但允许内含 `/`（修 4.10.2 "带内升级软件/固件" 标题）|
 | `[Agent]` Marker recognizer | `match_marker` 兼容三种写法：基础 / `\s*\d*` 数字带空格（修 4.2.39 "响应参数 1"）/ `\S{1,5}板` 板型前缀（修 4.4.2 "SMN板响应参数"）|
 

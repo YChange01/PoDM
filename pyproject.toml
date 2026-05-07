@@ -1,0 +1,9 @@
+[project]
+name = "podm-doc-tools"
+version = "0.1.0"
+description = "Redfish docx interface extraction and comparison tools for PoDManager documents."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.ruff]
+line-length = 100
