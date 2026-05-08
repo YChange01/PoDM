@@ -205,8 +205,38 @@ def parse_command_format(lines: list[str]) -> dict:
 
 # ===================== 输出说明 解析（响应字段） =====================
 
-# 字段名长相：@/字母/_ 开头，可含字母数字 . - _ @
-_FIELD_NAME_RE = re.compile(r"^[@A-Za-z_][\w@.\-]*$")
+# 字段名长相：@/字母/_ 开头，仅允许 ASCII 字母数字 . - _ @。
+# 不使用 \w：Python 的 \w 会匹配中文，导致 "CPU详细信息" / "TaskState任务状态说明"
+# 这类说明标题被误抓为响应字段。
+_FIELD_NAME_RE = re.compile(r"^[@A-Za-z_][A-Za-z0-9_@.\-]*$")
+_TYPE_VALUES = {
+    "string", "str", "integer", "int", "int32", "int64", "uint", "uint32",
+    "uint64", "long", "short", "number", "float", "double", "decimal",
+    "boolean", "bool", "array", "object", "enum", "null", "uri", "url",
+    "date", "datetime", "date-time", "time", "timestamp", "ipv4address",
+    "ipv6address", "macaddress", "guid", "uuid", "password", "byte", "bytes",
+    "字符串", "字符", "字符型", "整数", "整型", "数字", "布尔", "布尔值",
+    "布尔型", "对象", "数组", "列表", "枚举", "枚举型", "浮点", "浮点数",
+    "浮点型", "时间", "时间戳", "-", "–",
+}
+_TYPE_SUFFIX_RE = re.compile(r"^.{0,24}(列表|数组|对象|集合|属性|字典|映射|型)$")
+
+
+def looks_like_output_type(value: str) -> bool:
+    """判断输出说明表的类型列是否像类型，而不是枚举值说明。"""
+    normalized = value.strip()
+    if not normalized:
+        return False
+    # 类型列有时会混入简短说明，如 "对象，诊断结果" / "数组，硬盘列表"。
+    # 先按常见中文/英文分隔符取类型头部判断，避免把 "Successful  诊断成功"
+    # 这类枚举说明误判为字段。
+    head = re.split(r"[,，、;；:：\s]", normalized, maxsplit=1)[0]
+    lower = head.lower()
+    if lower in _TYPE_VALUES or head in _TYPE_VALUES:
+        return True
+    if re.search(r"(\[\]|\[[A-Za-z_][A-Za-z0-9_]*\])$", head):
+        return True
+    return bool(_TYPE_SUFFIX_RE.match(head))
 
 
 def extract_response_fields(lines: list[str]) -> list[str]:
@@ -214,16 +244,19 @@ def extract_response_fields(lines: list[str]) -> list[str]:
 
     跳过表头行 ('字段'/'类型'/'说明')。不去重——同名重复通常代表嵌套字段
     （如 RootCertificate.Subject 和 ClientCertificate.Subject 共用 Subject 时）。
+    同时跳过输出说明里的枚举值/说明标题：
+      - "CPU详细信息" 这类单独说明标题
+      - "Successful  成功" 这类枚举值说明
     """
     out: list[str] = []
     for line in lines:
         cols = split_columns(line)
-        if not cols:
+        if len(cols) < 2:
             continue
         first = cols[0]
         if first in ("字段", "类型", "说明", "参数"):
             continue
-        if _FIELD_NAME_RE.match(first):
+        if _FIELD_NAME_RE.match(first) and looks_like_output_type(cols[1]):
             out.append(first)
     return out
 
