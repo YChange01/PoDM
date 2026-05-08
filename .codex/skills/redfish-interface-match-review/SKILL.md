@@ -1,21 +1,20 @@
 ---
 name: redfish-interface-match-review
-description: Compare BMC and PoDManager Redfish interface-list YAML files using LLM semantic review and consolidated Excel workbooks. Use when asked to judge whether interfaces belong to the same API, summarize common/BMC-only/PoDM-only interfaces, review ambiguous matches, or package dated semantic analysis outputs.
+description: Compare BMC and PoDManager Redfish interface-list YAML files using direct LLM semantic judgment and a single consolidated Excel workbook. Use when asked to judge whether interfaces belong to the same API by title similarity and API/interface name semantics, summarize common/BMC-only/PoDM-only interfaces, or write dated results under the output analysis folder.
 ---
 
 # Redfish Interface Match Review
 
 ## Purpose
 
-Use this skill for this project's BMC vs PoDManager interface ownership analysis when the user wants model-based semantic judgment rather than a mechanical title-score report.
+Use this skill for this project's BMC vs PoDManager interface ownership analysis when the user wants direct model-based semantic judgment. Do not implement or run a matching script for the judgment step unless the user explicitly asks for an automation tool.
 
-The expected output is a dated semantic analysis directory containing:
+The expected output is one dated output analysis directory containing:
 
 - common interfaces;
 - BMC-only interfaces;
 - PoDM-only interfaces;
-- one Markdown review report;
-- one Excel workbook with three sheets.
+- one consolidated Excel workbook with three sheets.
 
 ## Inputs
 
@@ -39,31 +38,24 @@ uri: https://device_ip/redfish/v1/...
 ## Workflow
 
 1. Load both `*.interface-list.yaml` files.
-2. Build candidate pairs from title, method, normalized URI, URI skeleton, and final Action name.
-3. Use LLM semantic judgment to decide one-to-one interface ownership.
-4. Write semantic review outputs:
+2. Compare interfaces directly with LLM judgment based on title similarity, API/interface name semantics, method, URI, URI skeleton, and final Action name.
+3. Enforce one-to-one pairing: one BMC interface can belong to at most one PoDManager interface, and one PoDManager interface can belong to at most one BMC interface.
+4. Write the result under the dated output analysis folder:
 
 ```text
-analysis/<date>/llm_interface_match_review.md
-analysis/<date>/llm_common_interfaces.yaml
-analysis/<date>/llm_bmc_only_interfaces.yaml
-analysis/<date>/llm_podm_only_interfaces.yaml
-analysis/<date>/llm_common_interfaces.csv
-analysis/<date>/llm_bmc_only_interfaces.csv
-analysis/<date>/llm_podm_only_interfaces.csv
-analysis/<date>/llm_interface_match_review.xlsx
+output/<date>/analysis/
 ```
 
-5. Export one consolidated Excel workbook with exactly three sheets:
+5. Export exactly one consolidated Excel workbook with three sheets:
 
 ```text
-analysis/<date>/llm_interface_match_review.xlsx
+output/<date>/analysis/interface_match_llm_summary.xlsx
   - 共有接口
   - BMC独有
   - PoDM独有
 ```
 
-If separate per-category Excel files exist after consolidation, delete only those per-category Excel files. Keep CSV/YAML/Markdown source artifacts unless the user explicitly asks to remove them.
+Do not claim a CSV can contain sheets. CSV is flat; use `.xlsx` when the user asks for one file with multiple sheets. If a temporary CSV is useful for staging, keep it only when the user asks for CSV output; otherwise delete it after the workbook is verified.
 
 ## Semantic Review Rules
 
@@ -87,18 +79,25 @@ Common synonym/product-normalization examples:
 
 Use `high` confidence when URI or Action directly confirms the match. Use `medium` when the match depends on product terminology or semantic equivalence. Use `low` only when the result intentionally needs human review.
 
-## Report Requirements
+## Workbook Requirements
 
-The Markdown report must include:
+The Excel workbook must have exactly these sheets:
 
-- BMC interface count;
-- PoDManager interface count;
-- common interface count;
-- BMC-only count;
-- PoDM-only count;
-- notes for medium/low-confidence or non-literal title matches.
+- `共有接口`
+- `BMC独有`
+- `PoDM独有`
 
-Use absolute file links in the final user response for the important reports and Excel files.
+Recommended columns for `共有接口`:
+
+```text
+category, confidence, title_similarity_score, method_same,
+bmc_index, bmc_section, bmc_title, bmc_method, bmc_uri,
+podm_index, podm_section, podm_title, podm_method, podm_uri
+```
+
+For the two 独有 sheets, keep the same columns for consistency and leave the missing side blank.
+
+In the final user response, report the three category counts and link to the `.xlsx` file.
 
 ## Verification
 
@@ -111,5 +110,5 @@ conda run -n base python scripts/check.py
 For Excel outputs, reload the workbook and verify:
 
 - sheet names are exactly `共有接口`, `BMC独有`, `PoDM独有`;
-- row counts match the source CSV files;
+- row counts match the semantic result counts;
 - each workbook contains only the requested three sheets.

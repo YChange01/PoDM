@@ -1,4 +1,4 @@
 interface:
   display_name: "Redfish Interface Match Review"
   short_description: "Review Redfish API matches"
-  default_prompt: "Use this skill to compare BMC and PoDManager Redfish interface-list YAML files with semantic judgment and export consolidated analysis workbooks."
+  default_prompt: "Use this skill to compare BMC and PoDManager Redfish interface-list YAML files with direct semantic judgment and export one consolidated workbook under output/<date>/analysis/."
