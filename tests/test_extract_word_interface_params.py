@@ -10,6 +10,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 
 from extract_word_interface_params import (  # noqa: E402
     extract_interfaces_from_text,
+    interface_to_dict,
     load_common_sections,
 )
 
@@ -58,6 +59,16 @@ class ExtractWordInterfaceParamsTest(unittest.TestCase):
         self.assertEqual(iface.params["body"][0].name, "Type")
         self.assertEqual(iface.params["response"][1].name, "Members")
         self.assertEqual(iface.params["response"][1].type, "array")
+
+        serialized = interface_to_dict(iface)
+        self.assertEqual(
+            serialized["params"]["path"][0],
+            {"name": "manager_id", "type": "string"},
+        )
+        self.assertEqual(
+            set(serialized["params"]["body"][0].keys()),
+            {"name", "type"},
+        )
 
     def test_extracts_bmc_interface_params_and_types(self) -> None:
         text = "\n".join(

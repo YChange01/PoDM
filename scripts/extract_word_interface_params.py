@@ -770,8 +770,7 @@ def interface_to_dict(iface: InterfaceRecord) -> dict[str, object]:
 
 
 def compact_param(record: ParamRecord) -> dict[str, object]:
-    data = asdict(record)
-    return {key: value for key, value in data.items() if value not in ("", False)}
+    return {"name": record.name, "type": record.type}
 
 
 def write_output(data: dict[str, object], output: Path) -> Path:
