@@ -83,6 +83,7 @@ class ExtractWordInterfaceParamsTest(unittest.TestCase):
                 '{"Type":"All"}',
                 "参数说明",
                 "参数\t类型\t说明\t取值",
+                "device_ip\tstring\t设备IP地址\t-",
                 "manager_id\tstring\t管理资源ID\t-",
                 "X-Auth-Token\tstring\t认证令牌\t-",
                 "Type\tstring\t收集类型\tAll",
@@ -104,6 +105,7 @@ class ExtractWordInterfaceParamsTest(unittest.TestCase):
         self.assertEqual(params["path"][0].type, "string")
         self.assertEqual(params["header"][0].name, "X-Auth-Token")
         self.assertEqual(params["body"][0].name, "Type")
+        self.assertNotIn("device_ip", [record.name for record in params["body"]])
         self.assertEqual(params["query"][0].name, "dump_kind")
         self.assertEqual(params["query"][0].type, "integer")
         self.assertEqual([record.name for record in params["response"]], ["Id", "Messages"])

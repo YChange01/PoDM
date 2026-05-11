@@ -149,6 +149,7 @@ TYPE_VALUES = {
 }
 TYPE_SUFFIX_RE = re.compile(r"^.{0,24}(列表|数组|对象|集合|属性|字典|映射|型)$")
 PATH_KEYWORDS = {"redfish", "v1", "actions", "oem", "huawei", "public"}
+IGNORED_PARAM_NAMES = {"device_ip"}
 
 
 @dataclass
@@ -600,6 +601,8 @@ def parse_bmc_request_params(
         key_to_category[key.lower()] = "query"
 
     for row in rows:
+        if row.name.lower() in IGNORED_PARAM_NAMES:
+            continue
         category = key_to_category.get(row.name.lower(), "")
         if not category:
             category = "body"
