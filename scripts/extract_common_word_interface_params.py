@@ -14,6 +14,8 @@ Usage:
 from __future__ import annotations
 
 import argparse
+import csv
+import io
 import os
 import subprocess
 import sys
@@ -47,6 +49,11 @@ def parse_args(argv: list[str]) -> argparse.Namespace:
     parser.add_argument("--bmc-doc", type=Path, help="BMC Word 文档路径")
     parser.add_argument("--match-workbook", type=Path, help="共有接口匹配 Excel 路径")
     parser.add_argument("--out-dir", type=Path, help="输出目录")
+    parser.add_argument(
+        "--copy-input",
+        type=Path,
+        help="复制给大模型做参数差异分析的 Markdown 文件；默认 output/<date>/analysis/common_interface_param_compare_input.md",
+    )
     return parser.parse_args(argv)
 
 
@@ -104,6 +111,71 @@ def quote_arg(value: str) -> str:
     return value
 
 
+def common_sheet_as_csv(workbook: Path) -> str:
+    try:
+        from openpyxl import load_workbook
+    except ImportError as exc:
+        raise SystemExit("读取 xlsx 需要 openpyxl：pip install openpyxl") from exc
+
+    wb = load_workbook(workbook, read_only=True, data_only=True)
+    if "共有接口" not in wb.sheetnames:
+        raise SystemExit("匹配结果 Excel 缺少 sheet: 共有接口")
+
+    stream = io.StringIO()
+    writer = csv.writer(stream)
+    for row in wb["共有接口"].iter_rows(values_only=True):
+        writer.writerow(["" if value is None else str(value) for value in row])
+    return stream.getvalue().rstrip()
+
+
+def write_param_compare_input(
+    match_workbook: Path,
+    bmc_params: Path,
+    podm_params: Path,
+    output: Path,
+) -> None:
+    output.parent.mkdir(parents=True, exist_ok=True)
+    bmc_yaml = bmc_params.read_text(encoding="utf-8")
+    podm_yaml = podm_params.read_text(encoding="utf-8")
+    common_csv = common_sheet_as_csv(match_workbook)
+
+    output.write_text(
+        "\n".join(
+            [
+                "# BMC vs PoDManager 共有接口参数差异分析输入",
+                "",
+                "请基于下面的共有接口配对表和两侧参数 YAML，分析每一对共有接口的参数差异。",
+                "只比较参数 `name` 和 `type`。按 `path/header/body/query/response` 分类输出差异。",
+                "建议输出一个 Excel 工作簿：`common_interface_param_diff_llm_summary.xlsx`。",
+                "",
+                "建议列：",
+                "",
+                "`bmc_section, bmc_title, podm_section, podm_title, category, param_name, bmc_type, podm_type, difference_type, notes`",
+                "",
+                "## 共有接口配对表",
+                "",
+                "```csv",
+                common_csv,
+                "```",
+                "",
+                "## BMC common interface params",
+                "",
+                "```yaml",
+                bmc_yaml.rstrip(),
+                "```",
+                "",
+                "## PoDManager common interface params",
+                "",
+                "```yaml",
+                podm_yaml.rstrip(),
+                "```",
+                "",
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+
 def main(argv: list[str] | None = None) -> None:
     args = parse_args(sys.argv[1:] if argv is None else argv)
     date = choose_date(args)
@@ -124,24 +196,31 @@ def main(argv: list[str] | None = None) -> None:
         ROOT_DIR / "output" / date / "analysis" / "interface_match_llm_summary.xlsx",
     )
     out_dir = choose_path(args.out_dir, "OUT_DIR", ROOT_DIR / "output" / date)
+    copy_input = args.copy_input or out_dir / "analysis" / "common_interface_param_compare_input.md"
 
     require_files([EXTRACTOR, podm_doc, bmc_doc, match_workbook])
     out_dir.mkdir(parents=True, exist_ok=True)
+    bmc_output = out_dir / "bmc.common.word.interface-params.yaml"
+    podm_output = out_dir / "podm.common.word.interface-params.yaml"
 
     run_extractor(
         profile="bmc",
         match_side="bmc",
         input_doc=bmc_doc,
         match_workbook=match_workbook,
-        output_path=out_dir / "bmc.common.word.interface-params.yaml",
+        output_path=bmc_output,
     )
     run_extractor(
         profile="podm",
         match_side="podm",
         input_doc=podm_doc,
         match_workbook=match_workbook,
-        output_path=out_dir / "podm.common.word.interface-params.yaml",
+        output_path=podm_output,
     )
+    write_param_compare_input(match_workbook, bmc_output, podm_output, copy_input)
+
+    print(f"共有接口参数已生成:\n  {bmc_output}\n  {podm_output}")
+    print(f"复制给大模型的参数差异分析输入文件:\n  {copy_input}")
 
 
 if __name__ == "__main__":
