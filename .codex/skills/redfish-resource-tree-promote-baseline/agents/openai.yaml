@@ -1,0 +1,4 @@
+interface:
+  display_name: "Redfish Resource Tree Promote"
+  short_description: "Promote resource-tree baseline"
+  default_prompt: "Use $redfish-resource-tree-promote-baseline 20260609 to promote the reviewed resource_tree_summary.xlsx to the resource-tree baseline."

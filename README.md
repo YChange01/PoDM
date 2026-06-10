@@ -38,6 +38,9 @@ PoDM/
 │   ├── extract_from_examples.py      # 路径②：从示例代码提取 URI + 参数 (同时产出 uris.txt)
 │   ├── extract_bmc.py                # BMC：提取接口 + 参数
 │   ├── run_pipeline.py               # 一键跑完整提取流水线
+│   ├── extract_resource_tree_interfaces.py # PoDM：从 Redfish 资源树表提取接口清单
+│   ├── update_resource_tree_summary_from_baseline.py # 资源树 vs PoDM baseline 对比
+│   ├── promote_resource_tree_baseline.py # 将人工复核资源树 Excel 提升为 baseline
 │   ├── check.py                      # 编译 + 单元测试
 │   ├── col_enum.py                   # 诊断：按列索引枚举表格某列取值
 │   ├── type_enum.py                  # 诊断：枚举参数表"类型"列的取值
@@ -49,10 +52,14 @@ PoDM/
 │   └── why_missing_classification.md
 ├── baseline/                         # 当前人工确认后的接口对比基线
 │   ├── reviewed_baseline.xlsx
-│   └── reviewed_baseline_manifest.json
+│   ├── reviewed_baseline_manifest.json
+│   ├── resource_tree_baseline.xlsx          # 资源树 baseline，promote 后生成
+│   └── resource_tree_baseline_manifest.json # 资源树 manifest，promote 后生成
 ├── .codex/skills/                    # 项目本地 Codex skill
 │   ├── redfish-compare-baseline       # 提取并和 reviewed baseline 对比
-│   └── redfish-promote-baseline       # 将人工复核 Excel 提升为 baseline
+│   ├── redfish-promote-baseline       # 将人工复核 Excel 提升为 baseline
+│   ├── redfish-resource-tree-compare-baseline # 资源树 vs PoDM baseline 对比
+│   └── redfish-resource-tree-promote-baseline # 将资源树 Excel 提升为 baseline
 ├── data/                             # 原始文档（.docx / .txt），不入库
 ├── output/                           # 脚本生成的结果，不入库
 └── tests/                            # 标准库 unittest 冒烟测试
@@ -75,6 +82,9 @@ PoDM/
 | `scripts/extract_from_examples.py` | **示例路径**：从请求/响应示例代码抽相同字段结构 | `<input>.example.interfaces.yaml` + `<input>.example.uris.txt` |
 | `scripts/extract_bmc.py` | BMC：从命令格式 / 输出说明抽 URI + 参数 | `<input>.bmc.interfaces.yaml` + `<input>.bmc.uris.txt` |
 | `scripts/run_pipeline.py` | 一键跑两份文档的接口清单和接口+参数提取 | `output/<date>/` |
+| `scripts/extract_resource_tree_interfaces.py` | 从 PoDManager "Redfish资源树"表提取接口；`GET/PATCH`、`GET/POST`、`GET/DELETE`、`GET/PATCH/DELETE` 等会拆成多条 method+URI | `<PoDM stem>.resource-tree.interface-list.yaml` |
+| `scripts/update_resource_tree_summary_from_baseline.py` | 资源树接口与 PoDManager 接口清单对比；存在资源树 baseline 时标注新增/删除/变更 | `output/<date>/analysis/resource_tree_summary.xlsx` |
+| `scripts/promote_resource_tree_baseline.py` | 将人工复核后的资源树对比 Excel 提升为资源树 baseline | `baseline/resource_tree_baseline.xlsx` |
 
 ## 用法
 
@@ -130,6 +140,13 @@ python3 scripts/extract_bmc.py            data/你的BMC文件.docx output/你�
 
 只传输入、不传输出时，结果写到约定的默认文件名。
 
+资源树接口提取支持直接传日期，脚本会读取 `data/<日期>/` 下的 PoDManager 固定文件名，并写到
+`output/<日期>/`：
+
+```bash
+python3 scripts/extract_resource_tree_interfaces.py 20260609
+```
+
 两条接口+参数路径都**同时**产出 `.interfaces.yaml`（结构化参数清单）和 `.uris.txt`
 （每行 `[METHOD] URI`，顺序与 yaml 一致），分别给结构化 diff 和纯 URI
 集合对比用。
@@ -139,15 +156,19 @@ python3 scripts/extract_bmc.py            data/你的BMC文件.docx output/你�
 
 ## Codex Skills
 
-项目内置 2 个独立 skill，安装/启用后可按日期调用：
+项目内置 4 个独立 skill，安装/启用后可按日期调用：
 
 ```text
 /redfish-compare-baseline 20260609
 /redfish-promote-baseline 20260609
+/redfish-resource-tree-compare-baseline 20260609
+/redfish-resource-tree-promote-baseline 20260609
 ```
 
 - `redfish-compare-baseline` 独立调用 `scripts/run_pipeline.py`，再调用 `scripts/update_interface_summary_from_baseline.py` 生成 `new_summary.xlsx` 和 `interface_update_report.json`。
 - `redfish-promote-baseline` 调用 `scripts/promote_reviewed_baseline.py`，把人工审核后的 `new_summary.xlsx` 更新为 `baseline/reviewed_baseline.xlsx` 并重算 manifest；旧 baseline 会先归档到 `baseline/backup_<UTC时间戳>/`，备份文件名也会追加同一时间戳。
+- `redfish-resource-tree-compare-baseline` 调用 `scripts/extract_podm_interface_list.py`、`scripts/extract_resource_tree_interfaces.py` 和 `scripts/update_resource_tree_summary_from_baseline.py`，生成 `resource_tree_summary.xlsx` 和 `resource_tree_update_report.json`。资源树表中的多操作行会按 method 拆分，例如 `GET/PATCH/DELETE` 计为 3 个接口；该流程不依赖 BMC 文档。
+- `redfish-resource-tree-promote-baseline` 调用 `scripts/promote_resource_tree_baseline.py`，把人工审核后的 `resource_tree_summary.xlsx` 更新为 `baseline/resource_tree_baseline.xlsx` 并重算 manifest；旧资源树 baseline 会归档到 `baseline/backup_resource_tree_<UTC时间戳>/`，备份文件名也会追加同一时间戳。
 
 ## 验证
 
