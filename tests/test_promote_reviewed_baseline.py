@@ -105,11 +105,11 @@ class PromoteReviewedBaselineTest(unittest.TestCase):
 
             backup_dir = baseline_dir / "backup_20260610T010203Z"
             self.assertEqual(str(backup_dir), manifest["previous_baseline_backup"])
-            self.assertTrue((backup_dir / "reviewed_baseline.xlsx").is_file())
-            self.assertTrue((backup_dir / "reviewed_baseline_manifest.json").is_file())
+            self.assertTrue((backup_dir / "reviewed_baseline_20260610T010203Z.xlsx").is_file())
+            self.assertTrue((backup_dir / "reviewed_baseline_manifest_20260610T010203Z.json").is_file())
             self.assertEqual(
                 old_manifest_text,
-                (backup_dir / "reviewed_baseline_manifest.json").read_text(encoding="utf-8"),
+                (backup_dir / "reviewed_baseline_manifest_20260610T010203Z.json").read_text(encoding="utf-8"),
             )
             self.assertEqual(hashlib.sha256(old_workbook.read_bytes()).hexdigest(), manifest["sha256"])
 

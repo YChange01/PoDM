@@ -27,7 +27,7 @@ Before replacing an existing baseline, the script archives the previous baseline
 baseline/backup_<UTC timestamp>/
 ```
 
-The backup folder contains the previous `reviewed_baseline.xlsx` and `reviewed_baseline_manifest.json`, and the new manifest records the path in `previous_baseline_backup`.
+The backup folder contains timestamped copies such as `reviewed_baseline_<UTC timestamp>.xlsx` and `reviewed_baseline_manifest_<UTC timestamp>.json`, and the new manifest records the folder path in `previous_baseline_backup`.
 
 Also accept an explicit reviewed workbook path:
 

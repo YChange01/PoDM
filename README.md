@@ -147,7 +147,7 @@ python3 scripts/extract_bmc.py            data/你的BMC文件.docx output/你�
 ```
 
 - `redfish-compare-baseline` 独立调用 `scripts/run_pipeline.py`，再调用 `scripts/update_interface_summary_from_baseline.py` 生成 `new_summary.xlsx` 和 `interface_update_report.json`。
-- `redfish-promote-baseline` 调用 `scripts/promote_reviewed_baseline.py`，把人工审核后的 `new_summary.xlsx` 更新为 `baseline/reviewed_baseline.xlsx` 并重算 manifest；旧 baseline 会先归档到 `baseline/backup_<UTC时间戳>/`。
+- `redfish-promote-baseline` 调用 `scripts/promote_reviewed_baseline.py`，把人工审核后的 `new_summary.xlsx` 更新为 `baseline/reviewed_baseline.xlsx` 并重算 manifest；旧 baseline 会先归档到 `baseline/backup_<UTC时间戳>/`，备份文件名也会追加同一时间戳。
 
 ## 验证
 

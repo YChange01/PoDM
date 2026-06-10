@@ -73,6 +73,10 @@ def unique_backup_dir(baseline_dir: Path, timestamp: str) -> Path:
         suffix += 1
 
 
+def timestamped_backup_name(path: Path, timestamp: str) -> str:
+    return f"{path.stem}_{timestamp}{path.suffix}"
+
+
 def archive_existing_baseline(baseline_dir: Path, timestamp: str) -> Path | None:
     existing_paths = [
         path
@@ -88,7 +92,7 @@ def archive_existing_baseline(baseline_dir: Path, timestamp: str) -> Path | None
     backup_dir = unique_backup_dir(baseline_dir, timestamp)
     backup_dir.mkdir(parents=True, exist_ok=False)
     for path in existing_paths:
-        shutil.copy2(path, backup_dir / path.name)
+        shutil.copy2(path, backup_dir / timestamped_backup_name(path, timestamp))
     return backup_dir
 
 
