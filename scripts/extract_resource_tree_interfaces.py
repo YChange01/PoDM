@@ -79,6 +79,7 @@ def row_cells(line: str) -> tuple[str, str] | None:
 
 def extract(text: str) -> list[InterfaceSummary]:
     current_group = ""
+    inherited_methods: list[str] = []
     interfaces: list[InterfaceSummary] = []
     for line in resource_tree_lines(text):
         stripped = clean(line)
@@ -88,14 +89,19 @@ def extract(text: str) -> list[InterfaceSummary]:
             current_group = stripped
             continue
 
-        cells = row_cells(stripped)
+        cells = row_cells(line)
         if cells is None:
             continue
         raw_uri, raw_methods = cells
         uri = normalize_uri_text(raw_uri)
         if not uri.startswith("/redfish"):
             continue
-        for method in split_methods(raw_methods):
+        methods = split_methods(raw_methods)
+        if methods:
+            inherited_methods = methods
+        elif clean(raw_methods) == "":
+            methods = inherited_methods or [""]
+        for method in methods:
             interfaces.append(
                 InterfaceSummary(
                     section=current_group,

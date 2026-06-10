@@ -82,7 +82,7 @@ PoDM/
 | `scripts/extract_from_examples.py` | **示例路径**：从请求/响应示例代码抽相同字段结构 | `<input>.example.interfaces.yaml` + `<input>.example.uris.txt` |
 | `scripts/extract_bmc.py` | BMC：从命令格式 / 输出说明抽 URI + 参数 | `<input>.bmc.interfaces.yaml` + `<input>.bmc.uris.txt` |
 | `scripts/run_pipeline.py` | 一键跑两份文档的接口清单和接口+参数提取 | `output/<date>/` |
-| `scripts/extract_resource_tree_interfaces.py` | 从 PoDManager "Redfish资源树"表提取接口；`GET/PATCH`、`GET/POST`、`GET/DELETE`、`GET/PATCH/DELETE` 等会拆成多条 method+URI | `<PoDM stem>.resource-tree.interface-list.yaml` |
+| `scripts/extract_resource_tree_interfaces.py` | 从 PoDManager "Redfish资源树"表提取接口；`GET/PATCH`、`GET/POST`、`GET/DELETE`、`GET/PATCH/DELETE` 等会拆成多条 method+URI；空"允许操作"单元格按 Word 纵向合并表格规则继承上一条非空操作 | `<PoDM stem>.resource-tree.interface-list.yaml` |
 | `scripts/update_resource_tree_summary_from_baseline.py` | 资源树接口与 PoDManager 接口清单对比；存在资源树 baseline 时标注新增/删除/变更 | `output/<date>/analysis/resource_tree_summary.xlsx` |
 | `scripts/promote_resource_tree_baseline.py` | 将人工复核后的资源树对比 Excel 提升为资源树 baseline | `baseline/resource_tree_baseline.xlsx` |
 
@@ -167,7 +167,7 @@ python3 scripts/extract_resource_tree_interfaces.py 20260609
 
 - `redfish-compare-baseline` 独立调用 `scripts/run_pipeline.py`，再调用 `scripts/update_interface_summary_from_baseline.py` 生成 `new_summary.xlsx` 和 `interface_update_report.json`。
 - `redfish-promote-baseline` 调用 `scripts/promote_reviewed_baseline.py`，把人工审核后的 `new_summary.xlsx` 更新为 `baseline/reviewed_baseline.xlsx` 并重算 manifest；旧 baseline 会先归档到 `baseline/backup_<UTC时间戳>/`，备份文件名也会追加同一时间戳。
-- `redfish-resource-tree-compare-baseline` 调用 `scripts/extract_podm_interface_list.py`、`scripts/extract_resource_tree_interfaces.py` 和 `scripts/update_resource_tree_summary_from_baseline.py`，生成 `resource_tree_summary.xlsx` 和 `resource_tree_update_report.json`。资源树表中的多操作行会按 method 拆分，例如 `GET/PATCH/DELETE` 计为 3 个接口；该流程不依赖 BMC 文档。
+- `redfish-resource-tree-compare-baseline` 调用 `scripts/extract_podm_interface_list.py`、`scripts/extract_resource_tree_interfaces.py` 和 `scripts/update_resource_tree_summary_from_baseline.py`，生成 `resource_tree_summary.xlsx` 和 `resource_tree_update_report.json`。资源树表中的多操作行会按 method 拆分，例如 `GET/PATCH/DELETE` 计为 3 个接口；空"允许操作"单元格会继承上一条非空操作；该流程不依赖 BMC 文档。
 - `redfish-resource-tree-promote-baseline` 调用 `scripts/promote_resource_tree_baseline.py`，把人工审核后的 `resource_tree_summary.xlsx` 更新为 `baseline/resource_tree_baseline.xlsx` 并重算 manifest；旧资源树 baseline 会归档到 `baseline/backup_resource_tree_<UTC时间戳>/`，备份文件名也会追加同一时间戳。
 
 ## 验证

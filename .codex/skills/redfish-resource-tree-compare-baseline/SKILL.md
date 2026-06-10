@@ -41,7 +41,7 @@ python scripts/extract_podm_interface_list.py \
 python scripts/extract_resource_tree_interfaces.py <date>
 ```
 
-The extractor splits rows such as `GET/POST`, `GET/DELETE`, and `GET/PATCH/DELETE` into separate method+URI interfaces. Blank allowed-operation rows are not counted as interfaces.
+The extractor splits rows such as `GET/POST`, `GET/DELETE`, and `GET/PATCH/DELETE` into separate method+URI interfaces. Blank allowed-operation cells inherit the previous non-empty operation because the source Word table uses vertically merged cells.
 
 5. Compare resource-tree YAML with PoDManager interface-list YAML and the resource-tree baseline:
 

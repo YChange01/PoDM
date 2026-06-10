@@ -102,8 +102,9 @@ class ResourceTreeWorkflowTest(unittest.TestCase):
                 "表3-1 Redfish资源树",
                 "URL\t允许操作",
                 "公共固定资源",
-                "/redfish/v1\tGET/PATCH",
+                "/redfish\tGET",
                 "/redfish/v1/JSONSchemas\t",
+                "/redfish/v1\tGET/PATCH",
                 "Managers资源",
                 "redfish/v1/Managers/manager_id/SmsService\tGET/PATCH",
                 "/redfish/v1/Systems/system_id/Storages/storage_id/Volumes/volume_id\tGET/PATCH/Delete",
@@ -116,6 +117,8 @@ class ResourceTreeWorkflowTest(unittest.TestCase):
 
         self.assertEqual(
             [
+                ("GET", "/redfish"),
+                ("GET", "/redfish/v1/JSONSchemas"),
                 ("GET", "/redfish/v1"),
                 ("PATCH", "/redfish/v1"),
                 ("GET", "/redfish/v1/Managers/manager_id/SmsService"),
@@ -129,7 +132,73 @@ class ResourceTreeWorkflowTest(unittest.TestCase):
             [(item.method, item.uri) for item in items],
         )
         self.assertEqual("公共固定资源", items[0].section)
-        self.assertEqual("Managers资源", items[2].section)
+        self.assertEqual("Managers资源", items[4].section)
+
+    def test_extract_resource_tree_keeps_blank_operation_rows(self) -> None:
+        text = "\n".join(
+            [
+                "3 Redfish接口资源树",
+                "URL\t允许操作",
+                "公共固定资源",
+                "/redfish\tGET",
+                "/redfish/v1/$metadata\t",
+                "/redfish/v1/JSONSchemas\t",
+                "/redfish/v1/Registries\t",
+                "/redfish/v1/Registries/registries_id\t",
+                "/redfish/v1/odata\t",
+                "/redfish/v1/ChassisOverview\t",
+                "/redfish/v1/SystemsOverview\t",
+                "/redfish/v1\tGET/PATCH",
+                "Managers资源",
+            ]
+        )
+
+        items = extract_resource_tree(text)
+
+        self.assertEqual(10, len(items))
+        self.assertEqual({"公共固定资源"}, {item.section for item in items})
+        inherited_get = [item.uri for item in items if item.method == "GET"]
+        self.assertEqual(
+            [
+                "/redfish",
+                "/redfish/v1/$metadata",
+                "/redfish/v1/JSONSchemas",
+                "/redfish/v1/Registries",
+                "/redfish/v1/Registries/registries_id",
+                "/redfish/v1/odata",
+                "/redfish/v1/ChassisOverview",
+                "/redfish/v1/SystemsOverview",
+                "/redfish/v1",
+            ],
+            inherited_get,
+        )
+
+    def test_extract_resource_tree_blank_rows_inherit_multi_method_operation(self) -> None:
+        text = "\n".join(
+            [
+                "3 Redfish接口资源树",
+                "URL\t允许操作",
+                "SessionService资源",
+                "/redfish/v1/SessionService/Sessions\tGET/POST/PATCH/DELETE",
+                "/redfish/v1/SessionService/Sessions/session_id\t",
+            ]
+        )
+
+        items = extract_resource_tree(text)
+
+        self.assertEqual(
+            [
+                ("GET", "/redfish/v1/SessionService/Sessions"),
+                ("POST", "/redfish/v1/SessionService/Sessions"),
+                ("PATCH", "/redfish/v1/SessionService/Sessions"),
+                ("DELETE", "/redfish/v1/SessionService/Sessions"),
+                ("GET", "/redfish/v1/SessionService/Sessions/session_id"),
+                ("POST", "/redfish/v1/SessionService/Sessions/session_id"),
+                ("PATCH", "/redfish/v1/SessionService/Sessions/session_id"),
+                ("DELETE", "/redfish/v1/SessionService/Sessions/session_id"),
+            ],
+            [(item.method, item.uri) for item in items],
+        )
 
     def test_extract_resource_tree_cli_writes_yaml(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
