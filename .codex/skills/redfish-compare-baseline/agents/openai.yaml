@@ -1,0 +1,4 @@
+interface:
+  display_name: "Redfish Compare Baseline"
+  short_description: "Compare Redfish docs with baseline"
+  default_prompt: "Use $redfish-compare-baseline 20260609 to extract Redfish interfaces and compare them against the reviewed baseline."

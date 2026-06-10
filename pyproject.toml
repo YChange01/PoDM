@@ -3,7 +3,10 @@ name = "podm-doc-tools"
 version = "0.1.0"
 description = "Redfish docx interface extraction and comparison tools for PoDManager documents."
 requires-python = ">=3.10"
-dependencies = []
+dependencies = [
+    "openpyxl>=3.1",
+    "PyYAML>=6.0",
+]
 
 [tool.ruff]
 line-length = 100

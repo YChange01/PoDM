@@ -21,6 +21,11 @@ from _defaults import BMC_DOCX_NAME, PODM_DOCX_NAME  # noqa: E402
 
 DEFAULT_DATE = "20260507"
 DATE_RE = re.compile(r"^\d{8}$")
+COMMON_MATCH_COLUMNS = (
+    "confidence, bmc_section, bmc_title, bmc_method, bmc_uri, "
+    "podm_section, podm_title, podm_method, podm_uri"
+)
+ONLY_SIDE_COLUMNS = "section, title, method, uri"
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 ROOT_DIR = SCRIPT_DIR.parent
@@ -101,7 +106,9 @@ def write_interface_match_input(
                 "- 共有接口必须一对一匹配。",
                 "- 输出一个 Excel 工作簿：`interface_match_llm_summary.xlsx`。",
                 "- 工作簿必须包含且仅包含三个 sheet：`共有接口`、`BMC独有`、`PoDM独有`。",
-                "- `共有接口` 建议列：`category, confidence, title_similarity_score, method_same, bmc_index, bmc_section, bmc_title, bmc_method, bmc_uri, podm_index, podm_section, podm_title, podm_method, podm_uri`。",
+                f"- `共有接口` 只保留列：`{COMMON_MATCH_COLUMNS}`。",
+                f"- `BMC独有` 只保留列：`{ONLY_SIDE_COLUMNS}`。",
+                f"- `PoDM独有` 只保留列：`{ONLY_SIDE_COLUMNS}`。",
                 "",
                 "## BMC interface-list.yaml",
                 "",

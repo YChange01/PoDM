@@ -1,0 +1,4 @@
+interface:
+  display_name: "Redfish Extract Interfaces"
+  short_description: "Extract Redfish interface YAML"
+  default_prompt: "Use $redfish-extract-interfaces 20260609 to run the Redfish interface extraction pipeline."

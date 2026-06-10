@@ -1,0 +1,4 @@
+interface:
+  display_name: "Redfish Promote Baseline"
+  short_description: "Promote reviewed Excel baseline"
+  default_prompt: "Use $redfish-promote-baseline 20260609 to promote the reviewed new_summary.xlsx to the Redfish baseline."

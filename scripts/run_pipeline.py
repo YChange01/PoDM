@@ -13,6 +13,7 @@ SCRIPTS = ROOT / "scripts"
 
 sys.path.insert(0, str(SCRIPTS))
 from _defaults import BMC_DOCX_NAME, DATA_DIR, OUTPUT_DIR, PODM_DOCX_NAME  # noqa: E402
+from extract_interface_lists import write_interface_match_input  # noqa: E402
 
 DATE_RE = re.compile(r"^\d{8}$")
 
@@ -35,6 +36,7 @@ def output_paths(out_dir: Path, podm: Path, bmc: Path) -> dict[str, Path]:
         "podm_tables": out_dir / f"{podm.stem}.interfaces.yaml",
         "podm_examples": out_dir / f"{podm.stem}.example.interfaces.yaml",
         "bmc_params": out_dir / f"{bmc.stem}.bmc.interfaces.yaml",
+        "interface_match_input": out_dir / "analysis" / "interface_match_llm_input.md",
     }
 
 
@@ -73,6 +75,11 @@ def run_pipeline(
         str(bmc),
         str(paths["bmc_interface_list"]),
     ])
+    write_interface_match_input(
+        paths["bmc_interface_list"],
+        paths["podm_interface_list"],
+        paths["interface_match_input"],
+    )
     run_command([
         sys.executable,
         str(SCRIPTS / "extract_from_tables.py"),

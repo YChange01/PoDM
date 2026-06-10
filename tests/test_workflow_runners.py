@@ -75,6 +75,17 @@ class WorkflowRunnersTest(unittest.TestCase):
             content = copy_input.read_text(encoding="utf-8")
             self.assertIn("BMC interface-list.yaml", content)
             self.assertIn("PoDManager interface-list.yaml", content)
+            self.assertIn(
+                "confidence, bmc_section, bmc_title, bmc_method, bmc_uri, "
+                "podm_section, podm_title, podm_method, podm_uri",
+                content,
+            )
+            self.assertIn("`BMC独有` 只保留列：`section, title, method, uri`", content)
+            self.assertIn("`PoDM独有` 只保留列：`section, title, method, uri`", content)
+            self.assertNotIn("title_similarity_score", content)
+            self.assertNotIn("method_same", content)
+            self.assertNotIn("bmc_index", content)
+            self.assertNotIn("podm_index", content)
 
     def test_write_param_compare_input_embeds_pairing_and_params(self) -> None:
         try:

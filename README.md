@@ -3,9 +3,9 @@
 从 Redfish 接口文档（Word `.docx` 或纯文本 `.txt`）中提取接口清单与接口参数，
 方便后续做跨版本 / 跨产品（如 BMC vs PoDM）的对比分析。
 
-> 零第三方依赖：仅用 Python 3 标准库（`zipfile` + `xml.etree`）直读 `.docx`，
-> 不需要 `pandoc` / `python-docx` / `pip` 安装。
-> 若安装了 `PyYAML`，两份 interfaces.yaml 会用 YAML 输出，否则自动回退 JSON。
+> 基础 `.docx` 提取逻辑仅用 Python 3 标准库（`zipfile` + `xml.etree`）直读，
+> 不需要 `pandoc` / `python-docx`。
+> baseline 对比、Excel 读写和 YAML 读取需要 `openpyxl` 与 `PyYAML`。
 
 ## 两条独立的参数提取路径
 
@@ -47,8 +47,13 @@ PoDM/
 │   ├── error_cases.md / .docx
 │   ├── cross_doc_diff.md / .docx
 │   └── why_missing_classification.md
+├── baseline/                         # 当前人工确认后的接口对比基线
+│   ├── reviewed_baseline.xlsx
+│   └── reviewed_baseline_manifest.json
 ├── .codex/skills/                    # 项目本地 Codex skill
-│   └── redfish-interface-match-review # BMC/PoDM 接口归属分析流程
+│   ├── redfish-extract-interfaces     # 只提取接口 YAML/参数 YAML
+│   ├── redfish-compare-baseline       # 提取并和 reviewed baseline 对比
+│   └── redfish-promote-baseline       # 将人工复核 Excel 提升为 baseline
 ├── data/                             # 原始文档（.docx / .txt），不入库
 ├── output/                           # 脚本生成的结果，不入库
 └── tests/                            # 标准库 unittest 冒烟测试
@@ -133,7 +138,27 @@ python3 scripts/extract_bmc.py            data/你的BMC文件.docx output/你�
 如果要换默认文件名，改 `scripts/_defaults.py` 里的 `PODM_DOCX_NAME` /
 `BMC_DOCX_NAME` 常量即可。
 
+## Codex Skills
+
+项目内置 3 个独立 skill，安装/启用后可按日期调用：
+
+```text
+/redfish-extract-interfaces 20260609
+/redfish-compare-baseline 20260609
+/redfish-promote-baseline 20260609
+```
+
+- `redfish-extract-interfaces` 只调用 `scripts/run_pipeline.py` 提取接口清单、参数 YAML、URI 文本和 `interface_match_llm_input.md`。
+- `redfish-compare-baseline` 独立调用 `scripts/run_pipeline.py`，再调用 `scripts/update_interface_summary_from_baseline.py` 生成 `new_summary.xlsx` 和 `interface_update_report.json`。
+- `redfish-promote-baseline` 调用 `scripts/promote_reviewed_baseline.py`，把人工审核后的 `new_summary.xlsx` 更新为 `baseline/reviewed_baseline.xlsx` 并重算 manifest；旧 baseline 会先归档到 `baseline/backup_<UTC时间戳>/`。
+
 ## 验证
+
+首次使用 baseline 对比能力前，确保依赖已安装：
+
+```bash
+python -m pip install -e .
+```
 
 提交前跑统一检查：
 

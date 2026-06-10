@@ -81,6 +81,11 @@ class PipelineTest(unittest.TestCase):
             self.assertTrue((out_dir / f"{podm.stem}.uris.txt").exists())
             self.assertTrue((out_dir / f"{podm.stem}.example.uris.txt").exists())
             self.assertTrue((out_dir / f"{bmc.stem}.bmc.uris.txt").exists())
+            copy_input = out_dir / "analysis" / "interface_match_llm_input.md"
+            self.assertTrue(copy_input.exists())
+            copy_content = copy_input.read_text(encoding="utf-8")
+            self.assertIn("BMC interface-list.yaml", copy_content)
+            self.assertIn("PoDManager interface-list.yaml", copy_content)
 
             podm_params = out_dir / f"{podm.stem}.interfaces.yaml"
             bmc_params = out_dir / f"{bmc.stem}.bmc.interfaces.yaml"

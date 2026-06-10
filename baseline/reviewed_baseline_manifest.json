@@ -1,0 +1,87 @@
+{
+  "baseline_name": "reviewed_baseline",
+  "baseline_date": "20260609",
+  "created_at": "2026-06-10T11:09:10.886752+00:00",
+  "workbook": "baseline/reviewed_baseline.xlsx",
+  "sha256": "b718649035d96434c4025b1877501f287cb8532329da031b428608db60bcc7a6",
+  "source_workbook": "output/20260609/analysis/new_summary.xlsx",
+  "sheets": {
+    "共有接口": {
+      "rows": 342,
+      "columns": 10,
+      "headers": [
+        "confidence",
+        "bmc_section",
+        "bmc_title",
+        "bmc_method",
+        "bmc_uri",
+        "podm_section",
+        "podm_title",
+        "podm_method",
+        "podm_uri",
+        "复核备注"
+      ],
+      "note_counts": {
+        "复核备注": 24
+      }
+    },
+    "BMC独有": {
+      "rows": 217,
+      "columns": 5,
+      "headers": [
+        "section",
+        "title",
+        "method",
+        "uri",
+        "差异备注"
+      ],
+      "note_counts": {
+        "差异备注": 79
+      }
+    },
+    "PoDM独有": {
+      "rows": 44,
+      "columns": 5,
+      "headers": [
+        "section",
+        "title",
+        "method",
+        "uri",
+        "差异备注"
+      ],
+      "note_counts": {
+        "差异备注": 14
+      }
+    },
+    "YAML重复接口": {
+      "rows": 19,
+      "columns": 8,
+      "headers": [
+        "来源",
+        "重复组",
+        "section",
+        "title",
+        "method",
+        "uri",
+        "规范化method",
+        "规范化uri"
+      ],
+      "note_counts": {}
+    }
+  },
+  "manual_review_summary": {
+    "current_counts": {
+      "共有接口": 342,
+      "BMC独有": 217,
+      "PoDM独有": 44,
+      "YAML重复接口": 19
+    },
+    "inferred_changes_after_last_agent_pass": [
+      "新增共有配对：BMC 3.6.15 SSH公钥删除 -> PoDM 4.10.3.1.10 SSH公钥删除；method 为 POST vs DELETE，按人工基线保留。",
+      "BMC独有删除了旧 original 占位差异行：3.2.182、3.3.79、3.3.80、3.3.82、3.3.83、3.4.82、3.4.83。",
+      "BMC 3.6.15 从 BMC独有移入共有接口。",
+      "PoDM独有删除了旧 original 占位差异行：4.2.30、4.2.31、4.2.124、4.2.127。",
+      "PoDM 4.10.3.1.10 从 PoDM独有移入共有接口。"
+    ]
+  }
+}
