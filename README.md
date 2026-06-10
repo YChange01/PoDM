@@ -51,7 +51,6 @@ PoDM/
 │   ├── reviewed_baseline.xlsx
 │   └── reviewed_baseline_manifest.json
 ├── .codex/skills/                    # 项目本地 Codex skill
-│   ├── redfish-extract-interfaces     # 只提取接口 YAML/参数 YAML
 │   ├── redfish-compare-baseline       # 提取并和 reviewed baseline 对比
 │   └── redfish-promote-baseline       # 将人工复核 Excel 提升为 baseline
 ├── data/                             # 原始文档（.docx / .txt），不入库
@@ -140,15 +139,13 @@ python3 scripts/extract_bmc.py            data/你的BMC文件.docx output/你�
 
 ## Codex Skills
 
-项目内置 3 个独立 skill，安装/启用后可按日期调用：
+项目内置 2 个独立 skill，安装/启用后可按日期调用：
 
 ```text
-/redfish-extract-interfaces 20260609
 /redfish-compare-baseline 20260609
 /redfish-promote-baseline 20260609
 ```
 
-- `redfish-extract-interfaces` 只调用 `scripts/run_pipeline.py` 提取接口清单、参数 YAML、URI 文本和 `interface_match_llm_input.md`。
 - `redfish-compare-baseline` 独立调用 `scripts/run_pipeline.py`，再调用 `scripts/update_interface_summary_from_baseline.py` 生成 `new_summary.xlsx` 和 `interface_update_report.json`。
 - `redfish-promote-baseline` 调用 `scripts/promote_reviewed_baseline.py`，把人工审核后的 `new_summary.xlsx` 更新为 `baseline/reviewed_baseline.xlsx` 并重算 manifest；旧 baseline 会先归档到 `baseline/backup_<UTC时间戳>/`。
 

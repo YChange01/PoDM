@@ -5,7 +5,7 @@ description: Extract BMC and PoDManager Redfish interfaces from a dated document
 
 # Redfish Compare Baseline
 
-Run extraction and baseline comparison as one independent workflow. Do not call or depend on `redfish-extract-interfaces`; this skill runs `scripts/run_pipeline.py` itself.
+Run extraction and baseline comparison as one independent workflow. This skill runs `scripts/run_pipeline.py` itself before comparing against the reviewed baseline.
 
 ## Invocation
 

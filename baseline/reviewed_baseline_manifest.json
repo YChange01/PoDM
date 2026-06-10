@@ -3,7 +3,7 @@
   "baseline_date": "20260609",
   "created_at": "2026-06-10T11:09:10.886752+00:00",
   "workbook": "baseline/reviewed_baseline.xlsx",
-  "sha256": "b718649035d96434c4025b1877501f287cb8532329da031b428608db60bcc7a6",
+  "sha256": "d46d9e040e8c63a70909e8b7e86711f5446c57819c7bb2c8c262ac8d87a15562",
   "source_workbook": "output/20260609/analysis/new_summary.xlsx",
   "sheets": {
     "共有接口": {
@@ -22,7 +22,7 @@
         "复核备注"
       ],
       "note_counts": {
-        "复核备注": 24
+        "复核备注": 0
       }
     },
     "BMC独有": {
@@ -36,7 +36,7 @@
         "差异备注"
       ],
       "note_counts": {
-        "差异备注": 79
+        "差异备注": 0
       }
     },
     "PoDM独有": {
@@ -50,21 +50,19 @@
         "差异备注"
       ],
       "note_counts": {
-        "差异备注": 14
+        "差异备注": 0
       }
     },
     "YAML重复接口": {
       "rows": 19,
-      "columns": 8,
+      "columns": 6,
       "headers": [
         "来源",
         "重复组",
         "section",
         "title",
         "method",
-        "uri",
-        "规范化method",
-        "规范化uri"
+        "uri"
       ],
       "note_counts": {}
     }
