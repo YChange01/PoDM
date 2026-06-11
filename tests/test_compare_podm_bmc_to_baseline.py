@@ -12,6 +12,7 @@ from openpyxl import Workbook, load_workbook
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
+import compare_podm_bmc_to_baseline as compare_module  # noqa: E402
 from compare_podm_bmc_to_baseline import compare_podm_bmc_to_baseline  # noqa: E402
 from compare_podm_bmc_to_baseline import main as update_main  # noqa: E402
 
@@ -304,6 +305,92 @@ class UpdateInterfaceSummaryFromBaselineTest(unittest.TestCase):
                         str(output),
                     ]
                 )
+
+    def test_cli_date_mode_runs_pipeline_when_default_yamls_are_missing(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            output_root = root / "output"
+            baseline = root / "baseline.xlsx"
+            manifest = root / "baseline_manifest.json"
+
+            write_baseline(baseline)
+            manifest.write_text(
+                json.dumps(
+                    {
+                        "workbook": str(baseline),
+                        "sha256": hashlib.sha256(baseline.read_bytes()).hexdigest(),
+                    },
+                    ensure_ascii=False,
+                ),
+                encoding="utf-8",
+            )
+
+            calls: list[tuple[str, Path]] = []
+
+            def fake_run_pipeline(date: str, pipeline_output_root: Path) -> Path:
+                calls.append((date, pipeline_output_root))
+                date_dir = pipeline_output_root / date
+                date_dir.mkdir(parents=True)
+                write_yaml(
+                    date_dir / "bmc.interface-list.yaml",
+                    [
+                        {
+                            "section": "3.6.15",
+                            "title": "SSH公钥删除",
+                            "method": "POST",
+                            "uri": "https://device_ip/redfish/v1/AccountService/Accounts/account_id/Oem/Huawei/Public/Actions/Account.DeleteSSHPublicKey",
+                        },
+                        {
+                            "section": "3.9.9",
+                            "title": "修改事件订阅资源",
+                            "method": "PATCH",
+                            "uri": "https://device_ip/redfish/v1/EventService/Subscriptions/id",
+                        },
+                    ],
+                )
+                write_yaml(
+                    date_dir / "podm.interface-list.yaml",
+                    [
+                        {
+                            "section": "4.10.3.1.10",
+                            "title": "SSH公钥删除",
+                            "method": "DELETE",
+                            "uri": "/redfish/v1/AccountService/Accounts/account_id/Oem/{OemVendor}/Public/Actions/Account.DeleteSSHPublicKey",
+                        },
+                        {
+                            "section": "4.7.9",
+                            "title": "修改事件订阅资源",
+                            "method": "PATCH",
+                            "uri": "/redfish/v1/EventService/Subscriptions/{id}",
+                        },
+                    ],
+                )
+                return date_dir
+
+            original_output_dir = compare_module.OUTPUT_DIR
+            original_run_pipeline = getattr(compare_module, "run_pipeline", None)
+            compare_module.OUTPUT_DIR = output_root
+            compare_module.run_pipeline = fake_run_pipeline
+            try:
+                update_main(
+                    [
+                        "20260609",
+                        "--baseline",
+                        str(baseline),
+                        "--baseline-manifest",
+                        str(manifest),
+                    ]
+                )
+            finally:
+                compare_module.OUTPUT_DIR = original_output_dir
+                if original_run_pipeline is None:
+                    delattr(compare_module, "run_pipeline")
+                else:
+                    compare_module.run_pipeline = original_run_pipeline
+
+            self.assertEqual([("20260609", output_root)], calls)
+            self.assertTrue((output_root / "20260609" / "analysis" / "podm_bmc_summary.xlsx").is_file())
+            self.assertTrue((output_root / "20260609" / "analysis" / "podm_bmc_update_report.json").is_file())
 
 
 if __name__ == "__main__":

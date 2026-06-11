@@ -28,6 +28,7 @@ from _interface_compare import (  # noqa: E402
     row_dicts,
     uri_key,
 )
+from run_podm_bmc_pipeline import run_pipeline  # noqa: E402
 
 
 DEFAULT_BASELINE = REPO_ROOT / "baseline" / "podm_bmc" / "baseline.xlsx"
@@ -366,6 +367,23 @@ def default_yaml_paths(date: str) -> tuple[Path, Path]:
     )
 
 
+def ensure_default_yaml_inputs(
+    date: str,
+    bmc_yaml: Path,
+    podm_yaml: Path,
+    default_bmc_yaml: Path,
+    default_podm_yaml: Path,
+) -> None:
+    using_default_paths = bmc_yaml == default_bmc_yaml and podm_yaml == default_podm_yaml
+    if not using_default_paths:
+        return
+    if bmc_yaml.is_file() and podm_yaml.is_file():
+        return
+
+    print(f"默认 interface-list YAML 不存在，先运行 PoDManager/BMC 提取流水线: {date}")
+    run_pipeline(date, OUTPUT_DIR)
+
+
 def default_manifest_for_baseline(baseline: Path) -> Path | None:
     if baseline.resolve() == DEFAULT_BASELINE.resolve() and DEFAULT_BASELINE_MANIFEST.is_file():
         return DEFAULT_BASELINE_MANIFEST
@@ -384,6 +402,7 @@ def main(argv: list[str] | None = None) -> None:
         bmc_yaml = args.bmc_yaml or default_bmc
         podm_yaml = args.podm_yaml or default_podm
         output = args.output or (OUTPUT_DIR / args.date / "analysis" / "podm_bmc_summary.xlsx")
+        ensure_default_yaml_inputs(args.date, bmc_yaml, podm_yaml, default_bmc, default_podm)
     else:
         if not args.bmc_yaml or not args.podm_yaml or not args.output:
             raise SystemExit("未提供 date 时，必须显式指定 --bmc-yaml、--podm-yaml 和 --output")

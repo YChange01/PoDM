@@ -1,4 +1,4 @@
 interface:
   display_name: "PoDM-BMC Compare"
-  short_description: "Compare PoDM and BMC with baseline"
-  default_prompt: "Use $podm-bmc-compare 20260609 to extract PoDManager/BMC Redfish interfaces and compare them with the PoDM-BMC baseline."
+  short_description: "One-step PoDM/BMC compare"
+  default_prompt: "Use $podm-bmc-compare 20260609 to run the PoDManager/BMC compare script; it auto-extracts interface YAML if missing and compares with the PoDM-BMC baseline."
