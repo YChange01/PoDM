@@ -3,6 +3,8 @@
 从 Redfish 接口文档（Word `.docx` 或纯文本 `.txt`）中提取接口清单与接口参数，
 方便后续做跨版本 / 跨产品（如 BMC vs PoDM）的对比分析。
 
+日常使用先看：[Redfish 接口对比快速说明](docs/redfish_workflow_quick_guide.md)。
+
 > 基础 `.docx` 提取逻辑仅用 Python 3 标准库（`zipfile` + `xml.etree`）直读，
 > 不需要 `pandoc` / `python-docx`。
 > baseline 对比、Excel 读写和 YAML 读取需要 `openpyxl` 与 `PyYAML`。
