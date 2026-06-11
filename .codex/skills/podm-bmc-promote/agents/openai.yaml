@@ -1,0 +1,4 @@
+interface:
+  display_name: "PoDM-BMC Promote"
+  short_description: "Promote PoDM-BMC baseline"
+  default_prompt: "Use $podm-bmc-promote 20260609 to promote the reviewed podm_bmc_summary.xlsx to the PoDM-BMC baseline."

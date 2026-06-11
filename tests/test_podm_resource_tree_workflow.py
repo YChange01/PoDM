@@ -13,14 +13,16 @@ from openpyxl import Workbook, load_workbook
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-import extract_resource_tree_interfaces as resource_tree_extractor  # noqa: E402
-from extract_resource_tree_interfaces import extract as extract_resource_tree  # noqa: E402
-from extract_resource_tree_interfaces import main as extract_resource_tree_main  # noqa: E402
+import extract_podm_resource_tree_interface_list as resource_tree_extractor  # noqa: E402
+import compare_podm_resource_tree_to_baseline as resource_tree_compare  # noqa: E402
+from extract_podm_resource_tree_interface_list import extract as extract_resource_tree  # noqa: E402
+from extract_podm_resource_tree_interface_list import main as extract_resource_tree_main  # noqa: E402
 from _defaults import PODM_DOCX_NAME  # noqa: E402
-from promote_resource_tree_baseline import promote_resource_tree_baseline  # noqa: E402
-from update_resource_tree_summary_from_baseline import (  # noqa: E402
-    update_resource_tree_summary,
+from compare_podm_resource_tree_to_baseline import (  # noqa: E402
+    compare_podm_resource_tree_to_baseline,
+    main as compare_resource_tree_main,
 )
+from promote_podm_resource_tree_baseline import promote_podm_resource_tree_baseline  # noqa: E402
 
 
 def write_yaml(path: Path, items: list[dict[str, str]]) -> None:
@@ -243,7 +245,7 @@ class ResourceTreeWorkflowTest(unittest.TestCase):
                 resource_tree_extractor.DATA_DIR = original_data_dir
                 resource_tree_extractor.OUTPUT_DIR = original_output_dir
 
-            output = root / "output" / "20260609" / f"{Path(PODM_DOCX_NAME).stem}.resource-tree.interface-list.yaml"
+            output = root / "output" / "20260609" / "podm.resource-tree.interface-list.yaml"
             content = output.read_text(encoding="utf-8")
             self.assertIn("method: GET", content)
             self.assertIn("method: POST", content)
@@ -251,10 +253,10 @@ class ResourceTreeWorkflowTest(unittest.TestCase):
     def test_compare_resource_tree_with_podm_and_baseline(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            baseline = root / "resource_tree_baseline.xlsx"
+            baseline = root / "podm_resource_tree_baseline.xlsx"
             resource_yaml = root / "resource_tree.yaml"
             podm_yaml = root / "podm.yaml"
-            output = root / "resource_tree_summary.xlsx"
+            output = root / "podm_resource_tree_summary.xlsx"
 
             write_resource_tree_baseline(baseline)
             write_yaml(
@@ -304,7 +306,7 @@ class ResourceTreeWorkflowTest(unittest.TestCase):
                 ],
             )
 
-            report = update_resource_tree_summary(baseline, resource_yaml, podm_yaml, output)
+            report = compare_podm_resource_tree_to_baseline(baseline, resource_yaml, podm_yaml, output)
 
             self.assertEqual(2, report["summary"]["common"]["rows"])
             self.assertEqual(1, report["summary"]["common"]["added"])
@@ -336,35 +338,91 @@ class ResourceTreeWorkflowTest(unittest.TestCase):
             self.assertTrue(any(note and "删除" in note for note in resource_only_notes))
             wb.close()
 
+    def test_compare_resource_tree_cli_date_mode_uses_short_podm_yaml_name(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            output_dir = root / "output"
+            date_dir = output_dir / "20260609"
+            date_dir.mkdir(parents=True)
+            write_yaml(
+                date_dir / "podm.resource-tree.interface-list.yaml",
+                [
+                    {
+                        "section": "Managers资源",
+                        "title": "/redfish/v1/Managers",
+                        "method": "GET",
+                        "uri": "/redfish/v1/Managers",
+                    }
+                ],
+            )
+            write_yaml(
+                date_dir / "podm.interface-list.yaml",
+                [
+                    {
+                        "section": "4.2.1",
+                        "title": "查询管理资源集合",
+                        "method": "GET",
+                        "uri": "/redfish/v1/Managers",
+                    }
+                ],
+            )
+
+            original_output_dir = resource_tree_compare.OUTPUT_DIR
+            original_default_baseline = resource_tree_compare.DEFAULT_BASELINE
+            original_default_manifest = resource_tree_compare.DEFAULT_BASELINE_MANIFEST
+            try:
+                resource_tree_compare.OUTPUT_DIR = output_dir
+                resource_tree_compare.DEFAULT_BASELINE = root / "baseline" / "podm_resource_tree" / "baseline.xlsx"
+                resource_tree_compare.DEFAULT_BASELINE_MANIFEST = (
+                    root / "baseline" / "podm_resource_tree" / "manifest.json"
+                )
+                compare_resource_tree_main(["20260609"])
+            finally:
+                resource_tree_compare.OUTPUT_DIR = original_output_dir
+                resource_tree_compare.DEFAULT_BASELINE = original_default_baseline
+                resource_tree_compare.DEFAULT_BASELINE_MANIFEST = original_default_manifest
+
+            summary = output_dir / "20260609" / "analysis" / "podm_resource_tree_summary.xlsx"
+            report = output_dir / "20260609" / "analysis" / "podm_resource_tree_update_report.json"
+            self.assertTrue(summary.is_file())
+            self.assertTrue(report.is_file())
+
     def test_promotes_resource_tree_baseline_and_archives_existing_one(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            source = root / "resource_tree_summary.xlsx"
+            source = root / "podm_resource_tree_summary.xlsx"
             baseline_dir = root / "baseline"
-            baseline_dir.mkdir()
-            old_workbook = baseline_dir / "resource_tree_baseline.xlsx"
-            old_manifest = baseline_dir / "resource_tree_baseline_manifest.json"
+            workflow_dir = baseline_dir / "podm_resource_tree"
+            workflow_dir.mkdir(parents=True)
+            old_workbook = workflow_dir / "baseline.xlsx"
+            old_manifest = workflow_dir / "manifest.json"
 
             write_resource_tree_baseline(source)
             write_resource_tree_baseline(old_workbook)
+            old_sha256 = hashlib.sha256(old_workbook.read_bytes()).hexdigest()
             old_manifest.write_text(
-                json.dumps({"sha256": hashlib.sha256(old_workbook.read_bytes()).hexdigest()}),
+                json.dumps({"workbook": str(old_workbook), "sha256": old_sha256}),
                 encoding="utf-8",
             )
 
-            manifest = promote_resource_tree_baseline(
+            manifest = promote_podm_resource_tree_baseline(
                 source,
                 baseline_dir=baseline_dir,
                 baseline_date="20260610",
                 backup_timestamp="20260610T010203Z",
             )
 
-            self.assertEqual("resource_tree_baseline", manifest["baseline_name"])
-            self.assertTrue((baseline_dir / "resource_tree_baseline.xlsx").is_file())
-            backup_dir = baseline_dir / "backup_resource_tree_20260610T010203Z"
+            self.assertEqual("podm_resource_tree", manifest["baseline_name"])
+            self.assertTrue((workflow_dir / "baseline.xlsx").is_file())
+            backup_dir = workflow_dir / "backups" / "20260610T010203Z"
             self.assertEqual(str(backup_dir), manifest["previous_baseline_backup"])
-            self.assertTrue((backup_dir / "resource_tree_baseline_20260610T010203Z.xlsx").is_file())
-            self.assertTrue((backup_dir / "resource_tree_baseline_manifest_20260610T010203Z.json").is_file())
+            backup_workbook = backup_dir / "baseline_20260610T010203Z.xlsx"
+            backup_manifest_path = backup_dir / "manifest_20260610T010203Z.json"
+            self.assertTrue(backup_workbook.is_file())
+            self.assertTrue(backup_manifest_path.is_file())
+            backup_manifest = json.loads(backup_manifest_path.read_text(encoding="utf-8"))
+            self.assertEqual(str(backup_workbook), backup_manifest["workbook"])
+            self.assertEqual(hashlib.sha256(backup_workbook.read_bytes()).hexdigest(), backup_manifest["sha256"])
 
 
 if __name__ == "__main__":

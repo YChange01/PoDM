@@ -1,0 +1,72 @@
+{
+  "baseline_name": "podm_resource_tree",
+  "baseline_date": "20260609",
+  "created_at": "2026-06-10T13:50:07.260487+00:00",
+  "workbook": "baseline/podm_resource_tree/backups/20260610T142221Z/baseline_20260610T142221Z.xlsx",
+  "sha256": "0eeba7f3d50fa831a622df9ecbcb4f94a6f96be27da96e9ea35f313568464168",
+  "source_workbook": "output/20260609/analysis/podm_resource_tree_summary.xlsx",
+  "previous_baseline_backup": "baseline/podm_resource_tree/backups/20260610T135007Z",
+  "sheets": {
+    "共有接口": {
+      "rows": 198,
+      "columns": 10,
+      "headers": [
+        "confidence",
+        "resource_section",
+        "resource_title",
+        "resource_method",
+        "resource_uri",
+        "podm_section",
+        "podm_title",
+        "podm_method",
+        "podm_uri",
+        "复核备注"
+      ],
+      "note_counts": {
+        "复核备注": 2
+      }
+    },
+    "资源树独有": {
+      "rows": 114,
+      "columns": 5,
+      "headers": [
+        "section",
+        "title",
+        "method",
+        "uri",
+        "差异备注"
+      ],
+      "note_counts": {
+        "差异备注": 0
+      }
+    },
+    "PoDM独有": {
+      "rows": 188,
+      "columns": 5,
+      "headers": [
+        "section",
+        "title",
+        "method",
+        "uri",
+        "差异备注"
+      ],
+      "note_counts": {
+        "差异备注": 0
+      }
+    },
+    "重复接口": {
+      "rows": 14,
+      "columns": 6,
+      "headers": [
+        "来源",
+        "重复组",
+        "section",
+        "title",
+        "method",
+        "uri"
+      ],
+      "note_counts": {}
+    }
+  },
+  "updated_at": "2026-06-10T13:51:14.242587+00:00"
+}

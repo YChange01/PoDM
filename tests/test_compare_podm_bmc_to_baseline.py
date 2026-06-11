@@ -12,8 +12,8 @@ from openpyxl import Workbook, load_workbook
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from update_interface_summary_from_baseline import main as update_main  # noqa: E402
-from update_interface_summary_from_baseline import update_summary_from_baseline  # noqa: E402
+from compare_podm_bmc_to_baseline import compare_podm_bmc_to_baseline  # noqa: E402
+from compare_podm_bmc_to_baseline import main as update_main  # noqa: E402
 
 
 def write_yaml(path: Path, items: list[dict[str, str]]) -> None:
@@ -157,7 +157,7 @@ class UpdateInterfaceSummaryFromBaselineTest(unittest.TestCase):
                 ],
             )
 
-            update_summary_from_baseline(baseline, bmc_yaml, podm_yaml, output)
+            compare_podm_bmc_to_baseline(baseline, bmc_yaml, podm_yaml, output)
 
             wb = load_workbook(output, read_only=True, data_only=True)
             common_rows = list(wb["共有接口"].iter_rows(min_row=2, values_only=True))
@@ -193,7 +193,7 @@ class UpdateInterfaceSummaryFromBaselineTest(unittest.TestCase):
             bmc_yaml = root / "bmc.interface-list.yaml"
             podm_yaml = root / "podm.interface-list.yaml"
             output = root / "updated.xlsx"
-            report = root / "interface_update_report.json"
+            report = root / "podm_bmc_update_report.json"
 
             write_baseline(baseline)
             manifest.write_text(

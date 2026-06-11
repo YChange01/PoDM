@@ -9,7 +9,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from run_pipeline import run_pipeline  # noqa: E402
+from run_podm_bmc_pipeline import run_pipeline  # noqa: E402
 
 
 def write_docx_lines(path: Path, lines: list[str]) -> None:
@@ -76,8 +76,8 @@ class PipelineTest(unittest.TestCase):
             out_dir = run_pipeline("20260507", output_root, podm, bmc)
 
             self.assertEqual(out_dir, (output_root / "20260507").resolve())
-            self.assertTrue((out_dir / f"{podm.stem}.interface-list.yaml").exists())
-            self.assertTrue((out_dir / f"{bmc.stem}.interface-list.yaml").exists())
+            self.assertTrue((out_dir / "podm.interface-list.yaml").exists())
+            self.assertTrue((out_dir / "bmc.interface-list.yaml").exists())
             self.assertTrue((out_dir / f"{podm.stem}.uris.txt").exists())
             self.assertTrue((out_dir / f"{podm.stem}.example.uris.txt").exists())
             self.assertTrue((out_dir / f"{bmc.stem}.bmc.uris.txt").exists())

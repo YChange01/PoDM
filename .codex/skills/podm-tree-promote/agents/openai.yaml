@@ -1,0 +1,4 @@
+interface:
+  display_name: "PoDM-Tree Promote"
+  short_description: "Promote PoDM-resource-tree baseline"
+  default_prompt: "Use $podm-tree-promote 20260609 to promote the reviewed podm_resource_tree_summary.xlsx to the PoDM resource-tree baseline."

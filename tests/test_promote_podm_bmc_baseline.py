@@ -12,10 +12,10 @@ from openpyxl import Workbook
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from promote_reviewed_baseline import promote_reviewed_baseline  # noqa: E402
+from promote_podm_bmc_baseline import promote_podm_bmc_baseline  # noqa: E402
 
 
-def write_reviewed_workbook(path: Path, note: str = "人工确认") -> None:
+def write_podm_bmc_workbook(path: Path, note: str = "人工确认") -> None:
     wb = Workbook()
     ws = wb.active
     ws.title = "共有接口"
@@ -55,18 +55,18 @@ def write_reviewed_workbook(path: Path, note: str = "人工确认") -> None:
     wb.save(path)
 
 
-class PromoteReviewedBaselineTest(unittest.TestCase):
+class PromotePodmBmcBaselineTest(unittest.TestCase):
     def test_promotes_workbook_and_writes_manifest(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            source = root / "new_summary.xlsx"
+            source = root / "podm_bmc_summary.xlsx"
             baseline_dir = root / "baseline"
 
-            write_reviewed_workbook(source)
+            write_podm_bmc_workbook(source)
 
-            manifest = promote_reviewed_baseline(source, baseline_dir, baseline_date="20260610")
-            target = baseline_dir / "reviewed_baseline.xlsx"
-            manifest_path = baseline_dir / "reviewed_baseline_manifest.json"
+            manifest = promote_podm_bmc_baseline(source, baseline_dir, baseline_date="20260610")
+            target = baseline_dir / "podm_bmc" / "baseline.xlsx"
+            manifest_path = baseline_dir / "podm_bmc" / "manifest.json"
 
             self.assertTrue(target.is_file())
             self.assertTrue(manifest_path.is_file())
@@ -82,35 +82,37 @@ class PromoteReviewedBaselineTest(unittest.TestCase):
     def test_archives_existing_baseline_before_replacing_it(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
-            source = root / "new_summary.xlsx"
+            source = root / "podm_bmc_summary.xlsx"
             baseline_dir = root / "baseline"
-            baseline_dir.mkdir()
-            old_workbook = baseline_dir / "reviewed_baseline.xlsx"
-            old_manifest = baseline_dir / "reviewed_baseline_manifest.json"
+            workflow_dir = baseline_dir / "podm_bmc"
+            workflow_dir.mkdir(parents=True)
+            old_workbook = workflow_dir / "baseline.xlsx"
+            old_manifest = workflow_dir / "manifest.json"
 
-            write_reviewed_workbook(old_workbook, note="旧基线")
+            write_podm_bmc_workbook(old_workbook, note="旧基线")
+            old_sha256 = hashlib.sha256(old_workbook.read_bytes()).hexdigest()
             old_manifest.write_text(
-                json.dumps({"sha256": hashlib.sha256(old_workbook.read_bytes()).hexdigest()}),
+                json.dumps({"workbook": str(old_workbook), "sha256": old_sha256}),
                 encoding="utf-8",
             )
-            old_manifest_text = old_manifest.read_text(encoding="utf-8")
-            write_reviewed_workbook(source, note="新基线")
+            write_podm_bmc_workbook(source, note="新基线")
 
-            manifest = promote_reviewed_baseline(
+            manifest = promote_podm_bmc_baseline(
                 source,
                 baseline_dir,
                 baseline_date="20260610",
                 backup_timestamp="20260610T010203Z",
             )
 
-            backup_dir = baseline_dir / "backup_20260610T010203Z"
+            backup_dir = workflow_dir / "backups" / "20260610T010203Z"
             self.assertEqual(str(backup_dir), manifest["previous_baseline_backup"])
-            self.assertTrue((backup_dir / "reviewed_baseline_20260610T010203Z.xlsx").is_file())
-            self.assertTrue((backup_dir / "reviewed_baseline_manifest_20260610T010203Z.json").is_file())
-            self.assertEqual(
-                old_manifest_text,
-                (backup_dir / "reviewed_baseline_manifest_20260610T010203Z.json").read_text(encoding="utf-8"),
-            )
+            backup_workbook = backup_dir / "baseline_20260610T010203Z.xlsx"
+            backup_manifest_path = backup_dir / "manifest_20260610T010203Z.json"
+            self.assertTrue(backup_workbook.is_file())
+            self.assertTrue(backup_manifest_path.is_file())
+            backup_manifest = json.loads(backup_manifest_path.read_text(encoding="utf-8"))
+            self.assertEqual(str(backup_workbook), backup_manifest["workbook"])
+            self.assertEqual(hashlib.sha256(backup_workbook.read_bytes()).hexdigest(), backup_manifest["sha256"])
             self.assertEqual(hashlib.sha256(old_workbook.read_bytes()).hexdigest(), manifest["sha256"])
 
     def test_rejects_workbook_without_required_sheets(self) -> None:
@@ -126,9 +128,9 @@ class PromoteReviewedBaselineTest(unittest.TestCase):
             wb.save(source)
 
             with self.assertRaises(SystemExit):
-                promote_reviewed_baseline(source, baseline_dir, baseline_date="20260610")
+                promote_podm_bmc_baseline(source, baseline_dir, baseline_date="20260610")
 
-            self.assertFalse((baseline_dir / "reviewed_baseline.xlsx").exists())
+            self.assertFalse((baseline_dir / "podm_bmc" / "baseline.xlsx").exists())
 
 
 if __name__ == "__main__":

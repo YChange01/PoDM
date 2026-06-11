@@ -1,4 +1,0 @@
-interface:
-  display_name: "Redfish Resource Tree Compare"
-  short_description: "Compare resource tree with PoDM"
-  default_prompt: "Use $redfish-resource-tree-compare-baseline 20260609 to extract Redfish resource-tree interfaces and compare them with the PoDManager baseline."
