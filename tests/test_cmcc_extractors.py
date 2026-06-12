@@ -1,14 +1,60 @@
 from __future__ import annotations
 
 import sys
+import tempfile
 import unittest
+import zipfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
+from _docx_utils import read_source  # noqa: E402
 from extract_cmcc import extract as extract_cmcc_params  # noqa: E402
 from extract_cmcc_interface_list import extract as extract_cmcc_list  # noqa: E402
+
+
+W_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+
+
+def write_numbered_cmcc_docx(path: Path) -> None:
+    document = f"""
+<w:document xmlns:w="{W_NS}">
+  <w:body>
+    <w:p>
+      <w:pPr>
+        <w:numPr>
+          <w:ilvl w:val="3"/>
+          <w:numId w:val="1"/>
+        </w:numPr>
+      </w:pPr>
+      <w:r><w:t>修改BMC管理服务信息</w:t></w:r>
+    </w:p>
+    <w:p><w:r><w:t>命令功能</w:t></w:r></w:p>
+    <w:p><w:r><w:t>修改服务器 BMC 管理服务状态及端口信息。</w:t></w:r></w:p>
+    <w:p><w:r><w:t>命令格式</w:t></w:r></w:p>
+    <w:p><w:r><w:t>操作类型：PATCH</w:t></w:r></w:p>
+    <w:p><w:r><w:t>URL:https://device_ip/redfish/v1/Managers/manager_id/NetworkProtocol</w:t></w:r></w:p>
+    <w:p><w:r><w:t>请求头：</w:t></w:r></w:p>
+    <w:p><w:r><w:t>X-Auth-Token: auth_value</w:t></w:r></w:p>
+    <w:p><w:r><w:t>请求消息体：无</w:t></w:r></w:p>
+  </w:body>
+</w:document>
+""".strip()
+    numbering = f"""
+<w:numbering xmlns:w="{W_NS}">
+  <w:abstractNum w:abstractNumId="0">
+    <w:lvl w:ilvl="0"><w:start w:val="6"/><w:numFmt w:val="decimal"/><w:lvlText w:val="%1"/></w:lvl>
+    <w:lvl w:ilvl="1"><w:start w:val="1"/><w:numFmt w:val="decimal"/><w:lvlText w:val="%1.%2"/></w:lvl>
+    <w:lvl w:ilvl="2"><w:start w:val="9"/><w:numFmt w:val="decimal"/><w:lvlText w:val="%1.%2.%3"/></w:lvl>
+    <w:lvl w:ilvl="3"><w:start w:val="10"/><w:numFmt w:val="decimal"/><w:lvlText w:val="%1.%2.%3.%4"/></w:lvl>
+  </w:abstractNum>
+  <w:num w:numId="1"><w:abstractNumId w:val="0"/></w:num>
+</w:numbering>
+""".strip()
+    with zipfile.ZipFile(path, "w") as archive:
+        archive.writestr("word/document.xml", document)
+        archive.writestr("word/numbering.xml", numbering)
 
 
 class CmccExtractorsTest(unittest.TestCase):
@@ -187,6 +233,62 @@ class CmccExtractorsTest(unittest.TestCase):
         self.assertEqual(interfaces[0].params.path, ["system_id"])
         self.assertEqual(interfaces[0].params.header, ["auth_value"])
         self.assertEqual(interfaces[0].params.response, ["AssetTag", "HostName"])
+
+    def test_extracts_section_from_bullet_prefixed_heading(self) -> None:
+        text = "\n".join(
+            [
+                "▪ 6.1.9.10 修改BMC管理服务信息",
+                "命令功能",
+                "修改服务器 BMC 管理服务状态及端口信息。",
+                "命令格式",
+                "操作类型：PATCH",
+                "URL:https://device_ip/redfish/v1/Managers/manager_id/NetworkProtocol",
+                "请求头：",
+                "X-Auth-Token: auth_value",
+                "Content-Type: header_type",
+                "If-Match: ifmatch_value",
+                "请求消息体：",
+                "{",
+                '"HTTPS": https_value',
+                "}",
+                "参数说明",
+                "表 151 修改BMC管理服务信息参数说明",
+                "参数\t参数说明\t取值",
+                "manager_id\t管理资源的ID\t1",
+                "auth_value\t鉴权参数\t会话获得",
+                "header_type\t请求消息的格式\tapplication/json",
+                "ifmatch_value\t请求消息的匹配参数\tETag",
+                "https_value\tHTTPS服务开关\ttrue",
+            ]
+        )
+
+        interfaces = extract_cmcc_params(text)
+
+        self.assertEqual(len(interfaces), 1)
+        self.assertEqual(interfaces[0].section, "6.1.9.10")
+        self.assertEqual(interfaces[0].title, "修改BMC管理服务信息")
+        self.assertEqual(interfaces[0].method, "PATCH")
+        self.assertEqual(
+            interfaces[0].uri,
+            "https://device_ip/redfish/v1/Managers/manager_id/NetworkProtocol",
+        )
+        self.assertEqual(interfaces[0].params.path, ["manager_id"])
+        self.assertEqual(
+            interfaces[0].params.header,
+            ["auth_value", "header_type", "ifmatch_value"],
+        )
+        self.assertEqual(interfaces[0].params.body, ["https_value"])
+
+    def test_extracts_section_from_word_numbered_heading(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            docx = Path(tmp) / "cmcc.docx"
+            write_numbered_cmcc_docx(docx)
+
+            interfaces = extract_cmcc_params(read_source(docx))
+
+        self.assertEqual(len(interfaces), 1)
+        self.assertEqual(interfaces[0].section, "6.1.9.10")
+        self.assertEqual(interfaces[0].title, "修改BMC管理服务信息")
 
 
 if __name__ == "__main__":
