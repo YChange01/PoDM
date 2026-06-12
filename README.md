@@ -41,6 +41,7 @@ PoDM/
 │   ├── extract_bmc.py                # BMC：提取接口 + 参数
 │   ├── extract_cmcc.py               # 中国移动要求文档：提取 URI + 参数
 │   ├── extract_cmcc_interface_list.py # 中国移动要求文档：提取接口清单（不含参数）
+│   ├── extract_cmcc_toc.py           # 中国移动要求文档：单独提取章节目录
 │   ├── run_podm_bmc_pipeline.py      # 一键跑 PoDManager vs BMC 提取流水线
 │   ├── compare_podm_bmc_to_baseline.py # PoDManager vs BMC baseline 对比
 │   ├── promote_podm_bmc_baseline.py  # 将人工复核 PoDManager vs BMC Excel 提升为 baseline
@@ -95,6 +96,7 @@ PoDM/
 | `scripts/extract_bmc.py` | BMC：从命令格式 / 输出说明抽 URI + 参数 | `<input>.bmc.interfaces.yaml` + `<input>.bmc.uris.txt` |
 | `scripts/extract_cmcc_interface_list.py` | 中国移动要求文档：从命令格式抽接口清单（index/section/title/method/uri，不含参数） | `output/20260610/cmcc.interface-list.yaml` |
 | `scripts/extract_cmcc.py` | 中国移动要求文档：从命令格式 / 参数说明 / 输出说明抽 URI + path/header/body/query/response 参数 | `output/20260610/cmcc.interfaces.yaml` + `output/20260610/cmcc.uris.txt` |
+| `scripts/extract_cmcc_toc.py` | 中国移动要求文档：单独抽 `6.1.x` 章节目录，便于排查 section 丢失/错位 | `output/20260610/cmcc.toc.yaml` + `output/20260610/cmcc.toc.txt` |
 | `scripts/run_podm_bmc_pipeline.py` | 一键跑 PoDManager/BMC 接口清单和接口+参数提取 | `output/<date>/podm.interface-list.yaml`、`output/<date>/bmc.interface-list.yaml` |
 | `scripts/compare_podm_bmc_to_baseline.py` | PoDManager 接口清单与 BMC 接口清单对比；存在 baseline 时标注新增/删除/变更 | `output/<date>/analysis/podm_bmc_summary.xlsx` |
 | `scripts/promote_podm_bmc_baseline.py` | 将人工复核后的 PoDManager vs BMC 对比 Excel 提升为 baseline | `baseline/podm_bmc/baseline.xlsx` |
@@ -154,6 +156,7 @@ python3 scripts/extract_from_examples.py  data/你的文件.docx   output/你的
 python3 scripts/extract_bmc.py            data/你的BMC文件.docx output/你的BMC文件.bmc.interfaces.yaml
 python3 scripts/extract_cmcc_interface_list.py data/你的中国移动要求文档.docx output/cmcc.interface-list.yaml
 python3 scripts/extract_cmcc.py                data/你的中国移动要求文档.docx output/cmcc.interfaces.yaml
+python3 scripts/extract_cmcc_toc.py            data/你的中国移动要求文档.paste.txt output/cmcc.toc.yaml
 ```
 
 只传输入、不传输出时，结果写到约定的默认文件名。
@@ -189,6 +192,14 @@ data/20260610/附件5：中国移动服务器Redfish管理接口要求V6.1.0-v20
 也支持同名 `.copy.txt` / `.manual.txt`，以及 `原文件名.docx.paste.txt`
 / `原文件名.docx.copy.txt` / `原文件名.docx.manual.txt`。这种旁路只对
 `extract_cmcc*.py` 生效，不影响 PoDManager/BMC 提取脚本。
+
+如发现接口提取出的 section 仍然异常，可先单独提取目录核对源文本中的章节号：
+
+```bash
+python3 scripts/extract_cmcc_toc.py data/20260610/附件5：中国移动服务器Redfish管理接口要求V6.1.0-v20260604.paste.txt output/20260610/cmcc.toc.yaml
+```
+
+脚本会同时写出 `cmcc.toc.yaml` 和 `cmcc.toc.txt`，字段包含 `section / level / title / line`。
 
 资源树接口提取支持直接传日期，脚本会读取 `data/<日期>/` 下的 PoDManager 固定文件名，并写到
 `output/<日期>/`：

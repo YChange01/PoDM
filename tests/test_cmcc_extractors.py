@@ -14,6 +14,7 @@ from _docx_utils import read_source as read_shared_source  # noqa: E402
 from extract_cmcc import extract as extract_cmcc_params  # noqa: E402
 from extract_cmcc import split_command_blocks  # noqa: E402
 from extract_cmcc_interface_list import extract as extract_cmcc_list  # noqa: E402
+from extract_cmcc_toc import extract_toc  # noqa: E402
 
 
 W_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
@@ -126,6 +127,32 @@ def write_plain_cmcc_docx(path: Path) -> None:
 
 
 class CmccExtractorsTest(unittest.TestCase):
+    def test_extracts_cmcc_toc_from_copy_pasted_headings(self) -> None:
+        text = "\n".join(
+            [
+                "Port\t数字\t服务的端口号\tM\tM",
+                "6.1.3.7.3\t修改指定电源属性",
+                "命令功能",
+                "修改服务器指定电源属性。",
+                "6.1.3.8 PCIe设备管理要求",
+                "该章节的PCIe设备包含人工智能标卡、人工智能模组等PCIe设备",
+                "6.1.3.8.1\t查询PCIe设备集合资源信息",
+                "6.1.3.8.2 查询指定PCIe设备资源信息45",
+            ]
+        )
+
+        toc = extract_toc(text)
+
+        self.assertEqual(
+            [(item.section, item.level, item.title) for item in toc],
+            [
+                ("6.1.3.7.3", 5, "修改指定电源属性"),
+                ("6.1.3.8", 4, "PCIe设备管理要求"),
+                ("6.1.3.8.1", 5, "查询PCIe设备集合资源信息"),
+                ("6.1.3.8.2", 5, "查询指定PCIe设备资源信息"),
+            ],
+        )
+
     def test_shared_docx_reader_does_not_apply_cmcc_numbering_rules(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             docx = Path(tmp) / "cmcc.docx"
