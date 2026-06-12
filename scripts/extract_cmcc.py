@@ -123,13 +123,13 @@ def split_sections(text: str) -> list[dict[str, object]]:
 
 
 def split_command_blocks(text: str) -> list[dict[str, object]]:
-    """Fallback for DOCX files whose Word auto-numbered headings are not text.
+    """Split each command format block as one interface.
 
     Some Word files store ``6.1.x`` numbering in OOXML numbering metadata rather
     than literal paragraph text. The lightweight reader then sees only title
-    text, so normal heading-based splitting yields no sections. In that case,
-    use each ``命令格式`` block as an interface boundary and infer the title from
-    the line before ``命令功能``.
+    text, so heading-based splitting may either yield no sections or only coarse
+    parent sections. Use each ``命令格式`` block as an interface boundary and infer
+    the title from the line before ``命令功能``.
     """
     lines = normalize_source_text(text).splitlines()
     starts = [
@@ -147,23 +147,32 @@ def split_command_blocks(text: str) -> list[dict[str, object]]:
     sections: list[dict[str, object]] = []
     for ordinal, start in enumerate(starts):
         end = starts[ordinal + 1] if ordinal + 1 < len(starts) else len(lines)
+        number, title = infer_heading_before_command(lines, start)
         sections.append(
             {
-                "number": "",
-                "title": infer_title_before_command(lines, start),
+                "number": number,
+                "title": title,
                 "lines": lines[start:end],
             }
         )
     return sections
 
 
-def infer_title_before_command(lines: list[str], command_start: int) -> str:
+def infer_heading_before_command(lines: list[str], command_start: int) -> tuple[str, str]:
     title_limit = 80
     for index in range(command_start - 1, -1, -1):
         stripped = lines[index].strip()
         if re.match(r"^命令功能\s*[:：]?\s*$", stripped):
-            return previous_title_line(lines, index, title_limit)
-    return previous_title_line(lines, command_start, title_limit)
+            return parse_heading_title(previous_title_line(lines, index, title_limit))
+    return parse_heading_title(previous_title_line(lines, command_start, title_limit))
+
+
+def parse_heading_title(line: str) -> tuple[str, str]:
+    stripped = line.strip(" \t▪■●◆◇-")
+    match = HEADING_RE.match(stripped)
+    if not match:
+        return "", stripped
+    return match.group(1), _strip_trailing_pageno(match.group(2).strip())
 
 
 def previous_title_line(lines: list[str], before_index: int, title_limit: int) -> str:
@@ -462,10 +471,11 @@ def build_interface(section: dict[str, object]) -> Interface | None:
 
 
 def extract(text: str) -> list[Interface]:
-    interfaces = extract_from_sections(split_sections(text))
-    if interfaces:
-        return interfaces
-    return extract_from_sections(split_command_blocks(text))
+    heading_interfaces = extract_from_sections(split_sections(text))
+    command_interfaces = extract_from_sections(split_command_blocks(text))
+    if len(command_interfaces) > len(heading_interfaces):
+        return command_interfaces
+    return heading_interfaces or command_interfaces
 
 
 def extract_from_sections(sections: list[dict[str, object]]) -> list[Interface]:

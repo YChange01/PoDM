@@ -283,6 +283,56 @@ class CmccExtractorsTest(unittest.TestCase):
         self.assertEqual(interfaces[0].params.header, ["auth_value"])
         self.assertEqual(interfaces[0].params.response, ["AssetTag", "HostName"])
 
+    def test_prefers_command_blocks_when_generated_sections_are_too_coarse(self) -> None:
+        text = "\n".join(
+            [
+                "22.1 资产管理接口要求",
+                "表 13 资产管理需求规格表",
+                "序号\t功能\t功能描述",
+                "1\t资产编码设置\t服务器资产编号设置",
+                "查询服务器资产",
+                "命令功能：",
+                "查询服务器资产编码、主机名、制造厂商",
+                "命令格式：",
+                "请求方法：Get",
+                "URL：https://device_ip/redfish/v1/Systems/system_id",
+                "请求头：X-Auth-Token: auth_value",
+                "请求消息体：无",
+                "参数说明：",
+                "表 14 查询指定系统资源参数说明",
+                "参数\t参数说明\t取值\tIT-M\tCT-M",
+                "system_id\t系统资源的ID\t1\tM\tM",
+                "auth_value\t执行该GET请求时用于鉴权\t会话获得\tM\tM",
+                "设置服务器资产相关信息",
+                "命令功能：",
+                "修改指定系统资源属性，包括资产编码、主机名称、典配模型。",
+                "命令格式：",
+                "操作类型：PATCH",
+                "URL：https://device_ip/redfish/v1/Systems/system_id",
+                "请求头：",
+                "X-Auth-Token: auth_value",
+                "Content-Type: header_type",
+                "If-Match: ifmatch_value",
+                "请求消息体：",
+                "{",
+                '"AssetTag": tag,',
+                '"HostName": name',
+                "}",
+            ]
+        )
+
+        interfaces = extract_cmcc_params(text)
+
+        self.assertEqual(len(interfaces), 2)
+        self.assertEqual(interfaces[0].title, "查询服务器资产")
+        self.assertEqual(interfaces[0].method, "GET")
+        self.assertEqual(
+            interfaces[0].uri,
+            "https://device_ip/redfish/v1/Systems/system_id",
+        )
+        self.assertEqual(interfaces[1].title, "设置服务器资产相关信息")
+        self.assertEqual(interfaces[1].method, "PATCH")
+
     def test_extracts_section_from_bullet_prefixed_heading(self) -> None:
         text = "\n".join(
             [
