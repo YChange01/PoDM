@@ -12,6 +12,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from _cmcc_docx_utils import read_source as read_cmcc_source  # noqa: E402
 from _docx_utils import read_source as read_shared_source  # noqa: E402
 from extract_cmcc import extract as extract_cmcc_params  # noqa: E402
+from extract_cmcc import split_command_blocks  # noqa: E402
 from extract_cmcc_interface_list import extract as extract_cmcc_list  # noqa: E402
 
 
@@ -385,6 +386,45 @@ class CmccExtractorsTest(unittest.TestCase):
         )
         self.assertEqual(interfaces[1].title, "设置服务器资产相关信息")
         self.assertEqual(interfaces[1].method, "PATCH")
+
+    def test_command_blocks_keep_tab_separated_copy_pasted_sections(self) -> None:
+        text = "\n".join(
+            [
+                "Port\t数字\t服务的端口号\tM\tM",
+                "6.1.3.7.3\t修改指定电源属性",
+                "命令功能",
+                "修改服务器指定电源属性。",
+                "命令格式",
+                "操作类型：PATCH",
+                "URL：https://device_ip/redfish/v1/Chassis/chassis_id/Power",
+                "请求头：",
+                "X-Auth-Token: auth_value",
+                "Content-Type: header_type",
+                "If-Match: ifmatch_value",
+                "请求消息体：无",
+                "输出说明",
+                "字段\t类型\t说明\tIT-M\tCT-M",
+                "Mode\t字符串\t指定电源冗余组\tM\t",
+                "6.1.3.8 PCIe设备管理要求",
+                "该章节的PCIe设备包含人工智能标卡、人工智能模组等PCIe设备",
+                "6.1.3.8.1\t查询PCIe设备集合资源信息",
+                "命令功能",
+                "查询服务器PCIe设备集合资源信息。",
+                "命令格式",
+                "操作类型：GET",
+                "URL：https://device_ip/redfish/v1/Chassis/chassis_id/PCIeDevices",
+                "请求头：",
+                "X-Auth-Token: auth_value",
+                "请求消息体：无",
+            ]
+        )
+
+        sections = split_command_blocks(text)
+
+        self.assertEqual(sections[0]["number"], "6.1.3.7.3")
+        self.assertEqual(sections[0]["title"], "修改指定电源属性")
+        self.assertEqual(sections[1]["number"], "6.1.3.8.1")
+        self.assertEqual(sections[1]["title"], "查询PCIe设备集合资源信息")
 
     def test_extracts_section_from_bullet_prefixed_heading(self) -> None:
         text = "\n".join(

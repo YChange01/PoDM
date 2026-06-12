@@ -183,6 +183,9 @@ def previous_title_line(lines: list[str], before_index: int, title_limit: int) -
         if MARKER_RE.match(stripped) or TABLE_TITLE_RE.match(stripped):
             continue
         if "\t" in stripped:
+            number, _title = parse_heading_title(stripped)
+            if number:
+                return stripped
             continue
         if len(stripped) <= title_limit:
             return stripped
