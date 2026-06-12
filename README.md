@@ -47,6 +47,7 @@ PoDM/
 │   ├── promote_podm_resource_tree_baseline.py # 将人工复核资源树 Excel 提升为 baseline
 │   ├── run_pipeline.py / update_* / promote_* # 旧命名兼容 wrapper
 │   ├── check.py                      # 编译 + 单元测试
+│   ├── docx_to_text.py               # 诊断/协作：把 .docx 转成保留表格 Tab 的纯文本
 │   ├── col_enum.py                   # 诊断：按列索引枚举表格某列取值
 │   ├── type_enum.py                  # 诊断：枚举参数表"类型"列的取值
 │   ├── docx_diag.py                  # 诊断：打印段落样式分布
@@ -150,6 +151,16 @@ python3 scripts/extract_bmc.py            data/你的BMC文件.docx output/你�
 ```
 
 只传输入、不传输出时，结果写到约定的默认文件名。
+
+如果原始 Word 不能直接共享，可先转成提取友好的纯文本再复制给 Codex：
+
+```bash
+python3 scripts/docx_to_text.py data/你的接口文档.docx
+python3 scripts/docx_to_text.py data/你的接口文档.docx -o -
+```
+
+默认会生成 `data/你的接口文档.extraction.txt`。输出中普通段落逐行保留，Word 表格按
+"一行一行、单元格用 Tab 分隔" 展开，目录段落会跳过，标题自动编号会尽量合成为 `X.Y.Z 标题`。
 
 资源树接口提取支持直接传日期，脚本会读取 `data/<日期>/` 下的 PoDManager 固定文件名，并写到
 `output/<日期>/`：
