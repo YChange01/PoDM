@@ -178,6 +178,18 @@ python3 scripts/extract_cmcc.py
 默认读取 `data/20260610/附件5：中国移动服务器Redfish管理接口要求V6.1.0-v20260604.docx`。
 如果文档路径不同，也可以按上面的传参方式指定输入和输出。
 
+如果 `.docx` 直读时丢失或错还原 Word 自动章节号，可在同目录放一份从 Word 直接复制粘贴出来的
+纯文本，脚本会优先使用它，再回退到 `.docx`。推荐文件名是把 `.docx` 换成 `.paste.txt`：
+
+```text
+data/20260610/附件5：中国移动服务器Redfish管理接口要求V6.1.0-v20260604.docx
+data/20260610/附件5：中国移动服务器Redfish管理接口要求V6.1.0-v20260604.paste.txt
+```
+
+也支持同名 `.copy.txt` / `.manual.txt`，以及 `原文件名.docx.paste.txt`
+/ `原文件名.docx.copy.txt` / `原文件名.docx.manual.txt`。这种旁路只对
+`extract_cmcc*.py` 生效，不影响 PoDManager/BMC 提取脚本。
+
 资源树接口提取支持直接传日期，脚本会读取 `data/<日期>/` 下的 PoDManager 固定文件名，并写到
 `output/<日期>/`：
 

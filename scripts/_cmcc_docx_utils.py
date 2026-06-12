@@ -26,6 +26,7 @@ from pathlib import Path
 W = "{http://schemas.openxmlformats.org/wordprocessingml/2006/main}"
 _TEXT_NUM_PREFIX = re.compile(r"^(\d+(?:\.\d+)*)\s+(.*)$")
 _NUM_PLACEHOLDER_RE = re.compile(r"%([1-9])")
+COPY_PASTED_TEXT_SUFFIXES = (".paste.txt", ".copy.txt", ".manual.txt")
 
 
 @dataclass
@@ -315,9 +316,25 @@ def read_docx(path: Path) -> str:
     return "\n".join(out)
 
 
+def copy_pasted_text_candidates(path: Path) -> list[Path]:
+    candidates: list[Path] = []
+    for suffix in COPY_PASTED_TEXT_SUFFIXES:
+        candidates.append(path.with_suffix(suffix))
+        candidates.append(path.with_name(f"{path.name}{suffix}"))
+    return candidates
+
+
+def preferred_copy_pasted_text(path: Path) -> Path | None:
+    for candidate in copy_pasted_text_candidates(path):
+        if candidate.is_file():
+            return candidate
+    return None
+
+
 def read_source(path: Path) -> str:
     if path.suffix.lower() == ".docx":
-        text = read_docx(path)
+        copy_text = preferred_copy_pasted_text(path)
+        text = copy_text.read_text(encoding="utf-8-sig") if copy_text else read_docx(path)
     else:
         text = path.read_text(encoding="utf-8-sig")
     return text.replace("　", " ").replace("\xa0", " ")

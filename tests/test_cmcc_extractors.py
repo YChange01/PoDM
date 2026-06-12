@@ -107,6 +107,23 @@ def write_style_numbered_cmcc_docx(path: Path) -> None:
         archive.writestr("word/numbering.xml", numbering)
 
 
+def write_plain_cmcc_docx(path: Path) -> None:
+    document = f"""
+<w:document xmlns:w="{W_NS}">
+  <w:body>
+    <w:p><w:r><w:t>修改BMC管理服务信息</w:t></w:r></w:p>
+    <w:p><w:r><w:t>命令功能</w:t></w:r></w:p>
+    <w:p><w:r><w:t>修改服务器BMC管理服务状态及端口信息。</w:t></w:r></w:p>
+    <w:p><w:r><w:t>命令格式</w:t></w:r></w:p>
+    <w:p><w:r><w:t>操作类型：PATCH</w:t></w:r></w:p>
+    <w:p><w:r><w:t>URL:https://device_ip/redfish/v1/Managers/manager_id/NetworkProtocol</w:t></w:r></w:p>
+  </w:body>
+</w:document>
+""".strip()
+    with zipfile.ZipFile(path, "w") as archive:
+        archive.writestr("word/document.xml", document)
+
+
 class CmccExtractorsTest(unittest.TestCase):
     def test_shared_docx_reader_does_not_apply_cmcc_numbering_rules(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -117,6 +134,31 @@ class CmccExtractorsTest(unittest.TestCase):
 
         self.assertIn("修改BMC管理服务信息", text)
         self.assertNotIn("6.1.9.10 修改BMC管理服务信息", text)
+
+    def test_cmcc_docx_prefers_copy_pasted_sidecar_text(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            docx = Path(tmp) / "cmcc.docx"
+            write_plain_cmcc_docx(docx)
+            docx.with_suffix(".paste.txt").write_text(
+                "\n".join(
+                    [
+                        "Port\t数字\t服务的端口号\tM\tM",
+                        "6.1.9.10 修改BMC管理服务信息",
+                        "命令功能",
+                        "修改服务器BMC管理服务状态及端口信息。",
+                        "命令格式",
+                        "操作类型：PATCH",
+                        "URL:https://device_ip/redfish/v1/Managers/manager_id/NetworkProtocol",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            interfaces = extract_cmcc_params(read_cmcc_source(docx))
+
+        self.assertEqual(len(interfaces), 1)
+        self.assertEqual(interfaces[0].section, "6.1.9.10")
+        self.assertEqual(interfaces[0].title, "修改BMC管理服务信息")
 
     def test_extracts_uri_list_from_cmcc_command_format(self) -> None:
         text = "\n".join(
