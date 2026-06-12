@@ -57,6 +57,55 @@ def write_numbered_cmcc_docx(path: Path) -> None:
         archive.writestr("word/numbering.xml", numbering)
 
 
+def write_style_numbered_cmcc_docx(path: Path) -> None:
+    document = f"""
+<w:document xmlns:w="{W_NS}">
+  <w:body>
+    <w:p>
+      <w:pPr><w:pStyle w:val="CmccApiHeading"/></w:pPr>
+      <w:r><w:t>修改BMC管理服务信息</w:t></w:r>
+    </w:p>
+    <w:p><w:r><w:t>命令功能</w:t></w:r></w:p>
+    <w:p><w:r><w:t>修改服务器 BMC 管理服务状态及端口信息。</w:t></w:r></w:p>
+    <w:p><w:r><w:t>命令格式</w:t></w:r></w:p>
+    <w:p><w:r><w:t>操作类型：PATCH</w:t></w:r></w:p>
+    <w:p><w:r><w:t>URL:https://device_ip/redfish/v1/Managers/manager_id/NetworkProtocol</w:t></w:r></w:p>
+    <w:p><w:r><w:t>请求头：</w:t></w:r></w:p>
+    <w:p><w:r><w:t>X-Auth-Token: auth_value</w:t></w:r></w:p>
+    <w:p><w:r><w:t>请求消息体：无</w:t></w:r></w:p>
+  </w:body>
+</w:document>
+""".strip()
+    styles = f"""
+<w:styles xmlns:w="{W_NS}">
+  <w:style w:type="paragraph" w:styleId="CmccApiHeading">
+    <w:name w:val="Cmcc API Heading"/>
+    <w:pPr>
+      <w:numPr>
+        <w:ilvl w:val="3"/>
+        <w:numId w:val="1"/>
+      </w:numPr>
+    </w:pPr>
+  </w:style>
+</w:styles>
+""".strip()
+    numbering = f"""
+<w:numbering xmlns:w="{W_NS}">
+  <w:abstractNum w:abstractNumId="0">
+    <w:lvl w:ilvl="0"><w:start w:val="6"/><w:numFmt w:val="decimal"/><w:lvlText w:val="%1"/></w:lvl>
+    <w:lvl w:ilvl="1"><w:start w:val="1"/><w:numFmt w:val="decimal"/><w:lvlText w:val="%1.%2"/></w:lvl>
+    <w:lvl w:ilvl="2"><w:start w:val="9"/><w:numFmt w:val="decimal"/><w:lvlText w:val="%1.%2.%3"/></w:lvl>
+    <w:lvl w:ilvl="3"><w:start w:val="10"/><w:numFmt w:val="decimal"/><w:lvlText w:val="%1.%2.%3.%4"/></w:lvl>
+  </w:abstractNum>
+  <w:num w:numId="1"><w:abstractNumId w:val="0"/></w:num>
+</w:numbering>
+""".strip()
+    with zipfile.ZipFile(path, "w") as archive:
+        archive.writestr("word/document.xml", document)
+        archive.writestr("word/styles.xml", styles)
+        archive.writestr("word/numbering.xml", numbering)
+
+
 class CmccExtractorsTest(unittest.TestCase):
     def test_extracts_uri_list_from_cmcc_command_format(self) -> None:
         text = "\n".join(
@@ -283,6 +332,17 @@ class CmccExtractorsTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             docx = Path(tmp) / "cmcc.docx"
             write_numbered_cmcc_docx(docx)
+
+            interfaces = extract_cmcc_params(read_source(docx))
+
+        self.assertEqual(len(interfaces), 1)
+        self.assertEqual(interfaces[0].section, "6.1.9.10")
+        self.assertEqual(interfaces[0].title, "修改BMC管理服务信息")
+
+    def test_extracts_section_from_style_numbered_heading(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            docx = Path(tmp) / "cmcc.docx"
+            write_style_numbered_cmcc_docx(docx)
 
             interfaces = extract_cmcc_params(read_source(docx))
 

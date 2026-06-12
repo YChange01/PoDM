@@ -35,6 +35,7 @@ class _Numbering:
     num_to_abstract: dict[str, str] = field(default_factory=dict)
     levels: dict[str, dict[int, _NumberLevel]] = field(default_factory=dict)
     overrides: dict[tuple[str, int], int] = field(default_factory=dict)
+    style_num_pr: dict[str, tuple[str, int]] = field(default_factory=dict)
 
 
 # ---------- 样式识别 ----------
@@ -122,19 +123,72 @@ def _read_numbering(archive: zipfile.ZipFile) -> _Numbering:
     return numbering
 
 
-def _paragraph_numbering(p_elem: ET.Element) -> tuple[str, int] | None:
-    num_pr = p_elem.find(f"{W}pPr/{W}numPr")
-    if num_pr is None:
-        return None
-    num_id = _w_val(num_pr.find(f"{W}numId"))
-    raw_ilvl = _w_val(num_pr.find(f"{W}ilvl")) or "0"
-    if not num_id:
-        return None
+def _read_style_numbering(archive: zipfile.ZipFile, numbering: _Numbering) -> None:
     try:
-        ilvl = int(raw_ilvl)
-    except ValueError:
-        ilvl = 0
-    return num_id, ilvl
+        with archive.open("word/styles.xml") as f:
+            tree = ET.parse(f)
+    except KeyError:
+        return
+
+    direct: dict[str, tuple[str, int]] = {}
+    based_on: dict[str, str] = {}
+    for style in tree.getroot().findall(f"{W}style"):
+        style_id = style.get(f"{W}styleId") or ""
+        if not style_id:
+            continue
+        parent = _w_val(style.find(f"{W}basedOn"))
+        if parent:
+            based_on[style_id] = parent
+        num_pr = style.find(f"{W}pPr/{W}numPr")
+        if num_pr is None:
+            continue
+        num_id = _w_val(num_pr.find(f"{W}numId"))
+        raw_ilvl = _w_val(num_pr.find(f"{W}ilvl")) or "0"
+        if not num_id:
+            continue
+        try:
+            ilvl = int(raw_ilvl)
+        except ValueError:
+            ilvl = 0
+        direct[style_id] = (num_id, ilvl)
+
+    resolved: dict[str, tuple[str, int] | None] = {}
+
+    def resolve(style_id: str, trail: set[str]) -> tuple[str, int] | None:
+        if style_id in resolved:
+            return resolved[style_id]
+        if style_id in direct:
+            resolved[style_id] = direct[style_id]
+            return resolved[style_id]
+        parent = based_on.get(style_id)
+        if not parent or parent in trail:
+            resolved[style_id] = None
+            return None
+        resolved[style_id] = resolve(parent, trail | {style_id})
+        return resolved[style_id]
+
+    for style_id in set(direct) | set(based_on):
+        value = resolve(style_id, set())
+        if value is not None:
+            numbering.style_num_pr[style_id] = value
+
+
+def _paragraph_numbering(p_elem: ET.Element, numbering: _Numbering) -> tuple[str, int] | None:
+    num_pr = p_elem.find(f"{W}pPr/{W}numPr")
+    if num_pr is not None:
+        num_id = _w_val(num_pr.find(f"{W}numId"))
+        raw_ilvl = _w_val(num_pr.find(f"{W}ilvl")) or "0"
+        if num_id:
+            try:
+                ilvl = int(raw_ilvl)
+            except ValueError:
+                ilvl = 0
+            return num_id, ilvl
+
+    style = _pstyle_val(p_elem)
+    if style:
+        return numbering.style_num_pr.get(style)
+    return None
 
 
 def _level_start(
@@ -154,7 +208,7 @@ def _numbering_prefix(
     numbering: _Numbering,
     counters: dict[str, list[int]],
 ) -> str:
-    num_pr = _paragraph_numbering(p_elem)
+    num_pr = _paragraph_numbering(p_elem, numbering)
     if num_pr is None:
         return ""
     num_id, ilvl = num_pr
@@ -202,6 +256,7 @@ def _table_rows(tbl_elem) -> list[str]:
 def read_docx(path: Path) -> str:
     with zipfile.ZipFile(path) as z:
         numbering = _read_numbering(z)
+        _read_style_numbering(z, numbering)
         with z.open("word/document.xml") as f:
             tree = ET.parse(f)
     body = tree.getroot().find(f"{W}body")
