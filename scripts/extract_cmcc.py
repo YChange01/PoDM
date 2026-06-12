@@ -21,7 +21,7 @@ from dataclasses import asdict
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _docx_utils import read_source  # noqa: E402
+from _cmcc_docx_utils import read_source  # noqa: E402
 from _doc_structure import HEADING_RE, _strip_trailing_pageno, split_columns  # noqa: E402
 from _yaml_io import Interface, Params, dedup_keep_order, dump_yaml, write_uris  # noqa: E402
 

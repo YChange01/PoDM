@@ -9,7 +9,8 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
 
-from _docx_utils import read_source  # noqa: E402
+from _cmcc_docx_utils import read_source as read_cmcc_source  # noqa: E402
+from _docx_utils import read_source as read_shared_source  # noqa: E402
 from extract_cmcc import extract as extract_cmcc_params  # noqa: E402
 from extract_cmcc_interface_list import extract as extract_cmcc_list  # noqa: E402
 
@@ -107,6 +108,16 @@ def write_style_numbered_cmcc_docx(path: Path) -> None:
 
 
 class CmccExtractorsTest(unittest.TestCase):
+    def test_shared_docx_reader_does_not_apply_cmcc_numbering_rules(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            docx = Path(tmp) / "cmcc.docx"
+            write_style_numbered_cmcc_docx(docx)
+
+            text = read_shared_source(docx)
+
+        self.assertIn("修改BMC管理服务信息", text)
+        self.assertNotIn("6.1.9.10 修改BMC管理服务信息", text)
+
     def test_extracts_uri_list_from_cmcc_command_format(self) -> None:
         text = "\n".join(
             [
@@ -383,7 +394,7 @@ class CmccExtractorsTest(unittest.TestCase):
             docx = Path(tmp) / "cmcc.docx"
             write_numbered_cmcc_docx(docx)
 
-            interfaces = extract_cmcc_params(read_source(docx))
+            interfaces = extract_cmcc_params(read_cmcc_source(docx))
 
         self.assertEqual(len(interfaces), 1)
         self.assertEqual(interfaces[0].section, "6.1.9.10")
@@ -394,7 +405,7 @@ class CmccExtractorsTest(unittest.TestCase):
             docx = Path(tmp) / "cmcc.docx"
             write_style_numbered_cmcc_docx(docx)
 
-            interfaces = extract_cmcc_params(read_source(docx))
+            interfaces = extract_cmcc_params(read_cmcc_source(docx))
 
         self.assertEqual(len(interfaces), 1)
         self.assertEqual(interfaces[0].section, "6.1.9.10")

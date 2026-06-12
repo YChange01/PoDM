@@ -6,7 +6,7 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from _docx_utils import read_source  # noqa: E402
+from _cmcc_docx_utils import read_source  # noqa: E402
 from _interface_list import InterfaceSummary, write_interface_list_yaml  # noqa: E402
 from extract_cmcc import DEFAULT_INPUT, extract as extract_cmcc_interfaces  # noqa: E402
 
