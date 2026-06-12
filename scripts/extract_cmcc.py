@@ -122,6 +122,64 @@ def split_sections(text: str) -> list[dict[str, object]]:
     return sections
 
 
+def split_command_blocks(text: str) -> list[dict[str, object]]:
+    """Fallback for DOCX files whose Word auto-numbered headings are not text.
+
+    Some Word files store ``6.1.x`` numbering in OOXML numbering metadata rather
+    than literal paragraph text. The lightweight reader then sees only title
+    text, so normal heading-based splitting yields no sections. In that case,
+    use each ``命令格式`` block as an interface boundary and infer the title from
+    the line before ``命令功能``.
+    """
+    lines = normalize_source_text(text).splitlines()
+    starts = [
+        index
+        for index, line in enumerate(lines)
+        if re.match(r"^命令格式\s*[:：]?\s*$", line.strip())
+    ]
+    if not starts:
+        starts = [
+            index
+            for index, line in enumerate(lines)
+            if METHOD_RE.match(line.strip()) or URL_RE.match(line.strip())
+        ]
+
+    sections: list[dict[str, object]] = []
+    for ordinal, start in enumerate(starts):
+        end = starts[ordinal + 1] if ordinal + 1 < len(starts) else len(lines)
+        sections.append(
+            {
+                "number": "",
+                "title": infer_title_before_command(lines, start),
+                "lines": lines[start:end],
+            }
+        )
+    return sections
+
+
+def infer_title_before_command(lines: list[str], command_start: int) -> str:
+    title_limit = 80
+    for index in range(command_start - 1, -1, -1):
+        stripped = lines[index].strip()
+        if re.match(r"^命令功能\s*[:：]?\s*$", stripped):
+            return previous_title_line(lines, index, title_limit)
+    return previous_title_line(lines, command_start, title_limit)
+
+
+def previous_title_line(lines: list[str], before_index: int, title_limit: int) -> str:
+    for index in range(before_index - 1, -1, -1):
+        stripped = lines[index].strip()
+        if not stripped:
+            continue
+        if MARKER_RE.match(stripped) or TABLE_TITLE_RE.match(stripped):
+            continue
+        if "\t" in stripped:
+            continue
+        if len(stripped) <= title_limit:
+            return stripped
+    return ""
+
+
 def split_subsections(lines: list[str]) -> dict[str, list[str]]:
     subsections: dict[str, list[str]] = {marker: [] for marker in CMCC_MARKERS}
     current: str | None = None
@@ -404,8 +462,15 @@ def build_interface(section: dict[str, object]) -> Interface | None:
 
 
 def extract(text: str) -> list[Interface]:
+    interfaces = extract_from_sections(split_sections(text))
+    if interfaces:
+        return interfaces
+    return extract_from_sections(split_command_blocks(text))
+
+
+def extract_from_sections(sections: list[dict[str, object]]) -> list[Interface]:
     interfaces: list[Interface] = []
-    for section in split_sections(text):
+    for section in sections:
         iface = build_interface(section)
         if iface is not None:
             interfaces.append(iface)

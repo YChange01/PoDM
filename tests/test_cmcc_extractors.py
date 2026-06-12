@@ -149,6 +149,45 @@ class CmccExtractorsTest(unittest.TestCase):
         self.assertEqual(interfaces[1].params.path, ["system_id"])
         self.assertEqual(interfaces[1].params.query, ["$expand"])
 
+    def test_falls_back_to_command_blocks_when_heading_numbers_are_missing(self) -> None:
+        text = "\n".join(
+            [
+                "查询服务器资产",
+                "命令功能：",
+                "查询服务器资产编码、主机名、制造厂商",
+                "命令格式：",
+                "请求方法：Get",
+                "URL：https://device_ip/redfish/v1/Systems/system_id",
+                "请求头：X-Auth-Token: auth_value",
+                "请求消息体：无",
+                "参数说明：",
+                "表 14 查询指定系统资源参数说明",
+                "参数\t参数说明\t取值\tIT-M\tCT-M",
+                "device_ip\t登录设备的IP地址\tIPv4或IPv6地址\tM\tM",
+                "system_id\t系统资源的ID\t1\tM\tM",
+                "auth_value\t执行该GET请求时用于鉴权\t会话获得\tM\tM",
+                "输出说明：",
+                "表 15 指定系统资源信息",
+                "字段\t类型\t说明\tIT-M\tCT-M",
+                "AssetTag\t字符串\t指定系统资源的资产编码\tM\tM",
+                "HostName\t字符串\t指定系统资源的主机名称\tM\tM",
+            ]
+        )
+
+        interfaces = extract_cmcc_params(text)
+
+        self.assertEqual(len(interfaces), 1)
+        self.assertEqual(interfaces[0].section, "")
+        self.assertEqual(interfaces[0].title, "查询服务器资产")
+        self.assertEqual(interfaces[0].method, "GET")
+        self.assertEqual(
+            interfaces[0].uri,
+            "https://device_ip/redfish/v1/Systems/system_id",
+        )
+        self.assertEqual(interfaces[0].params.path, ["system_id"])
+        self.assertEqual(interfaces[0].params.header, ["auth_value"])
+        self.assertEqual(interfaces[0].params.response, ["AssetTag", "HostName"])
+
 
 if __name__ == "__main__":
     unittest.main()
