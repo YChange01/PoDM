@@ -15,6 +15,7 @@ from extract_cmcc import extract as extract_cmcc_params  # noqa: E402
 from extract_cmcc import split_command_blocks  # noqa: E402
 from extract_cmcc_interface_list import extract as extract_cmcc_list  # noqa: E402
 from extract_cmcc_toc import extract_toc  # noqa: E402
+from extract_cmcc_toc import main as extract_cmcc_toc_main  # noqa: E402
 
 
 W_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
@@ -126,6 +127,97 @@ def write_plain_cmcc_docx(path: Path) -> None:
         archive.writestr("word/document.xml", document)
 
 
+def write_outline_cmcc_docx(path: Path) -> None:
+    def paragraph(style_id: str, text: str) -> str:
+        return f"""
+    <w:p>
+      <w:pPr><w:pStyle w:val="{style_id}"/></w:pPr>
+      <w:r><w:t>{text}</w:t></w:r>
+    </w:p>
+""".rstrip()
+
+    headings = [
+        ("CmccH1", "目录"),
+        ("CmccH1", "前言"),
+        ("CmccH1", "范围"),
+        ("CmccH1", "规范性引用文件"),
+        ("CmccH1", "术语、定义和缩略语"),
+        ("CmccH1", "系统架构"),
+        ("CmccH1", "接口协议及相关流程要求"),
+        ("CmccH2", "接口协议及实现方式"),
+        ("CmccH2", "流程要求"),
+        ("CmccH3", "Redfish交互流程"),
+        ("CmccH2", "参数要求说明"),
+        ("CmccH1", "接口要求"),
+        ("CmccH2", "Redfish接口要求"),
+        ("CmccH3", "Server资源路径要求"),
+        ("CmccH3", "资产管理接口要求"),
+        ("CmccH4", "查询服务器资产"),
+        ("CmccH4", "设置服务器资产相关信息"),
+        ("CmccH4", "查询服务器主板信息"),
+        ("CmccH3", "部件管理接口要求"),
+        ("CmccH4", "处理器管理要求"),
+        ("CmccH4", "内存管理要求"),
+        ("CmccH4", "存储管理要求"),
+        ("CmccH4", "硬盘管理要求"),
+        ("CmccH4", "网卡管理要求"),
+        ("CmccH4", "风扇管理要求"),
+        ("CmccH4", "电源管理要求"),
+        ("CmccH5", "电源满配个数查询"),
+        ("CmccH5", "电源信息查询"),
+        ("CmccH5", "修改指定电源属性"),
+        ("CmccH4", "PCIe设备管理要求"),
+        ("CmccH5", "查询PCIe设备集合资源信息"),
+        ("CmccH5", "查询指定PCIe设备资源信息"),
+        ("CmccH5", "查询所有PCIe设备资源信息"),
+        ("CmccH3", "传感器管理接口要求"),
+        ("CmccH4", "关键部件温度查询"),
+        ("CmccH1", "编制历史"),
+    ]
+    body = "\n".join(paragraph(style_id, text) for style_id, text in headings)
+    document = f"""
+<w:document xmlns:w="{W_NS}">
+  <w:body>
+{body}
+    <w:tbl>
+      <w:tr>
+        <w:tc><w:p><w:r><w:t>1.0</w:t></w:r></w:p></w:tc>
+        <w:tc><w:p><w:r><w:t>2025/10/21</w:t></w:r></w:p></w:tc>
+        <w:tc><w:p><w:r><w:t>超节点规范刷新</w:t></w:r></w:p></w:tc>
+      </w:tr>
+    </w:tbl>
+  </w:body>
+</w:document>
+""".strip()
+    styles = f"""
+<w:styles xmlns:w="{W_NS}">
+  <w:style w:type="paragraph" w:styleId="CmccH1">
+    <w:name w:val="标题 1"/>
+    <w:pPr><w:outlineLvl w:val="0"/></w:pPr>
+  </w:style>
+  <w:style w:type="paragraph" w:styleId="CmccH2">
+    <w:name w:val="标题 2"/>
+    <w:pPr><w:outlineLvl w:val="1"/></w:pPr>
+  </w:style>
+  <w:style w:type="paragraph" w:styleId="CmccH3">
+    <w:name w:val="标题 3"/>
+    <w:pPr><w:outlineLvl w:val="2"/></w:pPr>
+  </w:style>
+  <w:style w:type="paragraph" w:styleId="CmccH4">
+    <w:name w:val="标题 4"/>
+    <w:pPr><w:outlineLvl w:val="3"/></w:pPr>
+  </w:style>
+  <w:style w:type="paragraph" w:styleId="CmccH5">
+    <w:name w:val="标题 5"/>
+    <w:pPr><w:outlineLvl w:val="4"/></w:pPr>
+  </w:style>
+</w:styles>
+""".strip()
+    with zipfile.ZipFile(path, "w") as archive:
+        archive.writestr("word/document.xml", document)
+        archive.writestr("word/styles.xml", styles)
+
+
 class CmccExtractorsTest(unittest.TestCase):
     def test_extracts_cmcc_toc_from_copy_pasted_headings(self) -> None:
         text = "\n".join(
@@ -152,6 +244,43 @@ class CmccExtractorsTest(unittest.TestCase):
                 ("6.1.3.8.2", 5, "查询指定PCIe设备资源信息"),
             ],
         )
+
+    def test_extracts_cmcc_toc_from_docx_heading_outline(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            docx = Path(tmp) / "cmcc.docx"
+            output = Path(tmp) / "cmcc.toc.yaml"
+            write_outline_cmcc_docx(docx)
+
+            extract_cmcc_toc_main([str(docx), str(output)])
+
+            rows = [
+                tuple(line.split("\t")[1:4])
+                for line in output.with_suffix(".txt").read_text(encoding="utf-8").splitlines()
+            ]
+
+        self.assertEqual(
+            rows[:13],
+            [
+                ("1", "1", "范围"),
+                ("2", "1", "规范性引用文件"),
+                ("3", "1", "术语、定义和缩略语"),
+                ("4", "1", "系统架构"),
+                ("5", "1", "接口协议及相关流程要求"),
+                ("5.1", "2", "接口协议及实现方式"),
+                ("5.2", "2", "流程要求"),
+                ("5.2.1", "3", "Redfish交互流程"),
+                ("5.3", "2", "参数要求说明"),
+                ("6", "1", "接口要求"),
+                ("6.1", "2", "Redfish接口要求"),
+                ("6.1.1", "3", "Server资源路径要求"),
+                ("6.1.2", "3", "资产管理接口要求"),
+            ],
+        )
+        self.assertIn(("6.1.2.1", "4", "查询服务器资产"), rows)
+        self.assertIn(("6.1.3.7.3", "5", "修改指定电源属性"), rows)
+        self.assertIn(("6.1.4", "3", "传感器管理接口要求"), rows)
+        self.assertIn(("7", "1", "编制历史"), rows)
+        self.assertFalse(any("2025/10/21" in row[2] or "超节点规范刷新" in row[2] for row in rows))
 
     def test_shared_docx_reader_does_not_apply_cmcc_numbering_rules(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

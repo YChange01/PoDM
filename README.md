@@ -156,7 +156,7 @@ python3 scripts/extract_from_examples.py  data/你的文件.docx   output/你的
 python3 scripts/extract_bmc.py            data/你的BMC文件.docx output/你的BMC文件.bmc.interfaces.yaml
 python3 scripts/extract_cmcc_interface_list.py data/你的中国移动要求文档.docx output/cmcc.interface-list.yaml
 python3 scripts/extract_cmcc.py                data/你的中国移动要求文档.docx output/cmcc.interfaces.yaml
-python3 scripts/extract_cmcc_toc.py            data/你的中国移动要求文档.paste.txt output/cmcc.toc.yaml
+python3 scripts/extract_cmcc_toc.py            data/你的中国移动要求文档.docx output/cmcc.toc.yaml
 ```
 
 只传输入、不传输出时，结果写到约定的默认文件名。
@@ -193,10 +193,13 @@ data/20260610/附件5：中国移动服务器Redfish管理接口要求V6.1.0-v20
 / `原文件名.docx.copy.txt` / `原文件名.docx.manual.txt`。这种旁路只对
 `extract_cmcc*.py` 生效，不影响 PoDManager/BMC 提取脚本。
 
-如发现接口提取出的 section 仍然异常，可先单独提取目录核对源文本中的章节号：
+如发现接口提取出的 section 仍然异常，可先单独提取目录核对源文本中的章节号。
+对 `.docx` 输入，目录脚本会读取 Word 标题大纲层级并合成 `1 / 5.2.1 / 6.1.3.7.3`
+这类章节号，同时跳过正文表格；如果同目录存在 `.paste.txt` / `.copy.txt` / `.manual.txt`
+旁路文本，则优先使用旁路文本中的显式章节号：
 
 ```bash
-python3 scripts/extract_cmcc_toc.py data/20260610/附件5：中国移动服务器Redfish管理接口要求V6.1.0-v20260604.paste.txt output/20260610/cmcc.toc.yaml
+python3 scripts/extract_cmcc_toc.py data/20260610/附件5：中国移动服务器Redfish管理接口要求V6.1.0-v20260604.docx output/20260610/cmcc.toc.yaml
 ```
 
 脚本会同时写出 `cmcc.toc.yaml` 和 `cmcc.toc.txt`，字段包含 `section / level / title / line`。
