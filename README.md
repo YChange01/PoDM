@@ -39,6 +39,8 @@ PoDM/
 │   ├── extract_from_tables.py        # 路径①：从表格提取 URI + 参数 (同时产出 uris.txt)
 │   ├── extract_from_examples.py      # 路径②：从示例代码提取 URI + 参数 (同时产出 uris.txt)
 │   ├── extract_bmc.py                # BMC：提取接口 + 参数
+│   ├── extract_cmcc.py               # 中国移动要求文档：提取 URI + 参数
+│   ├── extract_cmcc_interface_list.py # 中国移动要求文档：提取接口清单（不含参数）
 │   ├── run_podm_bmc_pipeline.py      # 一键跑 PoDManager vs BMC 提取流水线
 │   ├── compare_podm_bmc_to_baseline.py # PoDManager vs BMC baseline 对比
 │   ├── promote_podm_bmc_baseline.py  # 将人工复核 PoDManager vs BMC Excel 提升为 baseline
@@ -91,6 +93,8 @@ PoDM/
 | `scripts/extract_from_tables.py` | **表格路径**：从参数表抽 URI + path/header/body/query/response | `<input>.interfaces.yaml` + `<input>.uris.txt` |
 | `scripts/extract_from_examples.py` | **示例路径**：从请求/响应示例代码抽相同字段结构 | `<input>.example.interfaces.yaml` + `<input>.example.uris.txt` |
 | `scripts/extract_bmc.py` | BMC：从命令格式 / 输出说明抽 URI + 参数 | `<input>.bmc.interfaces.yaml` + `<input>.bmc.uris.txt` |
+| `scripts/extract_cmcc_interface_list.py` | 中国移动要求文档：从命令格式抽接口清单（index/section/title/method/uri，不含参数） | `output/20260610/cmcc.interface-list.yaml` |
+| `scripts/extract_cmcc.py` | 中国移动要求文档：从命令格式 / 参数说明 / 输出说明抽 URI + path/header/body/query/response 参数 | `output/20260610/cmcc.interfaces.yaml` + `output/20260610/cmcc.uris.txt` |
 | `scripts/run_podm_bmc_pipeline.py` | 一键跑 PoDManager/BMC 接口清单和接口+参数提取 | `output/<date>/podm.interface-list.yaml`、`output/<date>/bmc.interface-list.yaml` |
 | `scripts/compare_podm_bmc_to_baseline.py` | PoDManager 接口清单与 BMC 接口清单对比；存在 baseline 时标注新增/删除/变更 | `output/<date>/analysis/podm_bmc_summary.xlsx` |
 | `scripts/promote_podm_bmc_baseline.py` | 将人工复核后的 PoDManager vs BMC 对比 Excel 提升为 baseline | `baseline/podm_bmc/baseline.xlsx` |
@@ -148,6 +152,8 @@ python3 scripts/extract_bmc_interface_list.py  data/你的BMC文件.docx  output
 python3 scripts/extract_from_tables.py    data/你的文件.docx   output/你的文件.interfaces.yaml
 python3 scripts/extract_from_examples.py  data/你的文件.docx   output/你的文件.example.interfaces.yaml
 python3 scripts/extract_bmc.py            data/你的BMC文件.docx output/你的BMC文件.bmc.interfaces.yaml
+python3 scripts/extract_cmcc_interface_list.py data/你的中国移动要求文档.docx output/cmcc.interface-list.yaml
+python3 scripts/extract_cmcc.py                data/你的中国移动要求文档.docx output/cmcc.interfaces.yaml
 ```
 
 只传输入、不传输出时，结果写到约定的默认文件名。
@@ -161,6 +167,16 @@ python3 scripts/docx_to_text.py data/你的接口文档.docx -o -
 
 默认会生成 `data/你的接口文档.extraction.txt`。输出中普通段落逐行保留，Word 表格按
 "一行一行、单元格用 Tab 分隔" 展开，目录段落会跳过，标题自动编号会尽量合成为 `X.Y.Z 标题`。
+
+中国移动服务器 Redfish 管理接口要求文档可直接使用以下默认输入路径：
+
+```bash
+python3 scripts/extract_cmcc_interface_list.py
+python3 scripts/extract_cmcc.py
+```
+
+默认读取 `data/20260610/附件5：中国移动服务器Redfish管理接口要求V6.1.0-v20260604.docx`。
+如果文档路径不同，也可以按上面的传参方式指定输入和输出。
 
 资源树接口提取支持直接传日期，脚本会读取 `data/<日期>/` 下的 PoDManager 固定文件名，并写到
 `output/<日期>/`：
