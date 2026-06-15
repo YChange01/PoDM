@@ -13,6 +13,7 @@ from _cmcc_docx_utils import read_source as read_cmcc_source  # noqa: E402
 from _docx_utils import read_source as read_shared_source  # noqa: E402
 from extract_cmcc import extract as extract_cmcc_params  # noqa: E402
 from extract_cmcc import extract_from_path as extract_cmcc_params_from_path  # noqa: E402
+from extract_cmcc import interface_to_dict as cmcc_interface_to_dict  # noqa: E402
 from extract_cmcc import split_command_blocks  # noqa: E402
 from extract_cmcc_interface_list import extract as extract_cmcc_list  # noqa: E402
 from extract_cmcc_toc import extract_toc  # noqa: E402
@@ -376,7 +377,7 @@ class CmccExtractorsTest(unittest.TestCase):
                 ),
             ],
         )
-        self.assertEqual(interfaces[1].params.path, ["system_id"])
+        self.assertEqual(interfaces[1].params.path, ["device_ip", "system_id"])
 
     def test_cmcc_docx_params_match_toc_when_sidecar_titles_have_ordinals(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -417,7 +418,7 @@ class CmccExtractorsTest(unittest.TestCase):
                 ("6.1.2.2", "设置服务器资产相关信息", "PATCH"),
             ],
         )
-        self.assertEqual(interfaces[0].params.path, ["system_id"])
+        self.assertEqual(interfaces[0].params.path, ["device_ip", "system_id"])
 
     def test_shared_docx_reader_does_not_apply_cmcc_numbering_rules(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -538,7 +539,7 @@ class CmccExtractorsTest(unittest.TestCase):
         self.assertEqual(len(interfaces), 1)
         iface = interfaces[0]
         self.assertEqual(iface.method, "PATCH")
-        self.assertEqual(iface.params.path, ["system_id"])
+        self.assertEqual(iface.params.path, ["device_ip", "system_id"])
         self.assertEqual(iface.params.header, ["auth_value", "header_type", "ifmatch_value"])
         self.assertEqual(iface.params.body, ["tag", "name", "model", "power_control"])
         self.assertEqual(iface.params.query, [])
@@ -585,10 +586,10 @@ class CmccExtractorsTest(unittest.TestCase):
         interfaces = extract_cmcc_params(text)
 
         self.assertEqual(len(interfaces), 2)
-        self.assertEqual(interfaces[0].params.path, ["system_id", "processor_id"])
+        self.assertEqual(interfaces[0].params.path, ["device_ip", "system_id", "processor_id"])
         self.assertEqual(interfaces[0].params.header, ["auth_value"])
         self.assertEqual(interfaces[0].params.response, ["ProcessorType", "TotalCores"])
-        self.assertEqual(interfaces[1].params.path, ["system_id"])
+        self.assertEqual(interfaces[1].params.path, ["device_ip", "system_id"])
         self.assertEqual(interfaces[1].params.query, ["$expand"])
 
     def test_cmcc_response_keeps_container_and_repeated_fields(self) -> None:
@@ -642,8 +643,17 @@ class CmccExtractorsTest(unittest.TestCase):
         interfaces = extract_cmcc_params(text)
 
         self.assertEqual(len(interfaces), 1)
-        self.assertEqual(interfaces[0].params.path, ["manager_id", "ethernetinterface_id"])
+        self.assertEqual(interfaces[0].params.path, ["device_ip", "manager_id", "ethernetinterface_id"])
         self.assertEqual(interfaces[0].params.header, ["auth_value"])
+        serialized = cmcc_interface_to_dict(interfaces[0])
+        self.assertEqual(
+            serialized["params"]["request"],
+            ["device_ip", "manager_id", "ethernetinterface_id", "auth_value"],
+        )
+        self.assertNotIn("path", serialized["params"])
+        self.assertNotIn("header", serialized["params"])
+        self.assertNotIn("body", serialized["params"])
+        self.assertNotIn("query", serialized["params"])
         self.assertEqual(
             interfaces[0].params.response,
             [
@@ -708,7 +718,7 @@ class CmccExtractorsTest(unittest.TestCase):
             interfaces[0].uri,
             "https://device_ip/redfish/v1/Systems/system_id",
         )
-        self.assertEqual(interfaces[0].params.path, ["system_id"])
+        self.assertEqual(interfaces[0].params.path, ["device_ip", "system_id"])
         self.assertEqual(interfaces[0].params.header, ["auth_value"])
         self.assertEqual(interfaces[0].params.response, ["AssetTag", "HostName"])
 
@@ -839,7 +849,7 @@ class CmccExtractorsTest(unittest.TestCase):
             interfaces[0].uri,
             "https://device_ip/redfish/v1/Managers/manager_id/NetworkProtocol",
         )
-        self.assertEqual(interfaces[0].params.path, ["manager_id"])
+        self.assertEqual(interfaces[0].params.path, ["device_ip", "manager_id"])
         self.assertEqual(
             interfaces[0].params.header,
             ["auth_value", "header_type", "ifmatch_value"],

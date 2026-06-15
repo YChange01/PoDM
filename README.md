@@ -85,7 +85,7 @@ PoDM/
 本项目现在按两类任务管理：
 
 1. **提取接口清单**：只输出 `index / section / title / method / uri`，不含参数。
-2. **提取接口 + 参数**：输出接口元数据和 `path/header/body/query/response` 参数。
+2. **提取接口 + 参数**：PoDManager/BMC 输出 `path/header/body/query/response`；CMCC 输出文档口径的 `request/response`。
 
 | 脚本 | 作用 | 默认输出 |
 |---|---|---|
@@ -95,7 +95,7 @@ PoDM/
 | `scripts/extract_from_examples.py` | **示例路径**：从请求/响应示例代码抽相同字段结构 | `<input>.example.interfaces.yaml` + `<input>.example.uris.txt` |
 | `scripts/extract_bmc.py` | BMC：从命令格式 / 输出说明抽 URI + 参数 | `<input>.bmc.interfaces.yaml` + `<input>.bmc.uris.txt` |
 | `scripts/extract_cmcc_interface_list.py` | 中国移动要求文档：从命令格式抽接口清单（index/section/title/method/uri，不含参数） | `output/20260610/cmcc.interface-list.yaml` |
-| `scripts/extract_cmcc.py` | 中国移动要求文档：从命令格式 / 参数说明 / 输出说明抽 URI + path/header/body/query/response 参数 | `output/20260610/cmcc.interfaces.yaml` + `output/20260610/cmcc.uris.txt` |
+| `scripts/extract_cmcc.py` | 中国移动要求文档：从命令格式 / 参数说明 / 输出说明抽 URI + request/response 参数 | `output/20260610/cmcc.interfaces.yaml` + `output/20260610/cmcc.uris.txt` |
 | `scripts/extract_cmcc_toc.py` | 中国移动要求文档：单独抽 `6.1.x` 章节目录，便于排查 section 丢失/错位 | `output/20260610/cmcc.toc.yaml` + `output/20260610/cmcc.toc.txt` |
 | `scripts/run_podm_bmc_pipeline.py` | 一键跑 PoDManager/BMC 接口清单和接口+参数提取 | `output/<date>/podm.interface-list.yaml`、`output/<date>/bmc.interface-list.yaml` |
 | `scripts/compare_podm_bmc_to_baseline.py` | PoDManager 接口清单与 BMC 接口清单对比；存在 baseline 时标注新增/删除/变更 | `output/<date>/analysis/podm_bmc_summary.xlsx` |
@@ -195,6 +195,8 @@ data/20260610/附件5：中国移动服务器Redfish管理接口要求V6.1.0-v20
 
 对 CMCC `.docx` 输入，接口清单和带参数接口提取会复用 Word 标题大纲目录来修正
 `section / title`，正文命令块仍负责提取 method、URI 和参数。
+CMCC 文档的请求参数表不区分 path/header/body/query，因此带参数接口 YAML 会把请求参数统一输出到
+`params.request`，响应字段输出到 `params.response`。
 
 如发现接口提取出的 section 仍然异常，可先单独提取目录核对源文本中的章节号。
 对 `.docx` 输入，目录脚本会读取 Word 标题大纲层级并合成 `1 / 5.2.1 / 6.1.3.7.3`

@@ -10,14 +10,15 @@ The China Mobile requirement document uses a BMC-like layout:
 - response fields usually in ``输出说明`` tables, and occasionally in a later
   ``参数说明`` table headed by ``字段 / 类型 / 说明``.
 
-Output schema follows ``extract_bmc.py``:
-``interfaces[].params.path/header/body/query/response`` are lists of names.
+The internal ``Params`` object still uses the shared path/header/body/query
+shape so existing helpers can work unchanged. CMCC YAML output flattens request
+parameters into ``interfaces[].params.request`` because the CMCC document only
+has one request ``参数说明`` table and does not classify parameters by location.
 """
 from __future__ import annotations
 
 import re
 import sys
-from dataclasses import asdict
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
@@ -87,7 +88,7 @@ TYPE_VALUES = {
 TYPE_SUFFIX_RE = re.compile(r"^.{0,24}(列表|数组|对象|集合|属性|字典|映射|型)$")
 FIELD_NAME_RE = re.compile(r"^[@A-Za-z_][A-Za-z0-9_@.\-]*$")
 PATH_KEYWORDS = {"redfish", "v1", "actions", "oem", "public", "cmcc"}
-IGNORED_REQUEST_NAMES = {"device_ip"}
+IGNORED_REQUEST_NAMES: set[str] = set()
 NON_BODY_VALUE_WORDS = {"true", "false", "null", "none"}
 LEADING_COMMAND_ORDINAL_RE = re.compile(r"^\d{1,4}\s+(.+)$")
 
@@ -326,15 +327,28 @@ def normalize_param_name(value: str) -> str:
 def extract_path_keys(uri: str) -> list[str]:
     if not uri:
         return []
-    path = re.sub(r"^https?://[^/]+", "", uri).split("?", 1)[0]
     keys: list[str] = []
+    host_match = re.match(r"^https?://([^/]+)", uri)
+    if host_match:
+        host = normalize_param_name(host_match.group(1))
+        if looks_like_uri_param(host):
+            keys.append(host)
+
+    path = re.sub(r"^https?://[^/]+", "", uri).split("?", 1)[0]
     for segment in path.strip("/").split("/"):
         normalized = normalize_param_name(segment)
-        if not normalized or normalized.lower() in PATH_KEYWORDS:
+        if not looks_like_uri_param(normalized):
             continue
-        if re.fullmatch(r"[a-z][a-z0-9_]*", normalized):
-            keys.append(normalized)
+        keys.append(normalized)
     return dedup_keep_order(keys)
+
+
+def looks_like_uri_param(value: str) -> bool:
+    return bool(
+        value
+        and value.lower() not in PATH_KEYWORDS
+        and re.fullmatch(r"[a-z][a-z0-9_]*", value)
+    )
 
 
 def extract_query_keys(uri: str) -> list[str]:
@@ -374,6 +388,14 @@ def parse_request_params(
     for name in query_keys:
         key_to_category[name.lower()] = "query"
 
+    for category, names in (
+        ("path", path_keys),
+        ("header", header_values),
+        ("query", query_keys),
+    ):
+        for name in names:
+            add_param(params, category, name)
+
     in_request_table = False
     for line in lines:
         stripped = line.strip()
@@ -399,13 +421,6 @@ def parse_request_params(
             category = "body" if body_placeholders else ""
         add_param(params, category, first)
 
-    for category, names in (
-        ("path", path_keys),
-        ("header", header_values),
-        ("query", query_keys),
-    ):
-        for name in names:
-            add_param(params, category, name)
     return params
 
 
@@ -560,6 +575,23 @@ def extract_from_path(path: Path) -> list[Interface]:
     return extract(text)
 
 
+def request_param_names(params: Params) -> list[str]:
+    return dedup_keep_order(params.path + params.header + params.body + params.query)
+
+
+def interface_to_dict(item: Interface) -> dict[str, object]:
+    return {
+        "section": item.section,
+        "title": item.title,
+        "method": item.method,
+        "uri": item.uri,
+        "params": {
+            "request": request_param_names(item.params),
+            "response": item.params.response,
+        },
+    }
+
+
 def resolve_io(argv: list[str]) -> tuple[Path, Path]:
     if argv:
         input_path = Path(argv[0])
@@ -575,7 +607,7 @@ def main(argv: list[str] | None = None) -> None:
 
     interfaces = extract_from_path(input_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    final_yaml = dump_yaml({"interfaces": [asdict(item) for item in interfaces]}, output_path)
+    final_yaml = dump_yaml({"interfaces": [interface_to_dict(item) for item in interfaces]}, output_path)
     base_stem = Path(output_path.stem).stem if "." in output_path.stem else output_path.stem
     uris_path = output_path.parent / f"{base_stem}.uris.txt"
     write_uris(interfaces, uris_path)
