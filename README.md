@@ -202,7 +202,8 @@ data/20260610/附件5：中国移动服务器Redfish管理接口要求V6.1.0-v20
 python3 scripts/extract_cmcc_toc.py data/20260610/附件5：中国移动服务器Redfish管理接口要求V6.1.0-v20260604.docx output/20260610/cmcc.toc.yaml
 ```
 
-脚本会同时写出 `cmcc.toc.yaml` 和 `cmcc.toc.txt`，字段包含 `section / level / title / line`。
+脚本会同时写出 `cmcc.toc.yaml` 和 `cmcc.toc.txt`；其中 TXT 每行只包含 `section / title`，
+方便人工核对目录编号。
 
 资源树接口提取支持直接传日期，脚本会读取 `data/<日期>/` 下的 PoDManager 固定文件名，并写到
 `output/<日期>/`：

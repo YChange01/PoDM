@@ -137,8 +137,8 @@ def write_outline_cmcc_docx(path: Path) -> None:
 """.rstrip()
 
     headings = [
-        ("CmccH1", "目录"),
-        ("CmccH1", "前言"),
+        ("CmccH1", "目  录"),
+        ("CmccH1", "前  言"),
         ("CmccH1", "范围"),
         ("CmccH1", "规范性引用文件"),
         ("CmccH1", "术语、定义和缩略语"),
@@ -253,34 +253,33 @@ class CmccExtractorsTest(unittest.TestCase):
 
             extract_cmcc_toc_main([str(docx), str(output)])
 
-            rows = [
-                tuple(line.split("\t")[1:4])
-                for line in output.with_suffix(".txt").read_text(encoding="utf-8").splitlines()
-            ]
+            text_rows = output.with_suffix(".txt").read_text(encoding="utf-8").splitlines()
+            rows = [tuple(line.split("\t")) for line in text_rows]
 
         self.assertEqual(
             rows[:13],
             [
-                ("1", "1", "范围"),
-                ("2", "1", "规范性引用文件"),
-                ("3", "1", "术语、定义和缩略语"),
-                ("4", "1", "系统架构"),
-                ("5", "1", "接口协议及相关流程要求"),
-                ("5.1", "2", "接口协议及实现方式"),
-                ("5.2", "2", "流程要求"),
-                ("5.2.1", "3", "Redfish交互流程"),
-                ("5.3", "2", "参数要求说明"),
-                ("6", "1", "接口要求"),
-                ("6.1", "2", "Redfish接口要求"),
-                ("6.1.1", "3", "Server资源路径要求"),
-                ("6.1.2", "3", "资产管理接口要求"),
+                ("1", "范围"),
+                ("2", "规范性引用文件"),
+                ("3", "术语、定义和缩略语"),
+                ("4", "系统架构"),
+                ("5", "接口协议及相关流程要求"),
+                ("5.1", "接口协议及实现方式"),
+                ("5.2", "流程要求"),
+                ("5.2.1", "Redfish交互流程"),
+                ("5.3", "参数要求说明"),
+                ("6", "接口要求"),
+                ("6.1", "Redfish接口要求"),
+                ("6.1.1", "Server资源路径要求"),
+                ("6.1.2", "资产管理接口要求"),
             ],
         )
-        self.assertIn(("6.1.2.1", "4", "查询服务器资产"), rows)
-        self.assertIn(("6.1.3.7.3", "5", "修改指定电源属性"), rows)
-        self.assertIn(("6.1.4", "3", "传感器管理接口要求"), rows)
-        self.assertIn(("7", "1", "编制历史"), rows)
-        self.assertFalse(any("2025/10/21" in row[2] or "超节点规范刷新" in row[2] for row in rows))
+        self.assertIn(("6.1.2.1", "查询服务器资产"), rows)
+        self.assertIn(("6.1.3.7.3", "修改指定电源属性"), rows)
+        self.assertIn(("6.1.4", "传感器管理接口要求"), rows)
+        self.assertIn(("7", "编制历史"), rows)
+        self.assertFalse(any("line:" in line for line in text_rows))
+        self.assertFalse(any("2025/10/21" in row[1] or "超节点规范刷新" in row[1] for row in rows))
 
     def test_shared_docx_reader_does_not_apply_cmcc_numbering_rules(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

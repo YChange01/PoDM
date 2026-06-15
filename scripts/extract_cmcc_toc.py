@@ -76,6 +76,14 @@ def _parse_toc_heading(line: str) -> tuple[str, str]:
     return match.group(1), _strip_trailing_pageno(match.group(2).strip())
 
 
+def _compact_title(title: str) -> str:
+    return "".join(title.split())
+
+
+def _is_unnumbered_front_heading(title: str) -> bool:
+    return _compact_title(title) in UNNUMBERED_FRONT_HEADINGS
+
+
 def _read_style_outline_levels(archive: zipfile.ZipFile) -> dict[str, int]:
     try:
         with archive.open("word/styles.xml") as stream:
@@ -233,7 +241,7 @@ def extract_toc_from_docx(path: Path) -> list[TocEntry]:
             continue
 
         title_text = _para_text(child).strip()
-        if not title_text or title_text in UNNUMBERED_FRONT_HEADINGS:
+        if not title_text or _is_unnumbered_front_heading(title_text):
             continue
 
         section, title = _parse_toc_heading(title_text)
@@ -262,10 +270,7 @@ def extract_toc_from_path(path: Path) -> list[TocEntry]:
 def write_toc_text(entries: list[TocEntry], output_path: Path) -> Path:
     text_path = output_path.with_suffix(".txt")
     text_path.parent.mkdir(parents=True, exist_ok=True)
-    lines = [
-        f"{entry.index}\t{entry.section}\t{entry.level}\t{entry.title}\tline:{entry.line}"
-        for entry in entries
-    ]
+    lines = [f"{entry.section}\t{entry.title}" for entry in entries]
     text_path.write_text("\n".join(lines) + ("\n" if lines else ""), encoding="utf-8")
     return text_path
 
