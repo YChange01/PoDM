@@ -440,13 +440,16 @@ def parse_response_fields(lines: list[str]) -> list[str]:
             continue
         if (
             in_response_table
-            and len(cols) >= 2
             and FIELD_NAME_RE.match(first)
-            and looks_like_type(cols[1])
-            and first not in fields
+            and len(cols) >= 2
+            and (looks_like_type(cols[1]) or looks_like_response_container_row(cols))
         ):
             fields.append(first)
     return fields
+
+
+def looks_like_response_container_row(cols: list[str]) -> bool:
+    return bool(cols[0].strip()) and not looks_like_type(cols[1])
 
 
 def build_interface(section: dict[str, object]) -> Interface | None:

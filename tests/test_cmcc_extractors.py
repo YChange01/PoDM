@@ -591,6 +591,88 @@ class CmccExtractorsTest(unittest.TestCase):
         self.assertEqual(interfaces[1].params.path, ["system_id"])
         self.assertEqual(interfaces[1].params.query, ["$expand"])
 
+    def test_cmcc_response_keeps_container_and_repeated_fields(self) -> None:
+        text = "\n".join(
+            [
+                "6.1.9.6 查询指定BMC管理网口资源信息",
+                "命令格式",
+                "操作类型：GET",
+                "URL：https://device_ip/redfish/v1/Managers/manager_id/EthernetInterfaces/ethernetinterface_id",
+                "请求头：",
+                "X-Auth-Token: auth_value",
+                "请求消息体：无",
+                "参数说明",
+                "表 142 查询指定BMC管理网口资源信息参数说明",
+                "参数\t参数说明\t取值",
+                "device_ip\t登录设备的IP地址\tIPv4或IPv6地址",
+                "manager_id\t管理资源ID\t1",
+                "ethernetinterface_id\t表示网口ID\t网口MAC地址",
+                "auth_value\t执行该GET请求时用于鉴权\t会话获得",
+                "输出说明",
+                "表 143 指定BMC管理网口资源信息",
+                "字段\t类型\t说明\tIT-M\tCT-M",
+                "@odata.context\t字符串\t指定BMC管理网口源模型的OData描述信息",
+                "@odata.id\t字符串\t指定BMC管理网口资源节点的访问路径",
+                "@odata.type\t字符串\t指定BMC管理网口资源类型",
+                "Id\t字符串\t指定BMC管理网口资源的ID",
+                "Name\t字符串\t指定BMC管理网口资源的名称\tM\tM",
+                "PermanentMACAddress\t字符串\t指定BMC管理网口的MAC地址\tM\tM",
+                "VLAN\t指定BMC管理网口的VLAN信息",
+                "VLANEnable\t布尔\t指定BMC管理网口VLAN功能的使能状态\tM\tM",
+                "VLANId\t数字\t指定BMC管理网口所属VLAN的ID\tM\tM",
+                "IPv4Addresses\t指定BMC管理网口的IPv4信息",
+                "Address\t字符串\t指定BMC管理网口的IPv4地址\tM\tM",
+                "SubnetMask\t字符串\t指定BMC管理网口的IPv4地址对应的子网掩码\tM\tM",
+                "Gateway\t字符串\t指定BMC管理网口的IPv4网关地址\tM\tM",
+                "AddressOrigin\t字符串\t指定BMC管理网口的IPv4地址模式\tM\tM",
+                "IPv6Addresses\t指定BMC管理网口的IPv6信息",
+                "Address\t字符串\t指定BMC管理网口的IPv6地址\tM\tM",
+                "PrefixLength\t数字\t指定BMC管理网口的IPv6地址对应的前缀长度\tM\tM",
+                "AddressOrigin\t字符串\t指定BMC管理网口的IPv6地址模式\tM\tM",
+                "表 143 指定BMC管理网口资源信息（续）",
+                "字段\t类型\t说明\tIT-M\tCT-M",
+                "IPv6StaticAddresses\t指定BMC管理网口的静态IPv6信息\tM\tM",
+                "Address\t字符串\t指定BMC管理网口的静态IPv6地址\tM\tM",
+                "PrefixLength\t数字\t指定BMC管理网口的静态IPv6地址对应的前缀长度\tM\tM",
+                "IPv6DefaultGateway\t字符串\t指定BMC管理网口的IPv6网关地址\tM\tM",
+                "NameServers\t数组\t指定BMC管理网口地址为动态模式时，所需的DNS服务器信息\tM\tM",
+            ]
+        )
+
+        interfaces = extract_cmcc_params(text)
+
+        self.assertEqual(len(interfaces), 1)
+        self.assertEqual(interfaces[0].params.path, ["manager_id", "ethernetinterface_id"])
+        self.assertEqual(interfaces[0].params.header, ["auth_value"])
+        self.assertEqual(
+            interfaces[0].params.response,
+            [
+                "@odata.context",
+                "@odata.id",
+                "@odata.type",
+                "Id",
+                "Name",
+                "PermanentMACAddress",
+                "VLAN",
+                "VLANEnable",
+                "VLANId",
+                "IPv4Addresses",
+                "Address",
+                "SubnetMask",
+                "Gateway",
+                "AddressOrigin",
+                "IPv6Addresses",
+                "Address",
+                "PrefixLength",
+                "AddressOrigin",
+                "IPv6StaticAddresses",
+                "Address",
+                "PrefixLength",
+                "IPv6DefaultGateway",
+                "NameServers",
+            ],
+        )
+
     def test_falls_back_to_command_blocks_when_heading_numbers_are_missing(self) -> None:
         text = "\n".join(
             [
