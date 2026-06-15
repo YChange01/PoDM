@@ -12,6 +12,7 @@ sys.path.insert(0, str(ROOT / "scripts"))
 from _cmcc_docx_utils import read_source as read_cmcc_source  # noqa: E402
 from _docx_utils import read_source as read_shared_source  # noqa: E402
 from extract_cmcc import extract as extract_cmcc_params  # noqa: E402
+from extract_cmcc import extract_from_path as extract_cmcc_params_from_path  # noqa: E402
 from extract_cmcc import split_command_blocks  # noqa: E402
 from extract_cmcc_interface_list import extract as extract_cmcc_list  # noqa: E402
 from extract_cmcc_toc import extract_toc  # noqa: E402
@@ -218,6 +219,80 @@ def write_outline_cmcc_docx(path: Path) -> None:
         archive.writestr("word/styles.xml", styles)
 
 
+def write_outline_cmcc_interface_docx(path: Path) -> None:
+    def paragraph(style_id: str, text: str) -> str:
+        style = f"<w:pPr><w:pStyle w:val=\"{style_id}\"/></w:pPr>" if style_id else ""
+        return f"""
+    <w:p>
+      {style}
+      <w:r><w:t>{text}</w:t></w:r>
+    </w:p>
+""".rstrip()
+
+    headings_and_body = [
+        ("CmccH1", "目  录"),
+        ("CmccH1", "前  言"),
+        ("CmccH1", "范围"),
+        ("CmccH1", "规范性引用文件"),
+        ("CmccH1", "术语、定义和缩略语"),
+        ("CmccH1", "系统架构"),
+        ("CmccH1", "接口协议及相关流程要求"),
+        ("CmccH1", "接口要求"),
+        ("CmccH2", "Redfish接口要求"),
+        ("CmccH3", "Server资源路径要求"),
+        ("CmccH4", "Server资源路径要求"),
+        ("", "命令功能"),
+        ("", "查询服务器根服务资源路径。"),
+        ("", "命令格式"),
+        ("", "操作类型：GET"),
+        ("", "URL：https://device_ip/redfish/v1"),
+        ("", "请求头："),
+        ("", "X-Auth-Token: auth_value"),
+        ("CmccH3", "资产管理接口要求"),
+        ("CmccH4", "查询服务器资产"),
+        ("", "命令功能"),
+        ("", "查询服务器资产编码。"),
+        ("", "命令格式"),
+        ("", "请求方法：Get"),
+        ("", "URL：https://device_ip/redfish/v1/Systems/system_id"),
+        ("", "请求头：X-Auth-Token: auth_value"),
+        ("", "参数说明"),
+        ("", "参数\t参数说明\t取值"),
+        ("", "system_id\t系统资源的ID\t1"),
+    ]
+    body = "\n".join(paragraph(style_id, text) for style_id, text in headings_and_body)
+    document = f"""
+<w:document xmlns:w="{W_NS}">
+  <w:body>
+{body}
+  </w:body>
+</w:document>
+""".strip()
+    styles = f"""
+<w:styles xmlns:w="{W_NS}">
+  <w:style w:type="paragraph" w:styleId="CmccH1">
+    <w:name w:val="标题 1"/>
+    <w:pPr><w:outlineLvl w:val="0"/></w:pPr>
+  </w:style>
+  <w:style w:type="paragraph" w:styleId="CmccH2">
+    <w:name w:val="标题 2"/>
+    <w:pPr><w:outlineLvl w:val="1"/></w:pPr>
+  </w:style>
+  <w:style w:type="paragraph" w:styleId="CmccH3">
+    <w:name w:val="标题 3"/>
+    <w:pPr><w:outlineLvl w:val="2"/></w:pPr>
+  </w:style>
+  <w:style w:type="paragraph" w:styleId="CmccH4">
+    <w:name w:val="标题 4"/>
+    <w:pPr><w:outlineLvl w:val="3"/></w:pPr>
+  </w:style>
+</w:styles>
+""".strip()
+    with zipfile.ZipFile(path, "w") as archive:
+        archive.writestr("word/document.xml", document)
+        archive.writestr("word/styles.xml", styles)
+
+
 class CmccExtractorsTest(unittest.TestCase):
     def test_extracts_cmcc_toc_from_copy_pasted_headings(self) -> None:
         text = "\n".join(
@@ -280,6 +355,27 @@ class CmccExtractorsTest(unittest.TestCase):
         self.assertIn(("7", "编制历史"), rows)
         self.assertFalse(any("line:" in line for line in text_rows))
         self.assertFalse(any("2025/10/21" in row[1] or "超节点规范刷新" in row[1] for row in rows))
+
+    def test_cmcc_docx_params_use_toc_sections_for_command_blocks(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            docx = Path(tmp) / "cmcc.docx"
+            write_outline_cmcc_interface_docx(docx)
+
+            interfaces = extract_cmcc_params_from_path(docx)
+
+        self.assertEqual(
+            [(item.section, item.title, item.method, item.uri) for item in interfaces],
+            [
+                ("6.1.1.1", "Server资源路径要求", "GET", "https://device_ip/redfish/v1"),
+                (
+                    "6.1.2.1",
+                    "查询服务器资产",
+                    "GET",
+                    "https://device_ip/redfish/v1/Systems/system_id",
+                ),
+            ],
+        )
+        self.assertEqual(interfaces[1].params.path, ["system_id"])
 
     def test_shared_docx_reader_does_not_apply_cmcc_numbering_rules(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

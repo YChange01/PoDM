@@ -193,6 +193,9 @@ data/20260610/附件5：中国移动服务器Redfish管理接口要求V6.1.0-v20
 / `原文件名.docx.copy.txt` / `原文件名.docx.manual.txt`。这种旁路只对
 `extract_cmcc*.py` 生效，不影响 PoDManager/BMC 提取脚本。
 
+对 CMCC `.docx` 输入，接口清单和带参数接口提取会复用 Word 标题大纲目录来修正
+`section / title`，正文命令块仍负责提取 method、URI 和参数。
+
 如发现接口提取出的 section 仍然异常，可先单独提取目录核对源文本中的章节号。
 对 `.docx` 输入，目录脚本会读取 Word 标题大纲层级并合成 `1 / 5.2.1 / 6.1.3.7.3`
 这类章节号，同时跳过正文表格；如果同目录存在 `.paste.txt` / `.copy.txt` / `.manual.txt`

@@ -9,6 +9,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _cmcc_docx_utils import read_source  # noqa: E402
 from _interface_list import InterfaceSummary, write_interface_list_yaml  # noqa: E402
 from extract_cmcc import DEFAULT_INPUT, extract as extract_cmcc_interfaces  # noqa: E402
+from extract_cmcc import extract_from_path as extract_cmcc_interfaces_from_path  # noqa: E402
 
 
 DEFAULT_OUTPUT = Path("output/20260610/cmcc.interface-list.yaml")
@@ -39,7 +40,18 @@ def main() -> None:
     if not input_path.exists():
         raise SystemExit(f"输入文件不存在: {input_path}")
 
-    interfaces = extract(read_source(input_path))
+    if input_path.suffix.lower() == ".docx":
+        interfaces = [
+            InterfaceSummary(
+                section=item.section,
+                title=item.title,
+                method=item.method,
+                uri=item.uri,
+            )
+            for item in extract_cmcc_interfaces_from_path(input_path)
+        ]
+    else:
+        interfaces = extract(read_source(input_path))
     write_interface_list_yaml(interfaces, output_path)
     print(f"已提取 {len(interfaces)} 个 CMCC 接口 -> {output_path}")
 

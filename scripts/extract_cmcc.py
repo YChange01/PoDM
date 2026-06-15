@@ -22,6 +22,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _cmcc_docx_utils import read_source  # noqa: E402
+from _cmcc_toc_utils import TocEntry, compact_title, extract_toc_from_path  # noqa: E402
 from _doc_structure import HEADING_RE, _strip_trailing_pageno, split_columns  # noqa: E402
 from _yaml_io import Interface, Params, dedup_keep_order, dump_yaml, write_uris  # noqa: E402
 
@@ -481,6 +482,56 @@ def extract(text: str) -> list[Interface]:
     return heading_interfaces or command_interfaces
 
 
+def extract_with_toc(text: str, toc_entries: list[TocEntry]) -> list[Interface]:
+    command_sections = apply_toc_to_sections(split_command_blocks(text), toc_entries)
+    command_interfaces = extract_from_sections(command_sections)
+    if command_interfaces:
+        return command_interfaces
+    return extract(text)
+
+
+def apply_toc_to_sections(
+    sections: list[dict[str, object]],
+    toc_entries: list[TocEntry],
+) -> list[dict[str, object]]:
+    out: list[dict[str, object]] = []
+    cursor = 0
+    for section in sections:
+        current = dict(section)
+        match_index = find_toc_entry_index(str(current.get("title", "")), toc_entries, cursor)
+        if match_index is not None:
+            entry = toc_entries[match_index]
+            current["number"] = entry.section
+            current["title"] = entry.title
+            cursor = match_index + 1
+        out.append(current)
+    return out
+
+
+def find_toc_entry_index(
+    title: str,
+    toc_entries: list[TocEntry],
+    start_index: int,
+) -> int | None:
+    normalized_title = compact_title(title)
+    if not normalized_title:
+        return None
+    for index in range(start_index, len(toc_entries)):
+        if compact_title(toc_entries[index].title) != normalized_title:
+            continue
+        best = index
+        next_index = index + 1
+        while (
+            next_index < len(toc_entries)
+            and compact_title(toc_entries[next_index].title) == normalized_title
+        ):
+            if toc_entries[next_index].level >= toc_entries[best].level:
+                best = next_index
+            next_index += 1
+        return best
+    return None
+
+
 def extract_from_sections(sections: list[dict[str, object]]) -> list[Interface]:
     interfaces: list[Interface] = []
     for section in sections:
@@ -488,6 +539,13 @@ def extract_from_sections(sections: list[dict[str, object]]) -> list[Interface]:
         if iface is not None:
             interfaces.append(iface)
     return interfaces
+
+
+def extract_from_path(path: Path) -> list[Interface]:
+    text = read_source(path)
+    if path.suffix.lower() == ".docx":
+        return extract_with_toc(text, extract_toc_from_path(path))
+    return extract(text)
 
 
 def resolve_io(argv: list[str]) -> tuple[Path, Path]:
@@ -503,7 +561,7 @@ def main(argv: list[str] | None = None) -> None:
     if not input_path.exists():
         raise SystemExit(f"输入文件不存在: {input_path}")
 
-    interfaces = extract(read_source(input_path))
+    interfaces = extract_from_path(input_path)
     output_path.parent.mkdir(parents=True, exist_ok=True)
     final_yaml = dump_yaml({"interfaces": [asdict(item) for item in interfaces]}, output_path)
     base_stem = Path(output_path.stem).stem if "." in output_path.stem else output_path.stem
