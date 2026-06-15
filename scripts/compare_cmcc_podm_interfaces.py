@@ -20,6 +20,7 @@ from _yaml_io import dedup_keep_order  # noqa: E402
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_CMCC = REPO_ROOT / "output/20260609/cmcc.interface.yaml"
+DEFAULT_CMCC_TOC = REPO_ROOT / "output/20260609/cmcc.toc.yaml"
 DEFAULT_PODM = REPO_ROOT / "data/20260511/Atlas PoDManager 1.0.0 Redfish 接口参考.interfaces.yaml"
 DEFAULT_OUTPUT = REPO_ROOT / "output/20260609/analysis/cmcc_podm_interface_param_compare.xlsx"
 REQUEST_CATEGORIES = ("path", "header", "body", "query")
@@ -55,6 +56,13 @@ class MatchResult:
     note: str = ""
 
 
+@dataclass(frozen=True)
+class TocEntry:
+    section: str
+    level: int
+    title: str
+
+
 def load_interfaces(path: Path) -> list[InterfaceRecord]:
     try:
         import yaml
@@ -76,6 +84,40 @@ def load_interfaces(path: Path) -> list[InterfaceRecord]:
             )
         )
     return records
+
+
+def load_toc(path: Path | None) -> list[TocEntry]:
+    if path is None or not path.exists():
+        return []
+    try:
+        import yaml
+    except ImportError as exc:  # pragma: no cover - dependency is present in tests.
+        raise SystemExit("读取 YAML 需要 PyYAML：python -m pip install pyyaml") from exc
+
+    data = yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+    entries: list[TocEntry] = []
+    for raw in data.get("toc") or []:
+        entries.append(
+            TocEntry(
+                section=clean(raw.get("section")),
+                level=int(raw.get("level") or 0),
+                title=clean(raw.get("title")),
+            )
+        )
+    return entries
+
+
+def ancestor_chapter(section: str, toc_entries: list[TocEntry], level: int) -> str:
+    best: TocEntry | None = None
+    for entry in toc_entries:
+        if entry.level != level:
+            continue
+        if section == entry.section or section.startswith(f"{entry.section}."):
+            if best is None or len(entry.section) > len(best.section):
+                best = entry
+    if best is None:
+        return ""
+    return f"{best.section} {best.title}".strip()
 
 
 def match_key(item: InterfaceRecord) -> tuple[str, str]:
@@ -179,7 +221,8 @@ def count_summary(item: InterfaceRecord) -> str:
     return f"request:{request_count}, response:{response_count}"
 
 
-def write_workbook(results: list[MatchResult], output: Path) -> None:
+def write_workbook(results: list[MatchResult], output: Path, toc_entries: list[TocEntry] | None = None) -> None:
+    toc_entries = toc_entries or []
     wb = Workbook()
     match_ws = wb.active
     match_ws.title = "CMCC接口匹配"
@@ -187,6 +230,7 @@ def write_workbook(results: list[MatchResult], output: Path) -> None:
         [
             "CMCC序号",
             "CMCC章节",
+            "CMCC大章节",
             "CMCC标题",
             "方法",
             "CMCC URI",
@@ -209,6 +253,7 @@ def write_workbook(results: list[MatchResult], output: Path) -> None:
             [
                 result.cmcc.index,
                 result.cmcc.section,
+                ancestor_chapter(result.cmcc.section, toc_entries, 3),
                 result.cmcc.title,
                 result.cmcc.method,
                 result.cmcc.uri,
@@ -231,6 +276,7 @@ def write_workbook(results: list[MatchResult], output: Path) -> None:
         [
             "CMCC序号",
             "CMCC章节",
+            "CMCC大章节",
             "CMCC标题",
             "方法",
             "CMCC URI",
@@ -257,30 +303,50 @@ def write_workbook(results: list[MatchResult], output: Path) -> None:
         start_row = param_ws.max_row + 1
         for category in COMPARE_CATEGORIES:
             diff = param_diff(params_for(result.cmcc, category), params_for(result.podm, category))
-            param_ws.append(
-                [
-                    result.cmcc.index,
-                    result.cmcc.section,
-                    result.cmcc.title,
-                    result.cmcc.method,
-                    result.cmcc.uri,
-                    result.podm.section,
-                    result.podm.title,
-                    result.podm.uri,
-                    result.mode,
-                    category,
-                    len(diff["cmcc"]),
-                    len(diff["podm"]),
-                    len(diff["common"]),
-                    len(diff["cmcc_only"]),
-                    len(diff["podm_only"]),
-                    join_values(diff["cmcc"]),
-                    join_values(diff["podm"]),
-                    join_values(diff["common"]),
-                    join_values(diff["cmcc_only"]),
-                    join_values(diff["podm_only"]),
-                ]
+            rows = max(
+                1,
+                len(diff["cmcc"]),
+                len(diff["podm"]),
+                len(diff["common"]),
+                len(diff["cmcc_only"]),
+                len(diff["podm_only"]),
             )
+            category_start = param_ws.max_row + 1
+            for index in range(rows):
+                param_ws.append(
+                    [
+                        result.cmcc.index,
+                        result.cmcc.section,
+                        ancestor_chapter(result.cmcc.section, toc_entries, 3),
+                        result.cmcc.title,
+                        result.cmcc.method,
+                        result.cmcc.uri,
+                        result.podm.section,
+                        result.podm.title,
+                        result.podm.uri,
+                        result.mode,
+                        category,
+                        len(diff["cmcc"]),
+                        len(diff["podm"]),
+                        len(diff["common"]),
+                        len(diff["cmcc_only"]),
+                        len(diff["podm_only"]),
+                        value_at(diff["cmcc"], index),
+                        value_at(diff["podm"], index),
+                        value_at(diff["common"], index),
+                        value_at(diff["cmcc_only"], index),
+                        value_at(diff["podm_only"], index),
+                    ]
+                )
+            category_end = param_ws.max_row
+            if category_end > category_start:
+                for col in range(11, 17):
+                    param_ws.merge_cells(
+                        start_row=category_start,
+                        start_column=col,
+                        end_row=category_end,
+                        end_column=col,
+                    )
         end_row = param_ws.max_row
         if end_row > start_row:
             for col in range(1, 10):
@@ -289,6 +355,10 @@ def write_workbook(results: list[MatchResult], output: Path) -> None:
     style_workbook(wb)
     output.parent.mkdir(parents=True, exist_ok=True)
     wb.save(output)
+
+
+def value_at(values: list[str], index: int) -> str:
+    return values[index] if index < len(values) else ""
 
 
 def style_workbook(wb: Workbook) -> None:
@@ -315,11 +385,17 @@ def style_workbook(wb: Workbook) -> None:
             ws.column_dimensions[letter].width = min(max(max_len + 2, 10), 48)
 
 
-def compare_cmcc_podm(cmcc_yaml: Path, podm_yaml: Path, output: Path) -> dict[str, int]:
+def compare_cmcc_podm(
+    cmcc_yaml: Path,
+    podm_yaml: Path,
+    output: Path,
+    cmcc_toc: Path | None = DEFAULT_CMCC_TOC,
+) -> dict[str, int]:
     cmcc_items = load_interfaces(cmcc_yaml)
     podm_items = load_interfaces(podm_yaml)
+    toc_entries = load_toc(cmcc_toc)
     results = match_interfaces(cmcc_items, podm_items)
-    write_workbook(results, output)
+    write_workbook(results, output, toc_entries)
     matched = sum(1 for result in results if result.podm is not None)
     return {
         "cmcc": len(cmcc_items),
@@ -332,6 +408,7 @@ def compare_cmcc_podm(cmcc_yaml: Path, podm_yaml: Path, output: Path) -> dict[st
 def parse_args(argv: list[str]) -> argparse.Namespace:
     parser = argparse.ArgumentParser(description="对比 CMCC 与 PoDManager 接口及参数，输出 Excel。")
     parser.add_argument("--cmcc-yaml", type=Path, default=DEFAULT_CMCC)
+    parser.add_argument("--cmcc-toc", type=Path, default=DEFAULT_CMCC_TOC)
     parser.add_argument("--podm-yaml", type=Path, default=DEFAULT_PODM)
     parser.add_argument("--output", type=Path, default=DEFAULT_OUTPUT)
     return parser.parse_args(argv)
@@ -342,7 +419,7 @@ def main(argv: list[str] | None = None) -> None:
     for path in (args.cmcc_yaml, args.podm_yaml):
         if not path.exists():
             raise SystemExit(f"输入文件不存在: {path}")
-    summary = compare_cmcc_podm(args.cmcc_yaml, args.podm_yaml, args.output)
+    summary = compare_cmcc_podm(args.cmcc_yaml, args.podm_yaml, args.output, args.cmcc_toc)
     print(
         "CMCC vs PoDManager 对比完成："
         f"CMCC {summary['cmcc']} 条 / PoDManager {summary['podm']} 条 / "
