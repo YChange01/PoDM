@@ -22,7 +22,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from _cmcc_docx_utils import read_source  # noqa: E402
-from _cmcc_toc_utils import TocEntry, compact_title, extract_toc_from_path  # noqa: E402
+from _cmcc_toc_utils import TocEntry, compact_title, extract_toc_from_docx  # noqa: E402
 from _doc_structure import HEADING_RE, _strip_trailing_pageno, split_columns  # noqa: E402
 from _yaml_io import Interface, Params, dedup_keep_order, dump_yaml, write_uris  # noqa: E402
 
@@ -89,6 +89,7 @@ FIELD_NAME_RE = re.compile(r"^[@A-Za-z_][A-Za-z0-9_@.\-]*$")
 PATH_KEYWORDS = {"redfish", "v1", "actions", "oem", "public", "cmcc"}
 IGNORED_REQUEST_NAMES = {"device_ip"}
 NON_BODY_VALUE_WORDS = {"true", "false", "null", "none"}
+LEADING_COMMAND_ORDINAL_RE = re.compile(r"^\d{1,4}\s+(.+)$")
 
 
 def normalize_source_text(text: str) -> str:
@@ -513,23 +514,31 @@ def find_toc_entry_index(
     toc_entries: list[TocEntry],
     start_index: int,
 ) -> int | None:
-    normalized_title = compact_title(title)
+    normalized_title = normalize_match_title(title)
     if not normalized_title:
         return None
     for index in range(start_index, len(toc_entries)):
-        if compact_title(toc_entries[index].title) != normalized_title:
+        if normalize_match_title(toc_entries[index].title) != normalized_title:
             continue
         best = index
         next_index = index + 1
         while (
             next_index < len(toc_entries)
-            and compact_title(toc_entries[next_index].title) == normalized_title
+            and normalize_match_title(toc_entries[next_index].title) == normalized_title
         ):
             if toc_entries[next_index].level >= toc_entries[best].level:
                 best = next_index
             next_index += 1
         return best
     return None
+
+
+def normalize_match_title(title: str) -> str:
+    stripped = title.strip()
+    match = LEADING_COMMAND_ORDINAL_RE.match(stripped)
+    if match:
+        stripped = match.group(1).strip()
+    return compact_title(stripped)
 
 
 def extract_from_sections(sections: list[dict[str, object]]) -> list[Interface]:
@@ -544,7 +553,7 @@ def extract_from_sections(sections: list[dict[str, object]]) -> list[Interface]:
 def extract_from_path(path: Path) -> list[Interface]:
     text = read_source(path)
     if path.suffix.lower() == ".docx":
-        return extract_with_toc(text, extract_toc_from_path(path))
+        return extract_with_toc(text, extract_toc_from_docx(path))
     return extract(text)
 
 

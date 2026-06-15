@@ -259,6 +259,7 @@ def write_outline_cmcc_interface_docx(path: Path) -> None:
         ("", "参数说明"),
         ("", "参数\t参数说明\t取值"),
         ("", "system_id\t系统资源的ID\t1"),
+        ("CmccH4", "设置服务器资产相关信息"),
     ]
     body = "\n".join(paragraph(style_id, text) for style_id, text in headings_and_body)
     document = f"""
@@ -376,6 +377,47 @@ class CmccExtractorsTest(unittest.TestCase):
             ],
         )
         self.assertEqual(interfaces[1].params.path, ["system_id"])
+
+    def test_cmcc_docx_params_match_toc_when_sidecar_titles_have_ordinals(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            docx = Path(tmp) / "cmcc.docx"
+            write_outline_cmcc_interface_docx(docx)
+            docx.with_suffix(".paste.txt").write_text(
+                "\n".join(
+                    [
+                        "23 查询服务器资产",
+                        "命令功能",
+                        "查询服务器资产编码。",
+                        "命令格式",
+                        "请求方法：Get",
+                        "URL：https://device_ip/redfish/v1/Systems/system_id",
+                        "请求头：X-Auth-Token: auth_value",
+                        "参数说明",
+                        "参数\t参数说明\t取值",
+                        "system_id\t系统资源的ID\t1",
+                        "24 设置服务器资产相关信息",
+                        "命令功能",
+                        "修改指定系统资源属性。",
+                        "命令格式",
+                        "操作类型：PATCH",
+                        "URL：https://device_ip/redfish/v1/Systems/system_id",
+                        "请求头：",
+                        "X-Auth-Token: auth_value",
+                    ]
+                ),
+                encoding="utf-8",
+            )
+
+            interfaces = extract_cmcc_params_from_path(docx)
+
+        self.assertEqual(
+            [(item.section, item.title, item.method) for item in interfaces],
+            [
+                ("6.1.2.1", "查询服务器资产", "GET"),
+                ("6.1.2.2", "设置服务器资产相关信息", "PATCH"),
+            ],
+        )
+        self.assertEqual(interfaces[0].params.path, ["system_id"])
 
     def test_shared_docx_reader_does_not_apply_cmcc_numbering_rules(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
