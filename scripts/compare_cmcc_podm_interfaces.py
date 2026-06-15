@@ -107,7 +107,13 @@ def load_toc(path: Path | None) -> list[TocEntry]:
     return entries
 
 
-def ancestor_chapter(section: str, toc_entries: list[TocEntry], level: int) -> str:
+def format_toc_value(entry: TocEntry | None) -> str:
+    if entry is None:
+        return ""
+    return f"{entry.section}{entry.title}".strip()
+
+
+def ancestor_entry(section: str, toc_entries: list[TocEntry], level: int) -> TocEntry | None:
     best: TocEntry | None = None
     for entry in toc_entries:
         if entry.level != level:
@@ -115,9 +121,39 @@ def ancestor_chapter(section: str, toc_entries: list[TocEntry], level: int) -> s
         if section == entry.section or section.startswith(f"{entry.section}."):
             if best is None or len(entry.section) > len(best.section):
                 best = entry
-    if best is None:
-        return ""
-    return f"{best.section} {best.title}".strip()
+    return best
+
+
+def exact_toc_entry(section: str, toc_entries: list[TocEntry]) -> TocEntry | None:
+    for entry in toc_entries:
+        if entry.section == section:
+            return entry
+    return None
+
+
+def fallback_toc_entry(section: str, title: str, level: int) -> TocEntry | None:
+    parts = section.split(".")
+    if len(parts) < level:
+        return None
+    fallback_section = ".".join(parts[:level])
+    fallback_title = title if len(parts) == level else ""
+    return TocEntry(fallback_section, level, fallback_title)
+
+
+def cmcc_chapter_columns(item: InterfaceRecord, toc_entries: list[TocEntry]) -> tuple[str, str, str]:
+    exact = exact_toc_entry(item.section, toc_entries)
+    level3 = ancestor_entry(item.section, toc_entries, 3) or fallback_toc_entry(item.section, item.title, 3)
+    level4 = ancestor_entry(item.section, toc_entries, 4) or fallback_toc_entry(item.section, item.title, 4)
+    level5 = ancestor_entry(item.section, toc_entries, 5) or fallback_toc_entry(item.section, item.title, 5)
+
+    if exact is not None:
+        if exact.level == 3:
+            level3, level4, level5 = exact, None, None
+        elif exact.level == 4:
+            level4, level5 = exact, None
+        elif exact.level >= 5:
+            level5 = exact
+    return format_toc_value(level3), format_toc_value(level4), format_toc_value(level5)
 
 
 def match_key(item: InterfaceRecord) -> tuple[str, str]:
@@ -228,10 +264,9 @@ def write_workbook(results: list[MatchResult], output: Path, toc_entries: list[T
     match_ws.title = "CMCC接口匹配"
     match_ws.append(
         [
-            "CMCC序号",
-            "CMCC章节",
-            "CMCC大章节",
-            "CMCC标题",
+            "redfish规范大章节",
+            "redfish规范二级章节",
+            "redfish规范三级章节",
             "方法",
             "CMCC URI",
             "CMCC归一化URI",
@@ -249,12 +284,12 @@ def write_workbook(results: list[MatchResult], output: Path, toc_entries: list[T
     )
     for result in results:
         podm = result.podm
+        level3, level4, level5 = cmcc_chapter_columns(result.cmcc, toc_entries)
         match_ws.append(
             [
-                result.cmcc.index,
-                result.cmcc.section,
-                ancestor_chapter(result.cmcc.section, toc_entries, 3),
-                result.cmcc.title,
+                level3,
+                level4,
+                level5,
                 result.cmcc.method,
                 result.cmcc.uri,
                 normalize_uri(result.cmcc.uri),
@@ -270,14 +305,15 @@ def write_workbook(results: list[MatchResult], output: Path, toc_entries: list[T
                 result.note,
             ]
         )
+    merge_contiguous_values(match_ws, 1)
+    merge_contiguous_values(match_ws, 2)
 
     param_ws = wb.create_sheet("共有接口参数对比")
     param_ws.append(
         [
-            "CMCC序号",
-            "CMCC章节",
-            "CMCC大章节",
-            "CMCC标题",
+            "redfish规范大章节",
+            "redfish规范二级章节",
+            "redfish规范三级章节",
             "方法",
             "CMCC URI",
             "PODM章节",
@@ -300,6 +336,7 @@ def write_workbook(results: list[MatchResult], output: Path, toc_entries: list[T
     for result in results:
         if result.podm is None:
             continue
+        level3, level4, level5 = cmcc_chapter_columns(result.cmcc, toc_entries)
         start_row = param_ws.max_row + 1
         for category in COMPARE_CATEGORIES:
             diff = param_diff(params_for(result.cmcc, category), params_for(result.podm, category))
@@ -315,10 +352,9 @@ def write_workbook(results: list[MatchResult], output: Path, toc_entries: list[T
             for index in range(rows):
                 param_ws.append(
                     [
-                        result.cmcc.index,
-                        result.cmcc.section,
-                        ancestor_chapter(result.cmcc.section, toc_entries, 3),
-                        result.cmcc.title,
+                        level3,
+                        level4,
+                        level5,
                         result.cmcc.method,
                         result.cmcc.uri,
                         result.podm.section,
@@ -340,7 +376,7 @@ def write_workbook(results: list[MatchResult], output: Path, toc_entries: list[T
                 )
             category_end = param_ws.max_row
             if category_end > category_start:
-                for col in range(11, 17):
+                for col in range(10, 16):
                     param_ws.merge_cells(
                         start_row=category_start,
                         start_column=col,
@@ -359,6 +395,19 @@ def write_workbook(results: list[MatchResult], output: Path, toc_entries: list[T
 
 def value_at(values: list[str], index: int) -> str:
     return values[index] if index < len(values) else ""
+
+
+def merge_contiguous_values(ws, column: int, start_row: int = 2) -> None:
+    group_start = start_row
+    current = ws.cell(row=start_row, column=column).value
+    for row in range(start_row + 1, ws.max_row + 2):
+        value = ws.cell(row=row, column=column).value if row <= ws.max_row else None
+        if value == current:
+            continue
+        if current not in (None, "") and row - group_start > 1:
+            ws.merge_cells(start_row=group_start, start_column=column, end_row=row - 1, end_column=column)
+        group_start = row
+        current = value
 
 
 def style_workbook(wb: Workbook) -> None:

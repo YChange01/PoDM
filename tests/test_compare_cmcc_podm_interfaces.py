@@ -78,24 +78,25 @@ interfaces:
             match_rows = list(wb["CMCC接口匹配"].iter_rows(min_row=2, values_only=True))
             param_ws = wb["共有接口参数对比"]
             param_rows = list(param_ws.iter_rows(min_row=2, values_only=True))
-            request_row = next(row for row in param_rows if row[10] == "request")
-            request_detail_rows = [row for row in param_rows if row[0] == 1 or row[10] == "request" or row[16]]
+            request_row = next(row for row in param_rows if row[9] == "request")
+            request_detail_rows = [row for row in param_rows if row[9] == "request" or row[15] or row[16]]
             merged_ranges = {str(item) for item in param_ws.merged_cells.ranges}
 
         self.assertEqual(summary["cmcc"], 2)
         self.assertEqual(summary["podm"], 1)
         self.assertEqual(summary["matched"], 1)
         self.assertEqual(summary["unmatched"], 1)
-        self.assertEqual(match_rows[0][1:5], ("6.1.2.1", "6.1.2 资产管理接口要求", "查询服务器资产", "GET"))
-        self.assertEqual(match_rows[0][8], "已匹配")
-        self.assertEqual(match_rows[1][8], "未匹配")
-        self.assertEqual(request_row[13], 2)
-        self.assertEqual(request_row[14], 1)
-        self.assertEqual(request_row[19], "device_ip")
-        self.assertEqual(request_row[16], "device_ip")
+        self.assertEqual(match_rows[0][0:4], ("6.1.2资产管理接口要求", "6.1.2.1查询服务器资产", None, "GET"))
+        self.assertEqual(match_rows[0][7], "已匹配")
+        self.assertEqual(match_rows[1][7], "未匹配")
+        self.assertEqual(request_row[12], 2)
+        self.assertEqual(request_row[13], 1)
+        self.assertEqual(request_row[18], "device_ip")
+        self.assertEqual(request_row[15], "device_ip")
+        self.assertFalse(any("\n" in str(row[15] or "") for row in request_detail_rows))
         self.assertFalse(any("\n" in str(row[16] or "") for row in request_detail_rows))
         self.assertIn("A2:A6", merged_ranges)
-        self.assertIn("K2:K4", merged_ranges)
+        self.assertIn("J2:J4", merged_ranges)
 
 
 if __name__ == "__main__":
