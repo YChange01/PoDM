@@ -174,8 +174,15 @@ def parse_heading_title(line: str) -> tuple[str, str]:
     stripped = line.strip(" \t▪■●◆◇-")
     match = HEADING_RE.match(stripped)
     if not match:
-        return "", stripped
+        return "", strip_leading_command_ordinal(stripped)
     return match.group(1), _strip_trailing_pageno(match.group(2).strip())
+
+
+def strip_leading_command_ordinal(title: str) -> str:
+    match = LEADING_COMMAND_ORDINAL_RE.match(title.strip())
+    if not match:
+        return title.strip()
+    return match.group(1).strip()
 
 
 def previous_title_line(lines: list[str], before_index: int, title_limit: int) -> str:
@@ -552,11 +559,7 @@ def find_toc_entry_index(
 
 
 def normalize_match_title(title: str) -> str:
-    stripped = title.strip()
-    match = LEADING_COMMAND_ORDINAL_RE.match(stripped)
-    if match:
-        stripped = match.group(1).strip()
-    return compact_title(stripped)
+    return compact_title(strip_leading_command_ordinal(title))
 
 
 def extract_from_sections(sections: list[dict[str, object]]) -> list[Interface]:

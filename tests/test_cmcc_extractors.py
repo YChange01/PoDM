@@ -491,6 +491,26 @@ class CmccExtractorsTest(unittest.TestCase):
         )
         self.assertEqual(interfaces[1].uri, "https://device_ip/redfish/v1/Managers/manager_id")
 
+    def test_cmcc_interface_list_strips_copy_pasted_ordinals(self) -> None:
+        text = "\n".join(
+            [
+                "23 查询服务器资产",
+                "命令功能",
+                "查询服务器资产编码。",
+                "命令格式",
+                "请求方法：Get",
+                "URL：https://device_ip/redfish/v1/Systems/system_id",
+                "请求头：X-Auth-Token: auth_value",
+            ]
+        )
+
+        interfaces = extract_cmcc_list(text)
+
+        self.assertEqual(len(interfaces), 1)
+        self.assertEqual(interfaces[0].section, "")
+        self.assertEqual(interfaces[0].title, "查询服务器资产")
+        self.assertEqual(interfaces[0].method, "GET")
+
     def test_extracts_cmcc_request_and_response_params(self) -> None:
         text = "\n".join(
             [
